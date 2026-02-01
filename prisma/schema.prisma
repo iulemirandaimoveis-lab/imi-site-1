@@ -1,0 +1,181 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+// ===== USERS (Admin) =====
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String
+  passwordHash  String
+  role          UserRole @default(ADMIN)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+// ===== CLIENTS =====
+model Client {
+  id                    String                 @id @default(uuid())
+  name                  String
+  email                 String                 @unique
+  phone                 String
+  origin                String? // De onde veio (formulário, WhatsApp, etc)
+  notes                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  
+  // Relacionamentos
+  propertyLinks         ClientPropertyLink[]
+  accessLogs            PropertyAccessLog[]
+  
+  @@map("clients")
+}
+
+// ===== PROPERTIES =====
+model Property {
+  id                String              @id @default(uuid())
+  title             String
+  slug              String              @unique
+  description       String
+  price             Decimal             @db.Decimal(12, 2)
+  area              Int // m²
+  bedrooms          Int
+  bathrooms         Int
+  parkingSpots      Int
+  address           String
+  neighborhood      String
+  city              String
+  state             String
+  zipCode           String?
+  latitude          Decimal?            @db.Decimal(10, 8)
+  longitude         Decimal?            @db.Decimal(11, 8)
+  
+  // Status e Selos
+  status            PropertyStatus      @default(AVAILABLE)
+  isFeatured        Boolean             @default(false)
+  isExclusive       Boolean             @default(false)
+  hasAnalysis       Boolean             @default(false)
+  
+  // Metadata
+  viewCount         Int                 @default(0)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  publishedAt       DateTime?
+  
+  // Relacionamentos
+  images            PropertyImage[]
+  clientLinks       ClientPropertyLink[]
+  accessLogs        PropertyAccessLog[]
+  
+  @@map("properties")
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  ANALYSIS
+}
+
+// ===== PROPERTY IMAGES =====
+model PropertyImage {
+  id          String   @id @default(uuid())
+  propertyId  String
+  url         String
+  alt         String?
+  order       Int      @default(0)
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  @@map("property_images")
+}
+
+// ===== CLIENT PROPERTY LINKS (Tracking Links) =====
+model ClientPropertyLink {
+  id          String   @id @default(uuid())
+  clientId    String
+  propertyId  String
+  token       String   @unique // Token único para o link
+  url         String   // URL completa gerada
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime? // Opcional: link com expiração
+  
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  @@unique([clientId, propertyId])
+  @@map("client_property_links")
+}
+
+// ===== PROPERTY ACCESS LOGS (Tracking Detalhado) =====
+model PropertyAccessLog {
+  id                String   @id @default(uuid())
+  clientId          String
+  propertyId        String
+  linkToken         String
+  
+  // Dados de Acesso
+  accessedAt        DateTime @default(now())
+  device            String? // mobile, desktop, tablet
+  browser           String?
+  os                String?
+  ipAddress         String?
+  
+  // Tempo de Permanência
+  totalTimeSeconds  Int?
+  galleryTimeSeconds Int?
+  descriptionTimeSeconds Int?
+  priceTimeSeconds  Int?
+  ctaTimeSeconds    Int?
+  
+  // Interações
+  scrollDepth       Int? // Percentual de scroll
+  clickedCta        Boolean @default(false)
+  clickedWhatsApp   Boolean @default(false)
+  
+  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  property          Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  @@index([clientId, propertyId])
+  @@index([linkToken])
+  @@map("property_access_logs")
+}
+
+// ===== NOTIFICATIONS =====
+model Notification {
+  id          String            @id @default(uuid())
+  type        NotificationType
+  title       String
+  message     String
+  data        Json? // Dados adicionais (cliente, imóvel, etc)
+  isRead      Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+  
+  @@map("notifications")
+}
+
+enum NotificationType {
+  PROPERTY_ACCESS
+  PROPERTY_REVISIT
+  HIGH_ENGAGEMENT
+  NEW_CLIENT
+  PROPERTY_SOLD
+}
