@@ -4,13 +4,14 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "prisma generate && next build",
+        "build": "next build",
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc --noEmit",
         "prisma:generate": "prisma generate",
         "prisma:studio": "prisma studio",
-        "prisma:migrate": "prisma migrate dev"
+        "prisma:migrate": "prisma migrate dev",
+        "postinstall": "prisma generate"
     },
     "dependencies": {
         "@heroicons/react": "^2.2.0",
