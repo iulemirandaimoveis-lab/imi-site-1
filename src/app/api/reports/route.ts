@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
             totalLeads,
             totalProperties,
             totalViews: totalViews._sum.viewCount || 0,
-            totalRevenue: revenue._sum.price || 0,
+            totalRevenue: Number(revenue._sum.price || 0),
             leadsGrowth: calculateGrowth(totalLeads, previousLeads),
             propertiesGrowth: calculateGrowth(totalProperties, previousProperties),
             viewsGrowth: calculateGrowth(
@@ -109,8 +109,8 @@ export async function GET(request: NextRequest) {
                 previousViews._sum.viewCount || 0
             ),
             revenueGrowth: calculateGrowth(
-                revenue._sum.price || 0,
-                previousRevenue._sum.price || 0
+                Number(revenue._sum.price || 0),
+                Number(previousRevenue._sum.price || 0)
             ),
         }
 
