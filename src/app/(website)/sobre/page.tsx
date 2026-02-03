@@ -96,10 +96,13 @@ export default function SobrePage() {
                     >
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
                             <motion.div variants={slideUp} className="md:col-span-1">
-                                <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary-100 to-accent-100 flex items-center justify-center">
-                                    <svg className="w-32 h-32 text-primary-700" fill="none" viewBox="0 0 24 24" strokeWidth="1" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
+                                <div className="aspect-[3/4] md:aspect-[4/5] relative rounded-2xl overflow-hidden shadow-2xl border border-neutral-100 group">
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                                        style={{ backgroundImage: "url('/about-profile.jpg')" }}
+                                    />
+                                    {/* Overlay Gradient for depth */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                                 </div>
                             </motion.div>
 
