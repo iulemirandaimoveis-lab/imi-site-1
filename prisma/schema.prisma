@@ -16,19 +16,19 @@ model User {
   id            String   @id @default(uuid())
   email         String   @unique
   name          String
-  passwordHash  String
-  role          UserRole @default(ADMIN)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  passwordHash  String   @map("password_hash")
+  role          String   @default("ADMIN") // Enum: ADMIN, EDITOR, VIEWER
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   @@map("users")
 }
 
-enum UserRole {
-  ADMIN
-  EDITOR
-  VIEWER
-}
+// enum UserRole {
+//   ADMIN
+//   EDITOR
+//   VIEWER
+// }
 
 // ===== CLIENTS =====
 model Client {
@@ -38,8 +38,8 @@ model Client {
   phone                 String
   origin                String? // De onde veio (formulário, WhatsApp, etc)
   notes                 String?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  createdAt             DateTime               @default(now()) @map("created_at")
+  updatedAt             DateTime               @updatedAt @map("updated_at")
   
   // Relacionamentos
   propertyLinks         ClientPropertyLink[]
@@ -58,26 +58,26 @@ model Property {
   area              Int // m²
   bedrooms          Int
   bathrooms         Int
-  parkingSpots      Int
+  parkingSpots      Int                 @map("parking_spots")
   address           String
   neighborhood      String
   city              String
   state             String
-  zipCode           String?
+  zipCode           String?             @map("zip_code")
   latitude          Decimal?            @db.Decimal(10, 8)
   longitude         Decimal?            @db.Decimal(11, 8)
   
   // Status e Selos
-  status            PropertyStatus      @default(AVAILABLE)
-  isFeatured        Boolean             @default(false)
-  isExclusive       Boolean             @default(false)
-  hasAnalysis       Boolean             @default(false)
+  status            String              @default("AVAILABLE") // Enum: AVAILABLE, RESERVED, SOLD, ANALYSIS
+  isFeatured        Boolean             @default(false) @map("is_featured")
+  isExclusive       Boolean             @default(false) @map("is_exclusive")
+  hasAnalysis       Boolean             @default(false) @map("has_analysis")
   
   // Metadata
-  viewCount         Int                 @default(0)
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  publishedAt       DateTime?
+  viewCount         Int                 @default(0) @map("view_count")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  publishedAt       DateTime?           @map("published_at")
   
   // Relacionamentos
   images            PropertyImage[]
@@ -87,22 +87,22 @@ model Property {
   @@map("properties")
 }
 
-enum PropertyStatus {
-  AVAILABLE
-  RESERVED
-  SOLD
-  ANALYSIS
-}
+// enum PropertyStatus {
+//   AVAILABLE
+//   RESERVED
+//   SOLD
+//   ANALYSIS
+// }
 
 // ===== PROPERTY IMAGES =====
 model PropertyImage {
   id          String   @id @default(uuid())
-  propertyId  String
+  propertyId  String   @map("property_id")
   url         String
   alt         String?
   order       Int      @default(0)
-  isPrimary   Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  isPrimary   Boolean  @default(false) @map("is_primary")
+  createdAt   DateTime @default(now()) @map("created_at")
   
   property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   
@@ -112,12 +112,12 @@ model PropertyImage {
 // ===== CLIENT PROPERTY LINKS (Tracking Links) =====
 model ClientPropertyLink {
   id          String   @id @default(uuid())
-  clientId    String
-  propertyId  String
+  clientId    String   @map("client_id")
+  propertyId  String   @map("property_id")
   token       String   @unique // Token único para o link
   url         String   // URL completa gerada
-  createdAt   DateTime @default(now())
-  expiresAt   DateTime? // Opcional: link com expiração
+  createdAt   DateTime @default(now()) @map("created_at")
+  expiresAt   DateTime? @map("expires_at") // Opcional: link com expiração
   
   client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
@@ -129,28 +129,28 @@ model ClientPropertyLink {
 // ===== PROPERTY ACCESS LOGS (Tracking Detalhado) =====
 model PropertyAccessLog {
   id                String   @id @default(uuid())
-  clientId          String
-  propertyId        String
-  linkToken         String
+  clientId          String   @map("client_id")
+  propertyId        String   @map("property_id")
+  linkToken         String   @map("link_token")
   
   // Dados de Acesso
-  accessedAt        DateTime @default(now())
+  accessedAt        DateTime @default(now()) @map("accessed_at")
   device            String? // mobile, desktop, tablet
   browser           String?
   os                String?
-  ipAddress         String?
+  ipAddress         String?  @map("ip_address")
   
   // Tempo de Permanência
-  totalTimeSeconds  Int?
-  galleryTimeSeconds Int?
-  descriptionTimeSeconds Int?
-  priceTimeSeconds  Int?
-  ctaTimeSeconds    Int?
+  totalTimeSeconds  Int?     @map("total_time_seconds")
+  galleryTimeSeconds Int?    @map("gallery_time_seconds")
+  descriptionTimeSeconds Int? @map("description_time_seconds")
+  priceTimeSeconds  Int?     @map("price_time_seconds")
+  ctaTimeSeconds    Int?     @map("cta_time_seconds")
   
   // Interações
-  scrollDepth       Int? // Percentual de scroll
-  clickedCta        Boolean @default(false)
-  clickedWhatsApp   Boolean @default(false)
+  scrollDepth       Int?     @map("scroll_depth") // Percentual de scroll
+  clickedCta        Boolean  @default(false) @map("clicked_cta")
+  clickedWhatsApp   Boolean  @default(false) @map("clicked_whatsapp")
   
   client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   property          Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
@@ -163,20 +163,20 @@ model PropertyAccessLog {
 // ===== NOTIFICATIONS =====
 model Notification {
   id          String            @id @default(uuid())
-  type        NotificationType
+  type        String // Enum: PROPERTY_ACCESS, PROPERTY_REVISIT, etc
   title       String
   message     String
   data        Json? // Dados adicionais (cliente, imóvel, etc)
-  isRead      Boolean           @default(false)
-  createdAt   DateTime          @default(now())
+  isRead      Boolean           @default(false) @map("is_read")
+  createdAt   DateTime          @default(now()) @map("created_at")
   
   @@map("notifications")
 }
 
-enum NotificationType {
-  PROPERTY_ACCESS
-  PROPERTY_REVISIT
-  HIGH_ENGAGEMENT
-  NEW_CLIENT
-  PROPERTY_SOLD
-}
+// enum NotificationType {
+//   PROPERTY_ACCESS
+//   PROPERTY_REVISIT
+//   HIGH_ENGAGEMENT
+//   NEW_CLIENT
+//   PROPERTY_SOLD
+// }

@@ -1,5 +1,5 @@
 export type PropertyType = 'apartment' | 'house' | 'commercial' | 'land'
-export type PropertyStatus = 'lancamento' | 'usado'
+export type PropertyStatus = 'AVAILABLE' | 'RESERVED' | 'SOLD' | 'ANALYSIS' | 'lancamento' | 'usado' // Keeping old ones for compatibility during migration
 export type PropertyPurpose = 'moradia' | 'investimento'
 
 export interface Property {
@@ -17,9 +17,9 @@ export interface Property {
     address?: string
 
     // Details
-    bedrooms?: number
-    bathrooms?: number
-    parkingSpaces?: number
+    bedrooms: number // Made required to match DB
+    bathrooms: number // Made required
+    parkingSpots: number // Renamed from parkingSpaces
     area: number // in m²
 
     // Pricing

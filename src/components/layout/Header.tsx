@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button'
 const navigation = [
     { name: 'Home', href: '/' },
     { name: 'Avaliações', href: '/avaliacoes' },
+    { name: 'Inteligência', href: '/inteligencia' },
     { name: 'Consultoria', href: '/consultoria' },
     { name: 'Imóveis', href: '/imoveis' },
     { name: 'Sobre', href: '/sobre' },
@@ -93,7 +94,7 @@ export default function Header() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed inset-0 z-40 bg-white flex flex-col pt-24 px-6 lg:hidden"
+                        className="fixed inset-0 z-50 bg-white flex flex-col pt-24 px-6 lg:hidden min-h-[100dvh]"
                     >
                         <div className="flex flex-col gap-6 text-center">
                             {navigation.map((item) => (
@@ -106,6 +107,14 @@ export default function Header() {
                                     {item.name}
                                 </Link>
                             ))}
+                            <Link
+                                href="/inteligencia"
+                                className="text-2xl font-display font-bold text-primary-700 hover:text-primary-900 transition-colors"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                Inteligência
+                            </Link>
+
                             <div className="mt-8">
                                 <Button asChild size="lg" fullWidth>
                                     <Link href="/avaliacoes#form" onClick={() => setMobileMenuOpen(false)}>
