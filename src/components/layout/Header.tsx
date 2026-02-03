@@ -21,111 +21,96 @@ export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const pathname = usePathname()
 
+    // Lock body scroll when menu is open
+    if (typeof window !== 'undefined') {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'unset'
+        }
+    }
+
     return (
-        <header className="sticky top-0 z-50 bg-white border-b border-neutral-200">
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-neutral-100">
             <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">
                     {/* Logo */}
-                    <div className="flex items-center">
-                        <Link href="/" className="flex items-center space-x-3">
-                            <div className="text-2xl font-display font-bold text-primary-900">
-                                IMI
-                            </div>
-                            <div className="hidden sm:block text-sm text-neutral-600 border-l border-neutral-300 pl-3">
-                                Inteligência Imobiliária
-                            </div>
-                        </Link>
-                    </div>
+                    <Link href="/" className="z-50 relative flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
+                        <div className="text-2xl font-display font-bold text-primary-900 tracking-tight">
+                            IMI
+                        </div>
+                        <div className="hidden sm:block text-sm text-neutral-500 border-l border-neutral-300 pl-3 leading-none">
+                            Inteligência<br />Imobiliária
+                        </div>
+                    </Link>
 
-                    {/* Desktop Navigation */}
+                    {/* Desktop Navigation (Minimal) */}
                     <div className="hidden lg:flex lg:items-center lg:space-x-8">
-                        {navigation.map((item) => {
-                            const isActive = pathname === item.href
-                            return (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={cn(
-                                        'text-sm font-medium transition-colors duration-200 relative py-2',
-                                        isActive
-                                            ? 'text-primary-700'
-                                            : 'text-neutral-600 hover:text-primary-700'
-                                    )}
-                                >
-                                    {item.name}
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="activeNav"
-                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-700"
-                                            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                                        />
-                                    )}
-                                </Link>
-                            )
-                        })}
-                    </div>
-
-                    {/* CTA Button */}
-                    <div className="hidden lg:flex lg:items-center">
-                        <Button asChild size="md">
-                            <Link href="/avaliacoes#form">Solicitar Avaliação</Link>
+                        {navigation.map((item) => (
+                            <Link
+                                key={item.name}
+                                href={item.href}
+                                className={cn(
+                                    'text-sm font-medium transition-colors duration-200',
+                                    pathname === item.href
+                                        ? 'text-primary-900'
+                                        : 'text-neutral-500 hover:text-primary-900'
+                                )}
+                            >
+                                {item.name}
+                            </Link>
+                        ))}
+                        <Button asChild size="sm" className="ml-4">
+                            <Link href="/avaliacoes#form">Avaliação</Link>
                         </Button>
                     </div>
 
-                    {/* Mobile menu button */}
-                    <div className="flex lg:hidden">
-                        <button
-                            type="button"
-                            className="inline-flex items-center justify-center rounded-md p-2 text-neutral-700 hover:bg-neutral-100"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        >
-                            <span className="sr-only">Abrir menu</span>
-                            {mobileMenuOpen ? (
-                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            ) : (
-                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                                </svg>
-                            )}
-                        </button>
-                    </div>
+                    {/* Mobile Menu Toggle */}
+                    <button
+                        type="button"
+                        className="lg:hidden z-50 relative p-2 -mr-2 text-primary-900"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    >
+                        <span className="sr-only">Menu</span>
+                        {mobileMenuOpen ? (
+                            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        ) : (
+                            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+                            </svg>
+                        )}
+                    </button>
                 </div>
             </nav>
 
-            {/* Mobile menu */}
+            {/* Mobile Full Screen Overlay */}
             <AnimatePresence>
                 {mobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.2 }}
-                        className="lg:hidden border-t border-neutral-200"
+                        className="fixed inset-0 z-40 bg-white flex flex-col pt-24 px-6 lg:hidden"
                     >
-                        <div className="space-y-1 px-4 pb-4 pt-2">
-                            {navigation.map((item) => {
-                                const isActive = pathname === item.href
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className={cn(
-                                            'block rounded-md px-3 py-2 text-base font-medium transition-colors',
-                                            isActive
-                                                ? 'bg-primary-50 text-primary-700'
-                                                : 'text-neutral-700 hover:bg-neutral-50'
-                                        )}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                    >
-                                        {item.name}
+                        <div className="flex flex-col gap-6 text-center">
+                            {navigation.map((item) => (
+                                <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    className="text-2xl font-display font-medium text-neutral-900 hover:text-primary-700 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    {item.name}
+                                </Link>
+                            ))}
+                            <div className="mt-8">
+                                <Button asChild size="lg" fullWidth>
+                                    <Link href="/avaliacoes#form" onClick={() => setMobileMenuOpen(false)}>
+                                        Solicitar Avaliação
                                     </Link>
-                                )
-                            })}
-                            <div className="pt-4">
-                                <Button asChild fullWidth>
-                                    <Link href="/avaliacoes#form">Solicitar Avaliação</Link>
                                 </Button>
                             </div>
                         </div>

@@ -8,177 +8,125 @@ import { fadeIn, slideUp, staggerContainer } from '@/lib/animations'
 
 export default function HomePage() {
     return (
-        <div className="bg-white">
-            {/* Hero Section */}
-            <section className="relative bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 text-white overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
-                <div className="relative container-custom section-padding">
+        <div className="bg-neutral-50">
+            {/* Hero Section - Mobile First Authority */}
+            <section className="relative h-[95dvh] lg:h-[90vh] flex items-end lg:items-center overflow-hidden">
+                {/* Background Image (User Photo) */}
+                <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{ backgroundImage: "url('/hero-bg.jpg')" }}
+                >
+                    {/* Modern Overlay - Gradient from bottom (Mobile) and left (Desktop) */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/60 to-transparent lg:bg-gradient-to-r lg:from-neutral-900 lg:via-neutral-900/50 lg:to-transparent opacity-95 lg:opacity-90" />
+                </div>
+
+                <div className="relative container-custom w-full pb-16 lg:pb-0 pt-32 lg:pt-0">
                     <motion.div
                         initial="hidden"
                         animate="visible"
                         variants={staggerContainer}
-                        className="max-w-4xl mx-auto text-center"
+                        className="max-w-2xl text-left"
                     >
                         <motion.h1
                             variants={slideUp}
-                            className="text-display-lg md:text-display-xl font-bold mb-6 text-balance"
+                            className="text-white font-display font-bold text-4xl sm:text-5xl lg:text-7xl leading-[1.1] mb-6 drop-shadow-lg"
                         >
-                            Inteligência, método e segurança em decisões imobiliárias
+                            Inteligência,<br />
+                            método e segurança<br />
+                            <span className="text-primary-200">em decisões imobiliárias</span>
                         </motion.h1>
+
                         <motion.p
                             variants={slideUp}
-                            className="text-xl md:text-2xl text-primary-100 mb-12 max-w-3xl mx-auto text-balance"
+                            className="text-lg sm:text-xl text-neutral-200 mb-8 max-w-lg font-light leading-relaxed drop-shadow-md"
                         >
-                            Avaliações técnicas, consultoria estratégica e corretagem com curadoria.
-                            Transformamos dados em decisões seguras.
+                            Consultoria estratégica e avaliações técnicas.
+                            Transformamos incerteza em capital seguro.
                         </motion.p>
+
                         <motion.div
                             variants={slideUp}
-                            className="flex flex-col sm:flex-row gap-4 justify-center"
+                            className="flex flex-col sm:flex-row gap-4"
                         >
-                            <Button asChild size="lg" variant="secondary">
+                            <Button asChild size="lg" className="bg-white text-neutral-900 hover:bg-neutral-100 border-none shadow-xl text-base h-14 px-8">
                                 <Link href="/avaliacoes#form">Solicitar Avaliação</Link>
                             </Button>
-                            <Button asChild size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white/20">
-                                <Link href="/consultoria#form">Agendar Conversa</Link>
-                            </Button>
                         </motion.div>
                     </motion.div>
                 </div>
             </section>
 
-            {/* Three Service Pillars */}
-            <section className="section-padding bg-neutral-50">
+            {/* Value Pillars - Stacked Cards */}
+            <section className="py-20 bg-white">
                 <div className="container-custom">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: '-100px' }}
-                        variants={staggerContainer}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-                    >
-                        {/* Avaliações */}
-                        <motion.div variants={slideUp}>
-                            <Card hover className="h-full p-8 text-center">
-                                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary-100 flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-primary-700" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-2xl font-bold text-neutral-900 mb-4">
-                                    Avaliações Imobiliárias
-                                </h3>
-                                <p className="text-neutral-600 mb-6">
-                                    Laudos técnicos com metodologia normativa para venda, financiamento,
-                                    judicial e patrimonial. CNAI 53290.
-                                </p>
-                                <Button asChild variant="outline" className="w-full">
-                                    <Link href="/avaliacoes">Saiba mais</Link>
-                                </Button>
-                            </Card>
-                        </motion.div>
-
-                        {/* Consultoria */}
-                        <motion.div variants={slideUp}>
-                            <Card hover className="h-full p-8 text-center">
-                                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-accent-100 flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-accent-700" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-2xl font-bold text-neutral-900 mb-4">
-                                    Consultoria Estratégica
-                                </h3>
-                                <p className="text-neutral-600 mb-6">
-                                    Análise de viabilidade, precificação estratégica e consultoria para
-                                    investidores. Decisões baseadas em dados.
-                                </p>
-                                <Button asChild variant="outline" className="w-full">
-                                    <Link href="/consultoria">Saiba mais</Link>
-                                </Button>
-                            </Card>
-                        </motion.div>
-
-                        {/* Imóveis */}
-                        <motion.div variants={slideUp}>
-                            <Card hover className="h-full p-8 text-center">
-                                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary-100 flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-primary-700" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-2xl font-bold text-neutral-900 mb-4">
-                                    Imóveis
-                                </h3>
-                                <p className="text-neutral-600 mb-6">
-                                    Corretagem com curadoria técnica. Lançamentos e usados selecionados
-                                    com análise de mercado e viabilidade.
-                                </p>
-                                <Button asChild variant="outline" className="w-full">
-                                    <Link href="/imoveis">Ver Imóveis</Link>
-                                </Button>
-                            </Card>
-                        </motion.div>
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Trust Indicators */}
-            <section className="section-padding bg-white">
-                <div className="container-custom">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={fadeIn}
-                        className="max-w-4xl mx-auto"
-                    >
-                        <div className="bg-gradient-to-br from-primary-50 to-accent-50 rounded-2xl p-8 md:p-12">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                                <div>
-                                    <div className="text-4xl font-bold text-primary-900 mb-2">CNAI 53290</div>
-                                    <div className="text-neutral-600">Certificação Nacional de Avaliador Imobiliário</div>
-                                </div>
-                                <div>
-                                    <div className="text-4xl font-bold text-primary-900 mb-2">CRECI 17933</div>
-                                    <div className="text-neutral-600">Registro profissional ativo</div>
-                                </div>
-                                <div>
-                                    <div className="text-4xl font-bold text-primary-900 mb-2">Metodologia</div>
-                                    <div className="text-neutral-600">Conformidade normativa NBR 14653</div>
-                                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+                        {/* Card 1 */}
+                        <div className="group p-8 rounded-2xl bg-white border border-neutral-100 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div className="w-12 h-12 bg-neutral-900 text-white rounded-xl flex items-center justify-center mb-6">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
                             </div>
+                            <h3 className="text-xl font-bold text-neutral-900 mb-3 font-display">Avaliações Técnicas</h3>
+                            <p className="text-neutral-600 leading-relaxed text-sm">
+                                Laudos com rigor normativo (NBR 14653) para fins judiciais, garantia bancária e inventários. Precisão técnica acima de tudo.
+                            </p>
                         </div>
-                    </motion.div>
+
+                        {/* Card 2 */}
+                        <div className="group p-8 rounded-2xl bg-white border border-neutral-100 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div className="w-12 h-12 bg-neutral-900 text-white rounded-xl flex items-center justify-center mb-6">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-neutral-900 mb-3 font-display">Consultoria Estratégica</h3>
+                            <p className="text-neutral-600 leading-relaxed text-sm">
+                                Análise de viabilidade e inteligência de mercado para investidores. Decisões pautadas em dados, não em "feeling".
+                            </p>
+                        </div>
+
+                        {/* Card 3 */}
+                        <div className="group p-8 rounded-2xl bg-white border border-neutral-100 shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div className="w-12 h-12 bg-neutral-900 text-white rounded-xl flex items-center justify-center mb-6">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-neutral-900 mb-3 font-display">Corretagem Curada</h3>
+                            <p className="text-neutral-600 leading-relaxed text-sm">
+                                Venda e aluguel de imóveis selecionados. Foco na qualidade do ativo e na segurança jurídica da transação.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="section-padding bg-primary-900 text-white">
-                <div className="container-custom">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={staggerContainer}
-                        className="max-w-3xl mx-auto text-center"
-                    >
-                        <motion.h2 variants={slideUp} className="text-display-md font-bold mb-6">
-                            Pronto para tomar decisões mais seguras?
-                        </motion.h2>
-                        <motion.p variants={slideUp} className="text-xl text-primary-100 mb-8">
-                            Entre em contato e descubra como a inteligência imobiliária pode
-                            transformar suas decisões de compra, venda ou investimento.
-                        </motion.p>
-                        <motion.div variants={slideUp} className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button asChild size="lg" variant="secondary">
-                                <Link href="/avaliacoes#form">Solicitar Avaliação</Link>
-                            </Button>
-                            <Button asChild size="lg" variant="outline" className="bg-white/10 border-white text-white hover:bg-white/20">
-                                <Link href="/contato">Falar com Especialista</Link>
-                            </Button>
-                        </motion.div>
-                    </motion.div>
+            {/* Institutional / Authority Statement */}
+            <section className="py-24 bg-neutral-900 text-white text-center">
+                <div className="container-custom max-w-3xl">
+                    <p className="text-sm tracking-widest uppercase text-neutral-400 mb-6 font-medium">Método IMI</p>
+                    <h2 className="text-3xl md:text-5xl font-display font-medium leading-tight mb-8">
+                        "O mercado imobiliário não aceita amadorismo. Transformamos dados complexos em decisões de capital seguras."
+                    </h2>
+                    <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/10 hover:border-white">
+                        <Link href="/sobre">Conheça Nossa Trajetória</Link>
+                    </Button>
+                </div>
+            </section>
+
+            {/* Final CTA */}
+            <section className="py-20 bg-white border-t border-neutral-100">
+                <div className="container-custom text-center">
+                    <h2 className="text-2xl font-display font-bold text-neutral-900 mb-4">
+                        Precisa de uma avaliação técnica?
+                    </h2>
+                    <p className="text-neutral-600 mb-8 max-w-xl mx-auto">
+                        Entre em contato hoje para agendar uma consulta inicial ou solicitar um orçamento de avaliação.
+                    </p>
+                    <Button asChild size="lg">
+                        <Link href="/contato">Falar pelo WhatsApp</Link>
+                    </Button>
                 </div>
             </section>
         </div>
