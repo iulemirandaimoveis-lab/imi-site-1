@@ -114,31 +114,7 @@ export default function BackofficeLoginPage() {
                         </button>
                     </form>
 
-                    {/* Professional Badges */}
-                    <div className="mt-8 pt-6 border-t border-neutral-200">
-                        <div className="flex items-center justify-center gap-6">
-                            <div className="text-center">
-                                <Image
-                                    src="/creci-badge.png"
-                                    alt="CRECI"
-                                    width={40}
-                                    height={40}
-                                    className="mx-auto mb-1"
-                                />
-                                <p className="text-xs text-neutral-500">CRECI 17933</p>
-                            </div>
-                            <div className="text-center">
-                                <Image
-                                    src="/cnai-badge.png"
-                                    alt="CNAI"
-                                    width={40}
-                                    height={40}
-                                    className="mx-auto mb-1"
-                                />
-                                <p className="text-xs text-neutral-500">CNAI 53290</p>
-                            </div>
-                        </div>
-                    </div>
+                    {/* Badges removed */}
                 </div>
 
                 {/* Footer */}

@@ -4,24 +4,70 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-// Validação defensiva para build time
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('⚠️  Supabase env vars missing - using placeholder client')
-    // Durante build sem env vars, cria cliente dummy
-    const dummyUrl = 'https://placeholder.supabase.co'
-    const dummyKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder'
+// Helper to create a safe mock client that won't crash build
+const createMockClient = () => {
+    console.warn('⚠️  Supabase env vars missing - using MOCK client for build/SSR')
+
+    const noop = () => {
+        return {
+            select: noop,
+            insert: noop,
+            update: noop,
+            delete: noop,
+            eq: noop,
+            neq: noop,
+            gt: noop,
+            lt: noop,
+            in: noop,
+            single: () => Promise.resolve({ data: null, error: null }),
+            maybeSingle: () => Promise.resolve({ data: null, error: null }),
+            limit: noop,
+            order: noop,
+            range: noop,
+            data: null,
+            error: null,
+            then: (resolve: any) => resolve({ data: [], error: null }) // Default to empty array result
+        }
+    }
+
+    return new Proxy({}, {
+        get: (target, prop) => {
+            if (prop === 'auth') {
+                return {
+                    getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+                    getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+                    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => { } } } }),
+                    signInWithPassword: () => Promise.resolve({ data: {}, error: null }),
+                    signOut: () => Promise.resolve({ error: null })
+                }
+            }
+            if (prop === 'storage') {
+                return {
+                    from: () => ({
+                        getPublicUrl: () => ({ data: { publicUrl: '' } }),
+                        upload: () => Promise.resolve({ data: null, error: null })
+                    })
+                }
+            }
+            // Return a chainable no-op function for any table operation
+            return noop
+        }
+    }) as any
 }
 
-const finalUrl = supabaseUrl || 'https://placeholder.supabase.co'
-const finalAnonKey = supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder'
-const finalServiceKey = supabaseServiceRoleKey || finalAnonKey
+// Ensure we have valid consts for the REAL client
+const isValidEnv = supabaseUrl && supabaseAnonKey
 
-export const supabase = createClient(finalUrl, finalAnonKey)
+// Export safe clients
+export const supabase = isValidEnv
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : createMockClient()
 
-// Client com service role para operações admin
-export const supabaseAdmin = createClient(finalUrl, finalServiceKey, {
-    auth: {
-        autoRefreshToken: false,
-        persistSession: false
-    }
-})
+export const supabaseAdmin = (isValidEnv && supabaseServiceRoleKey)
+    ? createClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
+    })
+    : createMockClient()

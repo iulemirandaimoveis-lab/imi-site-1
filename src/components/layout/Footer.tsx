@@ -92,32 +92,7 @@ export default function Footer() {
                         </div>
 
                         {/* Professional Badges */}
-                        <div className="flex items-center gap-4">
-                            <div className="relative group">
-                                <Image
-                                    src="/creci-badge.png"
-                                    alt="CRECI - Conselho Regional de Corretores de Imóveis"
-                                    width={60}
-                                    height={60}
-                                    className="transition-transform duration-300 group-hover:scale-110"
-                                />
-                                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-neutral-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                                    CRECI 17933
-                                </div>
-                            </div>
-                            <div className="relative group">
-                                <Image
-                                    src="/cnai-badge.png"
-                                    alt="CNAI - Cadastro Nacional de Avaliadores Imobiliários"
-                                    width={60}
-                                    height={60}
-                                    className="transition-transform duration-300 group-hover:scale-110"
-                                />
-                                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-neutral-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                                    CNAI 53290
-                                </div>
-                            </div>
-                        </div>
+                        {/* Professional Badges removed for premium look */}
                     </div>
 
                     {/* Services */}

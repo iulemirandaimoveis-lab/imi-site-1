@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { supabaseAdmin } from '@/lib/supabase'
+import { z } from 'zod'
 
 export const runtime = 'nodejs';
 
@@ -68,30 +69,35 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
 
-        const {
-            title,
-            description,
-            price,
-            area,
-            bedrooms,
-            bathrooms,
-            parkingSpots,
-            address,
-            neighborhood,
-            city,
-            state,
-            zipCode,
-            latitude,
-            longitude,
-            status,
-            isFeatured,
-            isExclusive,
-            hasAnalysis,
-            images
-        } = body
+        // Validation Schema
+        const schema = z.object({
+            title: z.string().min(5, "Título muito curto"),
+            description: z.string().optional(),
+            price: z.number().min(0),
+            area: z.number().min(0),
+            bedrooms: z.number().min(0),
+            bathrooms: z.number().min(0),
+            parkingSpots: z.number().min(0),
+            address: z.string().optional(),
+            neighborhood: z.string().min(2, "Bairro obrigatório"),
+            city: z.string().min(2),
+            state: z.string().length(2),
+            zipCode: z.string().optional(),
+            status: z.enum(['AVAILABLE', 'RESERVED', 'SOLD', 'ANALYSIS']).default('AVAILABLE'),
+            isFeatured: z.boolean().default(false),
+            isExclusive: z.boolean().default(false),
+            hasAnalysis: z.boolean().default(false),
+            images: z.array(z.object({
+                url: z.string().url(),
+                alt: z.string().optional(),
+                isPrimary: z.boolean().optional()
+            })).optional()
+        })
 
-        // Gera slug único
-        const baseSlug = title
+        const data = schema.parse(body)
+
+        // Robust Slug Generation
+        let baseSlug = data.title
             .toLowerCase()
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
@@ -101,66 +107,60 @@ export async function POST(request: NextRequest) {
         let slug = baseSlug
         let counter = 1
 
-        // Verifica se slug já existe
         while (await prisma.property.findUnique({ where: { slug } })) {
             slug = `${baseSlug}-${counter}`
             counter++
         }
 
-        // Cria o imóvel
+        // Create Property
         const property = await prisma.property.create({
             data: {
-                title,
+                title: data.title,
                 slug,
-                description,
-                price,
-                area,
-                bedrooms,
-                bathrooms,
-                parkingSpots,
-                address,
-                neighborhood,
-                city,
-                state,
-                zipCode,
-                latitude,
-                longitude,
-                status: status || 'AVAILABLE',
-                isFeatured: isFeatured || false,
-                isExclusive: isExclusive || false,
-                hasAnalysis: hasAnalysis || false,
+                description: data.description || '',
+                price: data.price,
+                area: data.area,
+                bedrooms: data.bedrooms,
+                bathrooms: data.bathrooms,
+                parkingSpots: data.parkingSpots,
+                address: data.address || '',
+                neighborhood: data.neighborhood,
+                city: data.city,
+                state: data.state,
+                zipCode: data.zipCode,
+                status: data.status,
+                isFeatured: data.isFeatured,
+                isExclusive: data.isExclusive,
+                hasAnalysis: data.hasAnalysis,
                 publishedAt: new Date()
             }
         })
 
-        // Adiciona imagens se fornecidas
-        if (images && images.length > 0) {
+        // Create Images
+        if (data.images && data.images.length > 0) {
             await prisma.propertyImage.createMany({
-                data: images.map((img: any, index: number) => ({
+                data: data.images.map((img, index) => ({
                     propertyId: property.id,
                     url: img.url,
-                    alt: img.alt || title,
+                    alt: img.alt || data.title,
                     order: index,
-                    isPrimary: index === 0
+                    isPrimary: img.isPrimary || index === 0
                 }))
             })
         }
 
-        // Busca o imóvel completo com imagens
-        const fullProperty = await prisma.property.findUnique({
-            where: { id: property.id },
-            include: {
-                images: {
-                    orderBy: { order: 'asc' }
-                }
-            }
-        })
-
         return NextResponse.json({
             success: true,
-            data: fullProperty
+            data: property
         }, { status: 201 })
-    } catch (error) {
+
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                { success: false, error: 'Dados inválidos', details: error.errors },
+                { status: 400 }
+            )
+        }
         console.error('Error creating property:', error)
         return NextResponse.json(
             { success: false, error: 'Erro ao criar imóvel' },

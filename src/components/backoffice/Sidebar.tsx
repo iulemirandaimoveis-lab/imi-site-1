@@ -87,25 +87,7 @@ export default function BackofficeSidebar() {
                 </button>
             </div>
 
-            {/* Professional Badges */}
-            <div className="border-t border-neutral-800 p-4">
-                <div className="flex items-center justify-center gap-3">
-                    <Image
-                        src="/creci-badge.png"
-                        alt="CRECI"
-                        width={30}
-                        height={30}
-                        className="opacity-70 hover:opacity-100 transition-opacity"
-                    />
-                    <Image
-                        src="/cnai-badge.png"
-                        alt="CNAI"
-                        width={30}
-                        height={30}
-                        className="opacity-70 hover:opacity-100 transition-opacity"
-                    />
-                </div>
-            </div>
+            {/* Badges removed for cleaner UI */}
         </div>
     )
 }
