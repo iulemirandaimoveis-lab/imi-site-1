@@ -8,11 +8,6 @@
     --font-playfair: 'Playfair Display', Georgia, serif;
   }
 
-  /* * {
-    @apply border-neutral-200;
-  } */
-  /* Removing this global border color as it might conflict if neutral-200 is missing or not defined in time */
-
   html {
     @apply scroll-smooth;
   }
