@@ -37,6 +37,9 @@ export default function Sidebar() {
     // Filter out login page from showing sidebar logic if handled by layout, 
     // but usually Sidebar is only included in the authenticated layout.
 
+    // Hide sidebar on login page
+    if (pathname === '/backoffice') return null;
+
     return (
         <>
             {/* Mobile menu button */}
@@ -60,7 +63,7 @@ export default function Sidebar() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="lg:hidden fixed inset-0 bg-navy-900/60 backdrop-blur-sm z-40"
+                        className="lg:hidden fixed inset-0 bg-black/30 backdrop-blur-md z-40"
                         onClick={() => setMobileMenuOpen(false)}
                     />
                 )}
