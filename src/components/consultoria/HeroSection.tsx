@@ -1,57 +1,101 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Button from '@/components/ui/Button';
+import { CheckCircle, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
 export function HeroSection() {
     return (
-        <div className="relative isolate overflow-hidden bg-neutral-900 py-24 sm:py-32">
-            {/* Background Image with Overlay */}
-            <div className="absolute inset-0 -z-10 h-full w-full">
-                <img
-                    src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-                    alt="Luxury Real Estate"
-                    className="h-full w-full object-cover opacity-30"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/60 to-transparent" />
+        <section className="relative min-h-[90vh] flex items-center justify-center bg-gradient-to-br from-navy-700 via-navy-600 to-blue-700 overflow-hidden">
+            {/* Background pattern */}
+            <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat" />
             </div>
 
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                <div className="mx-auto max-w-2xl text-center">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="text-4xl font-display font-bold tracking-tight text-white sm:text-6xl"
-                    >
-                        Renda em Dólar com <span className="text-primary-400">Imóveis Internacionais</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="mt-6 text-lg leading-8 text-neutral-300"
-                    >
-                        Proteja seu patrimônio e gere dividendos mensais nas moedas mais fortes do mundo. Estruturação jurídica, financeira e tributária completa.
-                    </motion.p>
+            <div className="container mx-auto px-4 py-20 relative z-10">
+                <div className="max-w-4xl mx-auto text-center">
+
+                    {/* Badge */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="mt-10 flex items-center justify-center gap-x-6"
+                        transition={{ duration: 0.6 }}
+                        className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full text-white/90 text-sm font-medium mb-8"
                     >
-                        <Button size="lg" asChild>
-                            <Link href="#simulator">
-                                Simular Investimento
-                            </Link>
-                        </Button>
-                        <Link href="#locations" className="text-sm font-semibold leading-6 text-white hover:text-primary-400 transition-colors">
-                            Ver Localizações <span aria-hidden="true">→</span>
+                        <span className="w-2 h-2 bg-gold-500 rounded-full animate-pulse" />
+                        Consultoria Estratégica Internacional
+                    </motion.div>
+
+                    {/* Headline */}
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight"
+                    >
+                        Renda em Dólar com<br />
+                        <span className="text-gold-500">Imóveis Internacionais</span>
+                    </motion.h1>
+
+                    {/* Subheadline */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-lg md:text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed"
+                    >
+                        Estrutura jurídica sólida, gestão profissional e crédito inteligente para investidores brasileiros que querem proteger patrimônio e gerar renda previsível em USD.
+                    </motion.p>
+
+                    {/* CTA */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        className="flex flex-col sm:flex-row gap-4 justify-center"
+                    >
+                        <Link href="#simulator" className="bg-gold-500 hover:bg-gold-600 text-navy-700 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:shadow-lg hover:scale-105 inline-block">
+                            Simular Minha Estratégia
+                        </Link>
+
+                        <Link href="#cases" className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 border border-white/20 inline-block text-center">
+                            Ver Cases de Sucesso
                         </Link>
                     </motion.div>
+
+                    {/* Trust indicators */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="mt-16 flex flex-wrap justify-center gap-8 text-white/60 text-sm"
+                    >
+                        <div className="flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5 text-gold-500" />
+                            <span>+$50M Alocados</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5 text-gold-500" />
+                            <span>200+ Investidores</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5 text-gold-500" />
+                            <span>15 Anos Mercado</span>
+                        </div>
+                    </motion.div>
+
                 </div>
             </div>
-        </div>
+
+            {/* Scroll indicator */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5, repeat: Infinity, repeatType: 'reverse' }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2"
+            >
+                <ChevronDown className="w-8 h-8 text-white/40" />
+            </motion.div>
+        </section>
     );
 }
