@@ -9,6 +9,14 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
+                navy: {
+                    600: '#1E40AF',
+                    700: '#1E3A8A',
+                    800: '#172554',
+                },
+                gold: {
+                    600: '#D4AF37',
+                },
                 // Sober, professional color palette
                 primary: {
                     50: '#f5f7fa',
