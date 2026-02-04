@@ -31,7 +31,7 @@ export default function SettingsPage() {
     return (
         <>
             {/* Header */}
-            <div className="bg-white border-b border-neutral-200 sticky top-0 z-10">
+            <div className="bg-white/80 backdrop-blur-md shadow-soft border-b border-neutral-200 sticky top-0 z-10">
                 <div className="px-4 py-4 md:px-8 md:py-6">
                     <h1 className="text-xl md:text-3xl font-display font-bold text-neutral-900">
                         Configurações
@@ -65,7 +65,7 @@ export default function SettingsPage() {
             <div className="p-4 md:p-8">
                 <div className="max-w-4xl">
                     {activeTab === 'profile' && (
-                        <div className="bg-white rounded-2xl p-8 border border-neutral-200">
+                        <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-2xl p-8 border border-neutral-200">
                             <h2 className="text-xl font-display font-bold text-neutral-900 mb-6">
                                 Informações do Perfil
                             </h2>
@@ -120,7 +120,7 @@ export default function SettingsPage() {
                     )}
 
                     {activeTab === 'security' && (
-                        <div className="bg-white rounded-2xl p-8 border border-neutral-200">
+                        <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-2xl p-8 border border-neutral-200">
                             <h2 className="text-xl font-display font-bold text-neutral-900 mb-6">
                                 Segurança
                             </h2>
@@ -166,7 +166,7 @@ export default function SettingsPage() {
                     )}
 
                     {activeTab === 'notifications' && (
-                        <div className="bg-white rounded-2xl p-8 border border-neutral-200">
+                        <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-2xl p-8 border border-neutral-200">
                             <h2 className="text-xl font-display font-bold text-neutral-900 mb-6">
                                 Preferências de Notificações
                             </h2>
@@ -194,7 +194,7 @@ export default function SettingsPage() {
                     )}
 
                     {activeTab === 'system' && (
-                        <div className="bg-white rounded-2xl p-8 border border-neutral-200">
+                        <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-2xl p-8 border border-neutral-200">
                             <h2 className="text-xl font-display font-bold text-neutral-900 mb-6">
                                 Configurações do Sistema
                             </h2>

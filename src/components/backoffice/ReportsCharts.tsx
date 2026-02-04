@@ -7,7 +7,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#1E40AF', '#D4AF37'
 export default function ReportsCharts({ leadsData, consData }: { leadsData: any[], consData: any[] }) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-6">Leads por Estágio</h2>
                 <div className="h-[300px] w-full">
                     {leadsData.length > 0 ? (
@@ -25,7 +25,7 @@ export default function ReportsCharts({ leadsData, consData }: { leadsData: any[
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-6">Consultorias por Status</h2>
                 <div className="h-[300px] w-full">
                     {consData.length > 0 ? (

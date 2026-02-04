@@ -124,7 +124,7 @@ export default function NewProperty() {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 lg:p-8 space-y-6">
+                <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-xl border border-gray-200 shadow-sm p-6 lg:p-8 space-y-6">
                     <h2 className="text-lg font-semibold text-gray-900 border-b pb-4">Informações Básicas</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -202,7 +202,7 @@ export default function NewProperty() {
                 </div>
 
                 {/* Address Fields */}
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 lg:p-8 space-y-6">
+                <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-xl border border-gray-200 shadow-sm p-6 lg:p-8 space-y-6">
                     <h2 className="text-lg font-semibold text-gray-900 border-b pb-4">Endereço</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
@@ -234,7 +234,7 @@ export default function NewProperty() {
                 </div>
 
                 {/* Images */}
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 lg:p-8 space-y-6">
+                <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-xl border border-gray-200 shadow-sm p-6 lg:p-8 space-y-6">
                     <h2 className="text-lg font-semibold text-gray-900 border-b pb-4">Imagens</h2>
 
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:bg-gray-50 transition-colors">

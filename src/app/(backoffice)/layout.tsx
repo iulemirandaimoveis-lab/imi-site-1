@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     robots: 'noindex, nofollow',
 }
 
+import { Toaster } from 'sonner'
+
 export default function BackofficeLayout({
     children,
 }: {
@@ -27,8 +29,9 @@ export default function BackofficeLayout({
 }) {
     return (
         <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
-            <body className="bg-neutral-50">
+            <body className="bg-neutral-50 antialiased">
                 {children}
+                <Toaster position="top-right" richColors theme="light" />
             </body>
         </html>
     )

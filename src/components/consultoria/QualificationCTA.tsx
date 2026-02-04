@@ -19,7 +19,7 @@ export function QualificationCTA() {
                         Agende uma sessão estratégica com nossos especialistas para analisar seu perfil e apresentar as melhores teses de investimento disponíveis hoje.
                     </p>
                     <div className="mt-10 flex items-center justify-center gap-x-6">
-                        <Button size="lg" className="bg-white text-primary-900 hover:bg-neutral-100 ring-1 ring-white/10" asChild>
+                        <Button size="lg" className="bg-white/80 backdrop-blur-md shadow-soft text-primary-900 hover:bg-neutral-100 ring-1 ring-white/10" asChild>
                             <a href="https://wa.me/5511999999999?text=Ol%C3%A1%2C%20queria%20agendar%20uma%20sess%C3%A3o%20estrat%C3%A9gica%20sobre%20im%C3%B3veis%20internacionais.">
                                 Agendar Sessão Gratuita
                             </a>

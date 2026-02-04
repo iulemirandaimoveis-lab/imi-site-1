@@ -46,7 +46,7 @@ async function ConsultoriasList() {
                             <th scope="col" className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white/80 backdrop-blur-md shadow-soft divide-y divide-gray-200">
                         {consultorias.map((cons) => (
                             <tr key={cons.id} className="hover:bg-gray-50/80 transition-colors duration-150">
                                 <td className="px-6 py-4 whitespace-nowrap">

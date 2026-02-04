@@ -46,7 +46,7 @@ export default function AppraisalForm() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="bg-white rounded-2xl shadow-lg p-8 md:p-12"
+            className="bg-white/80 backdrop-blur-md shadow-soft rounded-2xl shadow-lg p-8 md:p-12"
         >
             <motion.h2 variants={slideUp} className="text-3xl font-bold text-neutral-900 mb-2">
                 Solicitar Avaliação Técnica
