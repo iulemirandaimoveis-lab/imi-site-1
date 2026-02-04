@@ -1,182 +1,496 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-// ===== USERS (Admin) =====
-model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  name          String
-  passwordHash  String   @map("password_hash")
-  role          String   @default("ADMIN") // Enum: ADMIN, EDITOR, VIEWER
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+// ============================================
+// USUÁRIOS & AUTENTICAÇÃO
+// ============================================
 
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  name          String
+  phone         String?
+  role          UserRole  @default(CUSTOMER)
+  status        UserStatus @default(ACTIVE)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+  emailVerified Boolean   @default(false)
+  
+  sessions      Session[]
+  leads         Lead[]
+  consultations Consultation[]
+  payments      Payment[]
+  activities    ActivityLog[]
+  
+  @@index([email])
+  @@index([role])
   @@map("users")
 }
 
-// enum UserRole {
-//   ADMIN
-//   EDITOR
-//   VIEWER
-// }
-
-// ===== CLIENTS =====
-model Client {
-  id                    String                 @id @default(uuid())
-  name                  String
-  email                 String                 @unique
-  phone                 String
-  origin                String? // De onde veio (formulário, WhatsApp, etc)
-  notes                 String?
-  createdAt             DateTime               @default(now()) @map("created_at")
-  updatedAt             DateTime               @updatedAt @map("updated_at")
-  
-  // Relacionamentos
-  propertyLinks         ClientPropertyLink[]
-  accessLogs            PropertyAccessLog[]
-  
-  @@map("clients")
+enum UserRole {
+  CUSTOMER
+  CONSULTANT
+  ANALYST
+  ADMIN
+  SUPER_ADMIN
 }
 
-// ===== PROPERTIES =====
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+// ============================================
+// LEADS & CRM
+// ============================================
+
+model Lead {
+  id                String   @id @default(cuid())
+  userId            String?
+  
+  email             String
+  phone             String?
+  name              String?
+  
+  capital           Decimal  @db.Decimal(15, 2)
+  investmentGoal    InvestmentGoal
+  experienceLevel   ExperienceLevel
+  creditInterest    Boolean  @default(false)
+  
+  qualificationScore Int     @default(0)
+  leadStage         LeadStage @default(NEW)
+  leadSource        String?
+  leadMedium        String?
+  leadCampaign      String?
+  
+  assignedTo        String?
+  assignedAt        DateTime?
+  
+  couponCode        String?
+  couponUsedAt      DateTime?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  lastContactAt     DateTime?
+  convertedAt       DateTime?
+  
+  user              User?    @relation(fields: [userId], references: [id])
+  simulations       Simulation[]
+  consultations     Consultation[]
+  whatsappMessages  WhatsAppMessage[]
+  activities        ActivityLog[]
+  
+  @@index([email])
+  @@index([leadStage])
+  @@index([qualificationScore])
+  @@index([createdAt])
+  @@map("leads")
+}
+
+enum LeadStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  NEGOTIATION
+  CONVERTED
+  LOST
+  NURTURING
+}
+
+enum InvestmentGoal {
+  INCOME
+  PRESERVATION
+  GROWTH
+  HYBRID
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PROFESSIONAL
+}
+
+// ============================================
+// SIMULAÇÕES
+// ============================================
+
+model Simulation {
+  id                String   @id @default(cuid())
+  leadId            String
+  
+  capital           Decimal  @db.Decimal(15, 2)
+  location          Location
+  rentalType        RentalType
+  leverage          Decimal  @db.Decimal(5, 4)
+  managementFee     Decimal  @db.Decimal(5, 4)
+  
+  propertyValue     Decimal  @db.Decimal(15, 2)
+  grossYield        Decimal  @db.Decimal(7, 6)
+  netYield          Decimal  @db.Decimal(7, 6)
+  cashOnCashYield   Decimal  @db.Decimal(7, 6)
+  monthlyCashflow   Decimal  @db.Decimal(12, 2)
+  annualCashflow    Decimal  @db.Decimal(12, 2)
+  dscr              Decimal? @db.Decimal(5, 2)
+  roe               Decimal? @db.Decimal(7, 6)
+  
+  riskScore         Int
+  riskLevel         RiskLevel
+  reserveMonths     Int
+  
+  version           Int      @default(1)
+  createdAt         DateTime @default(now())
+  
+  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  @@index([leadId])
+  @@index([createdAt])
+  @@map("simulations")
+}
+
+enum Location {
+  US_MIAMI
+  US_ORLANDO
+  US_NYC
+  US_TAMPA
+  UAE_DUBAI
+}
+
+enum RentalType {
+  LONG_TERM
+  SHORT_TERM
+  CORPORATE
+}
+
+enum RiskLevel {
+  CONSERVATIVE
+  MODERATE
+  MODERATE_AGGRESSIVE
+  AGGRESSIVE
+  VERY_AGGRESSIVE
+}
+
+// ============================================
+// CUPONS
+// ============================================
+
+model Coupon {
+  id                String   @id @default(cuid())
+  code              String   @unique
+  
+  discount          Decimal  @db.Decimal(5, 2)
+  discountType      DiscountType
+  isActive          Boolean  @default(true)
+  
+  maxUses           Int?
+  currentUses       Int      @default(0)
+  maxUsesPerUser    Int      @default(1)
+  
+  validFrom         DateTime
+  validUntil        DateTime?
+  
+  allowedDomains    String[]
+  minCapital        Decimal? @db.Decimal(15, 2)
+  specificLocations Location[]
+  
+  showRemaining     Boolean  @default(true)
+  urgencyMessage    String?
+  
+  createdAt         DateTime @default(now())
+  createdBy         String
+  
+  redemptions       CouponRedemption[]
+  
+  @@index([code])
+  @@index([isActive])
+  @@map("coupons")
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  FREE_CONSULTATION
+}
+
+model CouponRedemption {
+  id          String   @id @default(cuid())
+  couponId    String
+  leadId      String
+  
+  redeemedAt  DateTime @default(now())
+  ipAddress   String?
+  
+  coupon      Coupon   @relation(fields: [couponId], references: [id])
+  
+  @@unique([couponId, leadId])
+  @@index([couponId])
+  @@map("coupon_redemptions")
+}
+
+// ============================================
+// CONSULTORIAS
+// ============================================
+
+model Consultation {
+  id                String   @id @default(cuid())
+  leadId            String
+  userId            String?
+  consultantId      String
+  
+  scheduledAt       DateTime
+  duration          Int      @default(30)
+  status            ConsultationStatus @default(SCHEDULED)
+  
+  price             Decimal  @db.Decimal(10, 2)
+  currency          String   @default("USD")
+  isPaid            Boolean  @default(false)
+  couponId          String?
+  
+  meetingLink       String?
+  whatsappThreadId  String?
+  
+  consultantNotes   String?  @db.Text
+  clientFeedback    String?  @db.Text
+  rating            Int?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  cancellationReason String?
+  
+  lead              Lead     @relation(fields: [leadId], references: [id])
+  user              User?    @relation(fields: [userId], references: [id])
+  payment           Payment?
+  
+  @@index([leadId])
+  @@index([consultantId])
+  @@index([scheduledAt])
+  @@map("consultations")
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// ============================================
+// PAGAMENTOS
+// ============================================
+
+model Payment {
+  id                String   @id @default(cuid())
+  userId            String
+  consultationId    String?  @unique
+  
+  amount            Decimal  @db.Decimal(10, 2)
+  currency          String   @default("USD")
+  status            PaymentStatus @default(PENDING)
+  
+  provider          PaymentProvider @default(STRIPE)
+  externalId        String?
+  paymentMethod     String?
+  
+  description       String?
+  receiptUrl        String?
+  
+  createdAt         DateTime @default(now())
+  paidAt            DateTime?
+  refundedAt        DateTime?
+  
+  user              User     @relation(fields: [userId], references: [id])
+  consultation      Consultation? @relation(fields: [consultationId], references: [id])
+  
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentProvider {
+  STRIPE
+  PIX
+}
+
+// ============================================
+// WHATSAPP
+// ============================================
+
+model WhatsAppMessage {
+  id          String   @id @default(cuid())
+  leadId      String?
+  
+  from        String
+  to          String
+  direction   MessageDirection
+  
+  messageType WhatsAppMessageType
+  text        String?  @db.Text
+  mediaUrl    String?
+  
+  status      WhatsAppMessageStatus @default(SENT)
+  externalId  String?  @unique
+  timestamp   DateTime
+  
+  createdAt   DateTime @default(now())
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+  
+  @@index([leadId])
+  @@index([timestamp])
+  @@map("whatsapp_messages")
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum WhatsAppMessageType {
+  TEXT
+  IMAGE
+  DOCUMENT
+  TEMPLATE
+}
+
+enum WhatsAppMessageStatus {
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+// ============================================
+// IMÓVEIS (INVENTORY)
+// ============================================
+
 model Property {
-  id                String              @id @default(uuid())
+  id                String   @id @default(cuid())
+  
+  internalCode      String   @unique
   title             String
-  slug              String              @unique
-  description       String
-  price             Decimal             @db.Decimal(12, 2)
-  area              Int // m²
-  bedrooms          Int
-  bathrooms         Int
-  parkingSpots      Int                 @map("parking_spots")
+  description       String   @db.Text
+  
+  location          Location
   address           String
-  neighborhood      String
   city              String
   state             String
-  zipCode           String?             @map("zip_code")
-  latitude          Decimal?            @db.Decimal(10, 8)
-  longitude         Decimal?            @db.Decimal(11, 8)
+  country           String
+  zipCode           String
+  coordinates       String?
   
-  // Status e Selos
-  status            String              @default("AVAILABLE") // Enum: AVAILABLE, RESERVED, SOLD, ANALYSIS
-  isFeatured        Boolean             @default(false) @map("is_featured")
-  isExclusive       Boolean             @default(false) @map("is_exclusive")
-  hasAnalysis       Boolean             @default(false) @map("has_analysis")
+  propertyType      PropertyType
+  bedrooms          Int
+  bathrooms         Decimal  @db.Decimal(3, 1)
+  area              Decimal  @db.Decimal(10, 2)
+  areaUnit          String   @default("sqft")
+  yearBuilt         Int?
   
-  // Metadata
-  viewCount         Int                 @default(0) @map("view_count")
-  createdAt         DateTime            @default(now()) @map("created_at")
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  publishedAt       DateTime?           @map("published_at")
+  listPrice         Decimal  @db.Decimal(15, 2)
+  currency          String   @default("USD")
+  estimatedRent     Decimal? @db.Decimal(10, 2)
+  rentalType        RentalType?
   
-  // Relacionamentos
-  images            PropertyImage[]
-  clientLinks       ClientPropertyLink[]
-  accessLogs        PropertyAccessLog[]
+  grossYield        Decimal? @db.Decimal(7, 6)
+  netYield          Decimal? @db.Decimal(7, 6)
   
+  status            PropertyStatus @default(AVAILABLE)
+  featured          Boolean  @default(false)
+  
+  images            String[] // URLs Supabase Storage
+  virtualTourUrl    String?
+  documentsUrl      String[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  publishedAt       DateTime?
+  
+  @@index([location])
+  @@index([status])
+  @@index([listPrice])
   @@map("properties")
 }
 
-// enum PropertyStatus {
-//   AVAILABLE
-//   RESERVED
-//   SOLD
-//   ANALYSIS
-// }
-
-// ===== PROPERTY IMAGES =====
-model PropertyImage {
-  id          String   @id @default(uuid())
-  propertyId  String   @map("property_id")
-  url         String
-  alt         String?
-  order       Int      @default(0)
-  isPrimary   Boolean  @default(false) @map("is_primary")
-  createdAt   DateTime @default(now()) @map("created_at")
-  
-  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  
-  @@map("property_images")
+enum PropertyType {
+  APARTMENT
+  CONDO
+  HOUSE
+  TOWNHOUSE
+  VILLA
 }
 
-// ===== CLIENT PROPERTY LINKS (Tracking Links) =====
-model ClientPropertyLink {
-  id          String   @id @default(uuid())
-  clientId    String   @map("client_id")
-  propertyId  String   @map("property_id")
-  token       String   @unique // Token único para o link
-  url         String   // URL completa gerada
-  createdAt   DateTime @default(now()) @map("created_at")
-  expiresAt   DateTime? @map("expires_at") // Opcional: link com expiração
-  
-  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  
-  @@unique([clientId, propertyId])
-  @@map("client_property_links")
+enum PropertyStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  OFF_MARKET
 }
 
-// ===== PROPERTY ACCESS LOGS (Tracking Detalhado) =====
-model PropertyAccessLog {
-  id                String   @id @default(uuid())
-  clientId          String   @map("client_id")
-  propertyId        String   @map("property_id")
-  linkToken         String   @map("link_token")
-  
-  // Dados de Acesso
-  accessedAt        DateTime @default(now()) @map("accessed_at")
-  device            String? // mobile, desktop, tablet
-  browser           String?
-  os                String?
-  ipAddress         String?  @map("ip_address")
-  
-  // Tempo de Permanência
-  totalTimeSeconds  Int?     @map("total_time_seconds")
-  galleryTimeSeconds Int?    @map("gallery_time_seconds")
-  descriptionTimeSeconds Int? @map("description_time_seconds")
-  priceTimeSeconds  Int?     @map("price_time_seconds")
-  ctaTimeSeconds    Int?     @map("cta_time_seconds")
-  
-  // Interações
-  scrollDepth       Int?     @map("scroll_depth") // Percentual de scroll
-  clickedCta        Boolean  @default(false) @map("clicked_cta")
-  clickedWhatsApp   Boolean  @default(false) @map("clicked_whatsapp")
-  
-  client            Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  property          Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  
-  @@index([clientId, propertyId])
-  @@index([linkToken])
-  @@map("property_access_logs")
-}
+// ============================================
+// LOGS
+// ============================================
 
-// ===== NOTIFICATIONS =====
-model Notification {
-  id          String            @id @default(uuid())
-  type        String // Enum: PROPERTY_ACCESS, PROPERTY_REVISIT, etc
-  title       String
-  message     String
-  data        Json? // Dados adicionais (cliente, imóvel, etc)
-  isRead      Boolean           @default(false) @map("is_read")
-  createdAt   DateTime          @default(now()) @map("created_at")
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  leadId      String?
   
-  @@map("notifications")
+  action      String
+  entity      String
+  entityId    String?
+  
+  metadata    Json?
+  
+  ipAddress   String?
+  userAgent   String?
+  
+  createdAt   DateTime @default(now())
+  
+  user        User?    @relation(fields: [userId], references: [id])
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+  
+  @@index([userId])
+  @@index([leadId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("activity_logs")
 }
-
-// enum NotificationType {
-//   PROPERTY_ACCESS
-//   PROPERTY_REVISIT
-//   HIGH_ENGAGEMENT
-//   NEW_CLIENT
-//   PROPERTY_SOLD
-// }

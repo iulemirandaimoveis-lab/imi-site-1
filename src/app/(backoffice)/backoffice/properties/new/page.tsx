@@ -1,313 +1,461 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import ImageUpload from '@/components/forms/ImageUpload'
-import {
-    ArrowLeftIcon,
-    PhotoIcon,
-    CurrencyDollarIcon,
-    HomeIcon,
-    MapPinIcon,
-    CheckCircleIcon
-} from '@heroicons/react/24/outline'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import { PropertyImageUpload } from '@/components/properties/PropertyImageUpload';
+import { Loader2 } from 'lucide-react';
 
-interface PropertyFormData {
-    title: string
-    description: string
-    price: string
-    area: string
-    bedrooms: string
-    bathrooms: string
-    parkingSpots: string
-    address: string
-    neighborhood: string
-    city: string
-    state: string
-    zipCode: string
-    status: 'AVAILABLE' | 'RESERVED' | 'SOLD' | 'ANALYSIS'
-    isFeatured: boolean
-    isExclusive: boolean
-    images: { url: string; alt: string }[]
-}
+const propertySchema = z.object({
+    internalCode: z.string().min(1, 'Código obrigatório'),
+    title: z.string().min(1, 'Título obrigatório'),
+    description: z.string().min(20, 'Descrição muito curta'),
 
-const initialForm: PropertyFormData = {
-    title: '',
-    description: '',
-    price: '',
-    area: '',
-    bedrooms: '',
-    bathrooms: '',
-    parkingSpots: '',
-    address: '',
-    neighborhood: '',
-    city: 'Rio de Janeiro',
-    state: 'RJ',
-    zipCode: '',
-    status: 'AVAILABLE',
-    isFeatured: false,
-    isExclusive: false,
-    images: []
-}
+    location: z.enum(['US_MIAMI', 'US_ORLANDO', 'US_NYC', 'US_TAMPA', 'UAE_DUBAI']),
+    address: z.string().min(1, 'Endereço obrigatório'),
+    city: z.string().min(1, 'Cidade obrigatória'),
+    state: z.string().min(1, 'Estado obrigatório'),
+    country: z.string().min(1, 'País obrigatório'),
+    zipCode: z.string().min(1, 'CEP obrigatório'),
+
+    propertyType: z.enum(['APARTMENT', 'CONDO', 'HOUSE', 'TOWNHOUSE', 'VILLA']),
+    bedrooms: z.number().min(0),
+    bathrooms: z.number().min(0),
+    area: z.number().min(1),
+    areaUnit: z.enum(['sqft', 'm2']),
+    yearBuilt: z.number().optional(),
+
+    listPrice: z.number().min(1, 'Preço obrigatório'),
+    currency: z.string().default('USD'),
+    estimatedRent: z.number().optional(),
+    rentalType: z.enum(['LONG_TERM', 'SHORT_TERM', 'CORPORATE']).optional(),
+
+    status: z.enum(['AVAILABLE', 'RESERVED', 'SOLD', 'OFF_MARKET']).default('AVAILABLE'),
+    featured: z.boolean().default(false),
+
+    images: z.array(z.string()).min(1, 'Adicione pelo menos 1 imagem'),
+    virtualTourUrl: z.string().url().optional().or(z.literal('')),
+    documentsUrl: z.array(z.string()).optional()
+});
+
+type PropertyForm = z.infer<typeof propertySchema>;
 
 export default function NewPropertyPage() {
-    const router = useRouter()
-    const [formData, setFormData] = useState<PropertyFormData>(initialForm)
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [error, setError] = useState('')
+    const router = useRouter();
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target
-        const checked = (e.target as HTMLInputElement).checked
+    const form = useForm<PropertyForm>({
+        resolver: zodResolver(propertySchema),
+        defaultValues: {
+            internalCode: '',
+            title: '',
+            description: '',
+            location: 'US_MIAMI',
+            address: '',
+            city: '',
+            state: '',
+            country: 'USA',
+            zipCode: '',
+            propertyType: 'APARTMENT',
+            bedrooms: 2,
+            bathrooms: 2,
+            area: 1000,
+            areaUnit: 'sqft',
+            listPrice: 300000,
+            currency: 'USD',
+            status: 'AVAILABLE',
+            featured: false,
+            images: [],
+            documentsUrl: []
+        }
+    });
 
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }))
-    }
-
-    const handleImagesChange = (newImages: { url: string; alt: string }[]) => {
-        setFormData(prev => ({ ...prev, images: newImages }))
-    }
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsSubmitting(true)
-        setError('')
+    const onSubmit = async (data: PropertyForm) => {
+        setSubmitting(true);
 
         try {
-            // Validation logic before submit
-            if (!formData.title || !formData.price || !formData.neighborhood) {
-                throw new Error('Preencha os campos obrigatórios (Título, Preço, Bairro)')
-            }
-
-            // Require at least 1 image unless it's just an analysis
-            if (formData.images.length === 0 && formData.status !== 'ANALYSIS') {
-                throw new Error('Adicione pelo menos uma imagem do imóvel')
-            }
-
-            const payload = {
-                ...formData,
-                price: parseFloat(formData.price.replace(/[^\d.,]/g, '').replace(',', '.')),
-                area: parseInt(formData.area) || 0,
-                bedrooms: parseInt(formData.bedrooms) || 0,
-                bathrooms: parseInt(formData.bathrooms) || 0,
-                parkingSpots: parseInt(formData.parkingSpots) || 0,
-                // Using real images
-                images: formData.images
-            }
-
             const response = await fetch('/api/properties', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-
-            const data = await response.json()
+                body: JSON.stringify(data)
+            });
 
             if (!response.ok) {
-                throw new Error(data.error || 'Erro ao criar imóvel')
+                throw new Error('Erro ao cadastrar imóvel');
             }
 
-            // Success
-            router.push('/backoffice/properties')
-        } catch (err: any) {
-            setError(err.message || 'Ocorreu um erro ao salvar.')
+            const property = await response.json();
+            router.push(`/backoffice/properties/${property.id}`);
+
+        } catch (error: any) {
+            alert(error.message);
         } finally {
-            setIsSubmitting(false)
+            setSubmitting(false);
         }
-    }
+    };
 
     return (
-        <div className="max-w-5xl mx-auto px-8 py-10">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => router.back()}
-                        className="p-2 hover:bg-white rounded-full transition-colors border border-transparent hover:border-neutral-200"
-                    >
-                        <ArrowLeftIcon className="w-5 h-5 text-neutral-600" />
-                    </button>
-                    <div>
-                        <h1 className="text-2xl font-display font-bold text-neutral-900">
-                            Cadastrar Novo Imóvel
-                        </h1>
-                        <p className="text-neutral-600">
-                            Preencha os dados do imóvel para publicação
-                        </p>
-                    </div>
-                </div>
+        <div className="max-w-4xl mx-auto space-y-6 pb-20">
+
+            <div>
+                <h1 className="text-3xl font-bold">Novo Imóvel</h1>
+                <p className="text-gray-600 mt-1">
+                    Cadastre um novo imóvel no inventário
+                </p>
             </div>
 
-            {/* Error Alert */}
-            {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-700 text-sm flex items-center gap-2">
-                    ⚠️ {error}
-                </div>
-            )}
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Section 1: Basic Info */}
-                <div className="bg-white rounded-2xl border border-neutral-200 p-6 md:p-8 shadow-sm">
-                    <h2 className="text-lg font-semibold text-neutral-900 mb-6 flex items-center gap-2">
-                        <HomeIcon className="w-5 h-5 text-primary-700" />
-                        Informações Principais
-                    </h2>
+                {/* Informações básicas */}
+                <Card className="p-6">
+                    <h3 className="font-semibold text-lg mb-4">Informações Básicas</h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Título do Anúncio *</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Código Interno *
+                            </label>
                             <input
-                                type="text"
-                                name="title"
-                                required
-                                value={formData.title}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-50/50 outline-none transition-all"
-                                placeholder="Ex: Apartamento de Luxo no Leblon"
+                                {...form.register('internalCode')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="PROP-001"
                             />
+                            {form.formState.errors.internalCode && (
+                                <p className="text-sm text-red-600 mt-1">
+                                    {form.formState.errors.internalCode.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Localização *
+                            </label>
+                            <select
+                                {...form.register('location')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            >
+                                <option value="US_MIAMI">Miami, FL</option>
+                                <option value="US_ORLANDO">Orlando, FL</option>
+                                <option value="US_NYC">Nova York, NY</option>
+                                <option value="US_TAMPA">Tampa, FL</option>
+                                <option value="UAE_DUBAI">Dubai, UAE</option>
+                            </select>
                         </div>
 
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Descrição Completa</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Título *
+                            </label>
+                            <input
+                                {...form.register('title')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="Apartamento 2 quartos em Brickell"
+                            />
+                            {form.formState.errors.title && (
+                                <p className="text-sm text-red-600 mt-1">
+                                    {form.formState.errors.title.message}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium mb-2">
+                                Descrição *
+                            </label>
                             <textarea
-                                name="description"
+                                {...form.register('description')}
                                 rows={4}
-                                value={formData.description}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-50/50 outline-none transition-all"
-                                placeholder="Descreva os detalhes do imóvel..."
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="Descrição detalhada do imóvel..."
+                            />
+                            {form.formState.errors.description && (
+                                <p className="text-sm text-red-600 mt-1">
+                                    {form.formState.errors.description.message}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </Card>
+
+                {/* Localização */}
+                <Card className="p-6">
+                    <h3 className="font-semibold text-lg mb-4">Localização</h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium mb-2">
+                                Endereço *
+                            </label>
+                            <input
+                                {...form.register('address')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="123 Main Street, Apt 456"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Valor de Venda (R$) *</label>
-                            <div className="relative">
-                                <CurrencyDollarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                            <label className="block text-sm font-medium mb-2">
+                                Cidade *
+                            </label>
+                            <input
+                                {...form.register('city')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Estado *
+                            </label>
+                            <input
+                                {...form.register('state')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                País *
+                            </label>
+                            <input
+                                {...form.register('country')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                CEP *
+                            </label>
+                            <input
+                                {...form.register('zipCode')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            />
+                        </div>
+                    </div>
+                </Card>
+
+                {/* Características */}
+                <Card className="p-6">
+                    <h3 className="font-semibold text-lg mb-4">Características</h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Tipo *
+                            </label>
+                            <select
+                                {...form.register('propertyType')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            >
+                                <option value="APARTMENT">Apartamento</option>
+                                <option value="CONDO">Condomínio</option>
+                                <option value="HOUSE">Casa</option>
+                                <option value="TOWNHOUSE">Townhouse</option>
+                                <option value="VILLA">Vila</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Quartos *
+                            </label>
+                            <input
+                                type="number"
+                                {...form.register('bedrooms', { valueAsNumber: true })}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Banheiros *
+                            </label>
+                            <input
+                                type="number"
+                                step="0.5"
+                                {...form.register('bathrooms', { valueAsNumber: true })}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Área *
+                            </label>
+                            <div className="flex gap-2">
                                 <input
-                                    type="text" // Using text to handle potential dots/commas input manually if needed
-                                    name="price"
-                                    required
-                                    value={formData.price}
-                                    onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-50/50 outline-none transition-all"
-                                    placeholder="0,00"
+                                    type="number"
+                                    {...form.register('area', { valueAsNumber: true })}
+                                    className="flex-1 px-4 py-2 border rounded-lg"
                                 />
+                                <select
+                                    {...form.register('areaUnit')}
+                                    className="px-4 py-2 border rounded-lg"
+                                >
+                                    <option value="sqft">sqft</option>
+                                    <option value="m2">m²</option>
+                                </select>
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Área (m²)</label>
+                            <label className="block text-sm font-medium mb-2">
+                                Ano de Construção
+                            </label>
                             <input
                                 type="number"
-                                name="area"
-                                value={formData.area}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-50/50 outline-none transition-all"
-                                placeholder="120"
+                                {...form.register('yearBuilt', { valueAsNumber: true })}
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="2020"
                             />
                         </div>
                     </div>
-                </div>
+                </Card>
 
-                {/* Section 1.5: Media */}
-                <div className="bg-white rounded-2xl border border-neutral-200 p-6 md:p-8 shadow-sm">
-                    <h2 className="text-lg font-semibold text-neutral-900 mb-6 flex items-center gap-2">
-                        <PhotoIcon className="w-5 h-5 text-primary-700" />
-                        Fotos do Imóvel
-                    </h2>
-                    <ImageUpload
-                        images={formData.images}
-                        onChange={handleImagesChange}
-                    />
-                </div>
+                {/* Financeiro */}
+                <Card className="p-6">
+                    <h3 className="font-semibold text-lg mb-4">Informações Financeiras</h3>
 
-                {/* Section 2: Details */}
-                <div className="bg-white rounded-2xl border border-neutral-200 p-6 md:p-8 shadow-sm">
-                    <h2 className="text-lg font-semibold text-neutral-900 mb-6 flex items-center gap-2">
-                        <CheckCircleIcon className="w-5 h-5 text-primary-700" />
-                        Detalhes e Características
-                    </h2>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Quartos</label>
-                            <input type="number" name="bedrooms" value={formData.bedrooms} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 outline-none" placeholder="0" />
+                            <label className="block text-sm font-medium mb-2">
+                                Preço de Venda (USD) *
+                            </label>
+                            <input
+                                type="number"
+                                {...form.register('listPrice', { valueAsNumber: true })}
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="300000"
+                            />
                         </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Banheiros</label>
-                            <input type="number" name="bathrooms" value={formData.bathrooms} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 outline-none" placeholder="0" />
+                            <label className="block text-sm font-medium mb-2">
+                                Aluguel Estimado (USD/mês)
+                            </label>
+                            <input
+                                type="number"
+                                {...form.register('estimatedRent', { valueAsNumber: true })}
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="2500"
+                            />
                         </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Vagas</label>
-                            <input type="number" name="parkingSpots" value={formData.parkingSpots} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 outline-none" placeholder="0" />
+                            <label className="block text-sm font-medium mb-2">
+                                Tipo de Locação
+                            </label>
+                            <select
+                                {...form.register('rentalType')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            >
+                                <option value="">Não se aplica</option>
+                                <option value="LONG_TERM">Long-term</option>
+                                <option value="SHORT_TERM">Short-term</option>
+                                <option value="CORPORATE">Corporativo</option>
+                            </select>
                         </div>
+
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Status</label>
-                            <select name="status" value={formData.status} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 outline-none bg-white">
+                            <label className="block text-sm font-medium mb-2">
+                                Status *
+                            </label>
+                            <select
+                                {...form.register('status')}
+                                className="w-full px-4 py-2 border rounded-lg"
+                            >
                                 <option value="AVAILABLE">Disponível</option>
                                 <option value="RESERVED">Reservado</option>
                                 <option value="SOLD">Vendido</option>
-                                <option value="ANALYSIS">Em Análise</option>
+                                <option value="OFF_MARKET">Fora do mercado</option>
                             </select>
                         </div>
                     </div>
-                </div>
 
-                {/* Section 3: Address */}
-                <div className="bg-white rounded-2xl border border-neutral-200 p-6 md:p-8 shadow-sm">
-                    <h2 className="text-lg font-semibold text-neutral-900 mb-6 flex items-center gap-2">
-                        <MapPinIcon className="w-5 h-5 text-primary-700" />
-                        Localização
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Endereço</label>
-                            <input type="text" name="address" value={formData.address} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 outline-none" placeholder="Rua..." />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Bairro *</label>
-                            <input type="text" name="neighborhood" required value={formData.neighborhood} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 outline-none" placeholder="Ex: Ipanema" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-neutral-700 mb-2">Cidade</label>
-                            <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-primary-500 outline-none" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Section 4: Validation */}
-                <div className="bg-white rounded-2xl border border-neutral-200 p-8 shadow-sm">
-                    <div className="flex items-center gap-6">
-                        <label className="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="isFeatured" checked={formData.isFeatured} onChange={handleChange} className="w-5 h-5 rounded border-neutral-300 text-primary-600 focus:ring-primary-500" />
-                            <span className="text-neutral-700 font-medium">Imóvel em Destaque</span>
-                        </label>
-                        <label className="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="isExclusive" checked={formData.isExclusive} onChange={handleChange} className="w-5 h-5 rounded border-neutral-300 text-primary-600 focus:ring-primary-500" />
-                            <span className="text-neutral-700 font-medium">Exclusividade IMI</span>
+                    <div className="mt-4">
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                {...form.register('featured')}
+                                className="w-4 h-4"
+                            />
+                            <span className="text-sm font-medium">
+                                Destacar imóvel (featured)
+                            </span>
                         </label>
                     </div>
-                </div>
+                </Card>
 
-                {/* Actions */}
-                <div className="flex justify-end gap-3 pt-6">
-                    <button
+                {/* Imagens */}
+                <Card className="p-6">
+                    <h3 className="font-semibold text-lg mb-4">
+                        Imagens * (mínimo 1)
+                    </h3>
+
+                    <PropertyImageUpload
+                        onChange={(images) => form.setValue('images', images)}
+                        maxImages={15}
+                    />
+
+                    {form.formState.errors.images && (
+                        <p className="text-sm text-red-600 mt-2">
+                            {form.formState.errors.images.message}
+                        </p>
+                    )}
+                </Card>
+
+                {/* Tour virtual */}
+                <Card className="p-6">
+                    <h3 className="font-semibold text-lg mb-4">Tour Virtual</h3>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            URL do Tour Virtual (Matterport, etc)
+                        </label>
+                        <input
+                            {...form.register('virtualTourUrl')}
+                            type="url"
+                            className="w-full px-4 py-2 border rounded-lg"
+                            placeholder="https://..."
+                        />
+                    </div>
+                </Card>
+
+                {/* Ações */}
+                <div className="flex gap-4">
+                    <Button
                         type="button"
+                        variant="outline"
                         onClick={() => router.back()}
-                        className="px-6 py-3 border border-neutral-200 text-neutral-700 font-medium rounded-xl hover:bg-neutral-50 transition-colors"
+                        className="flex-1"
                     >
                         Cancelar
-                    </button>
-                    <button
+                    </Button>
+
+                    <Button
                         type="submit"
-                        disabled={isSubmitting}
-                        className="px-8 py-3 bg-primary-700 text-white font-medium rounded-xl hover:bg-primary-800 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
+                        disabled={submitting}
+                        className="flex-1"
                     >
-                        {isSubmitting ? 'Salvando...' : 'Cadastrar Imóvel'}
-                    </button>
+                        {submitting ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Cadastrando...
+                            </>
+                        ) : (
+                            'Cadastrar Imóvel'
+                        )}
+                    </Button>
                 </div>
+
             </form>
+
         </div>
-    )
+    );
 }

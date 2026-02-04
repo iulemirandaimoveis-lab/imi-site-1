@@ -1,115 +1,120 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
-    HomeIcon,
-    UsersIcon,
-    BuildingOfficeIcon,
-    ChartBarIcon,
-    Cog6ToothIcon,
-    ArrowRightOnRectangleIcon,
-    XMarkIcon
-} from '@heroicons/react/24/outline'
+    LayoutDashboard,
+    Users,
+    Calendar,
+    Building2,
+    Ticket,
+    MessageSquare,
+    FileText,
+    Settings,
+    Menu,
+    X
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const navigation = [
-    { name: 'Dashboard', href: '/backoffice/dashboard', icon: HomeIcon },
-    { name: 'Leads', href: '/backoffice/leads', icon: UsersIcon },
-    { name: 'Imóveis', href: '/backoffice/properties', icon: BuildingOfficeIcon },
-    { name: 'Relatórios', href: '/backoffice/reports', icon: ChartBarIcon },
-    { name: 'Configurações', href: '/backoffice/settings', icon: Cog6ToothIcon },
-]
+    { name: 'Dashboard', href: '/backoffice', icon: LayoutDashboard },
+    { name: 'Leads', href: '/backoffice/leads', icon: Users },
+    { name: 'Consultorias', href: '/backoffice/consultations', icon: Calendar },
+    { name: 'Imóveis', href: '/backoffice/properties', icon: Building2 },
+    { name: 'Cupons', href: '/backoffice/coupons', icon: Ticket },
+    { name: 'WhatsApp', href: '/backoffice/whatsapp', icon: MessageSquare },
+    { name: 'Relatórios', href: '/backoffice/reports', icon: FileText },
+    { name: 'Configurações', href: '/backoffice/settings', icon: Settings }
+];
 
-interface SidebarProps {
-    isOpen: boolean
-    onClose: () => void
-}
-
-export default function BackofficeSidebar({ isOpen, onClose }: SidebarProps) {
-    const pathname = usePathname()
-
-    const handleLogout = () => {
-        window.location.href = '/backoffice'
-    }
+export default function Sidebar() {
+    const pathname = usePathname();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
         <>
-            {/* Mobile Overlay */}
-            {isOpen && (
+            {/* Mobile menu button */}
+            <div className="lg:hidden fixed top-4 left-4 z-50">
+                <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="p-2 bg-white border rounded-lg shadow-sm"
+                >
+                    {mobileMenuOpen ? (
+                        <X className="w-6 h-6" />
+                    ) : (
+                        <Menu className="w-6 h-6" />
+                    )}
+                </button>
+            </div>
+
+            {/* Overlay (mobile) */}
+            {mobileMenuOpen && (
                 <div
-                    className="fixed inset-0 bg-neutral-900/60 backdrop-blur-sm z-[90] lg:hidden transition-opacity duration-300"
-                    onClick={onClose}
+                    className="lg:hidden fixed inset-0 bg-black/50 z-40"
+                    onClick={() => setMobileMenuOpen(false)}
                 />
             )}
 
-            {/* Sidebar Container */}
-            <div className={`
-                fixed inset-y-0 left-0 z-[100] w-[85vw] max-w-xs bg-neutral-900/95 backdrop-blur-xl border-r border-neutral-800 transform transition-transform duration-300 cubic-bezier(0.4, 0, 0.2, 1)
-                h-[100dvh] lg:h-screen lg:w-64 lg:translate-x-0 lg:static lg:pointer-events-auto
-                ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full pointer-events-none'}
-            `}>
-                {/* Logo & Header */}
-                <div className="flex h-20 items-center justify-between px-6 border-b border-neutral-800/50">
-                    <div>
-                        <h1 className="text-2xl font-display font-bold text-white tracking-tight">IMI</h1>
-                        <p className="text-[10px] text-neutral-400 tracking-widest uppercase mt-0.5">Backoffice</p>
+            {/* Sidebar */}
+            <aside
+                className={cn(
+                    "fixed lg:static inset-y-0 left-0 z-40",
+                    "w-64 bg-white border-r",
+                    "transform transition-transform duration-300 ease-in-out",
+                    "lg:translate-x-0",
+                    mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+                )}
+            >
+                <div className="h-full flex flex-col">
+
+                    {/* Logo */}
+                    <div className="p-6 border-b">
+                        <h1 className="text-xl font-bold">Backoffice</h1>
                     </div>
-                    {/* Close button - Mobile only */}
-                    <button
-                        onClick={onClose}
-                        className="lg:hidden text-neutral-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
-                    >
-                        <XMarkIcon className="h-6 w-6" />
-                    </button>
-                </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
-                    {navigation.map((item) => {
-                        const isActive = pathname === item.href
-                        return (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                onClick={() => onClose()} // Close on navigation (mobile)
-                                className={`
-                                    group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200
-                                    ${isActive
-                                        ? 'bg-primary-700 text-white shadow-lg shadow-primary-900/20'
-                                        : 'text-neutral-400 hover:bg-white/5 hover:text-white'
-                                    }
-                                `}
-                            >
-                                <item.icon
-                                    className={`mr-3 h-5 w-5 flex-shrink-0 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'
-                                        }`}
-                                />
-                                {item.name}
-                            </Link>
-                        )
-                    })}
-                </nav>
+                    {/* Navigation */}
+                    <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                        {navigation.map((item) => {
+                            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
 
-                {/* User Section */}
-                <div className="border-t border-neutral-800/50 p-6 bg-neutral-900/50">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center text-white font-semibold ring-2 ring-white/10">
-                            IM
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-white">Iule Miranda</p>
-                            <p className="text-xs text-neutral-400">Administrador</p>
+                            return (
+                                <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className={cn(
+                                        "flex items-center gap-3 px-4 py-3 rounded-lg",
+                                        "text-sm font-medium transition-colors",
+                                        isActive
+                                            ? "bg-blue-50 text-blue-700"
+                                            : "text-gray-700 hover:bg-gray-100"
+                                    )}
+                                >
+                                    <item.icon className="w-5 h-5" />
+                                    {item.name}
+                                </Link>
+                            );
+                        })}
+                    </nav>
+
+                    {/* User section */}
+                    <div className="p-4 border-t">
+                        <div className="flex items-center gap-3 px-4 py-3">
+                            <div className="w-8 h-8 bg-gray-200 rounded-full" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">
+                                    Admin User
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">
+                                    admin@example.com
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="flex w-full items-center justify-center px-4 py-2.5 text-sm font-medium text-neutral-400 hover:bg-white/5 hover:text-white rounded-xl transition-all duration-200 border border-neutral-800 hover:border-neutral-700"
-                    >
-                        <ArrowRightOnRectangleIcon className="mr-2 h-4 w-4" />
-                        Sair
-                    </button>
+
                 </div>
-            </div>
+            </aside>
         </>
-    )
+    );
 }
