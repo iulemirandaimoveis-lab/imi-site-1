@@ -12,6 +12,8 @@ const config: Config = {
                 navy: {
                     600: '#1E40AF',
                     700: '#1E3A8A',
+                    800: '#1E3A70',
+                    900: '#1A2744',
                 },
                 gold: {
                     500: '#D4AF37',
@@ -20,11 +22,12 @@ const config: Config = {
                 offwhite: '#FAFAFA',
             },
             fontFamily: {
-                sans: ['Inter', 'system-ui', 'sans-serif'],
+                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
                 display: ['Playfair Display', 'serif'],
             },
             boxShadow: {
                 soft: '0 4px 30px rgba(0, 0, 0, 0.05)',
+                'soft-lg': '0 8px 40px rgba(0, 0, 0, 0.08)',
             },
             backdropBlur: {
                 xs: '2px',
@@ -33,7 +36,7 @@ const config: Config = {
     },
     plugins: [
         require('@tailwindcss/forms'),
-        require('@tailwindcss/typography')
+        require('@tailwindcss/typography'),
     ],
 }
 export default config
