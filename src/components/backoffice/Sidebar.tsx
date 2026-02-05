@@ -39,7 +39,7 @@ export default function Sidebar() {
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
-        router.push('/backoffice');
+        router.push('/backoffice/login');
         router.refresh();
     };
 
@@ -62,8 +62,8 @@ export default function Sidebar() {
                                     key={item.href}
                                     href={item.href}
                                     className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ${isActive
-                                            ? 'bg-blue-50 text-blue-600 shadow-soft'
-                                            : 'text-gray-700 hover:bg-gray-100/80 hover:text-navy-600'
+                                        ? 'bg-blue-50 text-blue-600 shadow-soft'
+                                        : 'text-gray-700 hover:bg-gray-100/80 hover:text-navy-600'
                                         }`}
                                 >
                                     <item.icon size={20} />
@@ -139,8 +139,8 @@ export default function Sidebar() {
                                                 href={item.href}
                                                 onClick={() => setIsOpen(false)}
                                                 className={`flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-300 active:scale-95 ${isActive
-                                                        ? 'bg-blue-50 text-blue-600'
-                                                        : 'text-gray-700 hover:bg-gray-100/80 hover:text-navy-600'
+                                                    ? 'bg-blue-50 text-blue-600'
+                                                    : 'text-gray-700 hover:bg-gray-100/80 hover:text-navy-600'
                                                     }`}
                                             >
                                                 <item.icon size={24} />
