@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
@@ -18,36 +18,50 @@ const navigation = [
 ];
 
 const menuVariants = {
-    hidden: { opacity: 0, height: 0 },
+    hidden: { opacity: 0, y: -20 },
     visible: {
         opacity: 1,
-        height: 'auto',
+        y: 0,
         transition: {
-            duration: 0.4,
+            duration: 0.3,
             ease: 'easeOut',
-            when: 'beforeChildren',
-            staggerChildren: 0.07,
+            staggerChildren: 0.05,
         },
     },
-    exit: { opacity: 0, height: 0, transition: { duration: 0.3 } },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
 };
 
 const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
 };
 
 export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
 
+    // Debug log for production verification
+    useEffect(() => {
+        console.log('IMI Header V4 Loaded');
+    }, []);
+
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-lg shadow-sm transition-all duration-300">
-            <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-12">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg shadow-sm">
+            <div className="max-w-7xl mx-auto px-6 md:px-10">
                 <div className="flex items-center justify-between h-20 lg:h-24">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-3 group">
-                        <span className="text-3xl font-extrabold text-navy-700 group-hover:text-navy-800 transition-colors">IMI</span>
-                        <span className="text-base font-medium text-gray-500 tracking-wide">Inteligência Imobiliária</span>
+                        <div className="flex items-center gap-3">
+                            <span
+                                className="text-2xl font-bold text-navy-900 tracking-tight transition-colors"
+                                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                            >
+                                IMI
+                            </span>
+                            <div className="hidden sm:block h-6 w-px bg-gray-300"></div>
+                            <span className="hidden sm:block text-[11px] font-medium text-gray-500 uppercase tracking-[0.15em] leading-[1.1]">
+                                Inteligência<br />Imobiliária
+                            </span>
+                        </div>
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -59,7 +73,7 @@ export default function Header() {
                                 className="relative text-gray-600 font-medium hover:text-navy-600 transition-colors duration-300 group"
                             >
                                 {item.label}
-                                <span className="absolute left-0 bottom-[-4px] w-0 h-0.5 bg-gold-600 group-hover:w-full transition-all duration-300"></span>
+                                <span className="absolute left-0 bottom-[-4px] w-0 h-0.5 bg-accent-600 group-hover:w-full transition-all duration-300"></span>
                             </Link>
                         ))}
                     </nav>
@@ -75,7 +89,7 @@ export default function Header() {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu Overlay */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -83,20 +97,26 @@ export default function Header() {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="md:hidden bg-gradient-to-b from-white to-gray-50/90 shadow-xl overflow-hidden"
+                        className="md:hidden fixed inset-0 top-20 bg-white z-40 overflow-y-auto overflow-x-hidden pt-4 pb-32"
                     >
-                        <nav className="px-8 py-12 space-y-8">
+                        <nav className="px-6 py-4 flex flex-col items-center text-center">
                             {navigation.map((item) => (
-                                <motion.div key={item.href} variants={itemVariants}>
+                                <motion.div key={item.href} variants={itemVariants} className="w-full">
                                     <Link
                                         href={item.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="block text-xl font-medium text-gray-800 hover:text-navy-600 transition-colors duration-300 py-4 border-b border-gray-100 last:border-none"
+                                        className="block text-2xl font-display font-medium text-gray-800 hover:text-navy-600 py-6 border-b border-gray-50 last:border-none"
                                     >
                                         {item.label}
                                     </Link>
                                 </motion.div>
                             ))}
+
+                            {/* Mobile Footer in Menu */}
+                            <div className="w-full max-w-xs mx-auto px-6 py-12 bg-gray-50 rounded-2xl mt-8">
+                                <p className="text-base font-bold text-gray-900 mb-1">Iule Miranda</p>
+                                <p className="text-[11px] text-gray-500 uppercase tracking-[0.2em]">CRECI 17933 | CNAI 53290</p>
+                            </div>
                         </nav>
                     </motion.div>
                 )}

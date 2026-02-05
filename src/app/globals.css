@@ -3,11 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-playfair: 'Playfair Display', Georgia, serif;
-  }
-
   * {
     @apply border-neutral-200;
   }
@@ -20,7 +15,12 @@
     @apply bg-white text-neutral-900 antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display;
   }
 }
