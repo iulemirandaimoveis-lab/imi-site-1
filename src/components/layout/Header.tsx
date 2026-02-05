@@ -6,12 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
 const navigation = [
-    { label: 'IMI - Apresentação', href: '/' },
+    { label: 'Início', href: '/' },
     { label: 'Avaliações', href: '/avaliacoes' },
     { label: 'Imóveis', href: '/imoveis' },
+    { label: 'Crédito', href: '/credito' },
     { label: 'Consultoria', href: '/consultoria' },
     { label: 'Inteligência', href: '/inteligencia' },
-    { label: 'Projetos', href: '/projetos' },
+    { label: 'Conteúdo', href: '/conteudo' },
     { label: 'Sobre', href: '/sobre' },
     { label: 'Contato', href: '/contato' },
 ];
