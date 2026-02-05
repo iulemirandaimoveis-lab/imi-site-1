@@ -21,23 +21,37 @@ export default function BackofficeLoginPage() {
         setError('');
 
         try {
+            console.log('Iniciando login para:', email);
+
             const { data, error: signInError } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
 
             if (signInError) {
-                setError('Credenciais inválidas. Verifique email e senha.');
+                console.error('Erro Supabase:', signInError.message, signInError.status);
+
+                // Mensagens de erro mais específicas
+                if (signInError.message.includes('Invalid login credentials')) {
+                    setError('Email ou senha incorretos. Verifique suas credenciais.');
+                } else if (signInError.message.includes('Email not confirmed')) {
+                    setError('Email não confirmado. Verifique sua caixa de entrada.');
+                } else if (signInError.message.includes('Too many requests')) {
+                    setError('Muitas tentativas. Aguarde alguns minutos.');
+                } else {
+                    setError(`Erro: ${signInError.message}`);
+                }
                 return;
             }
 
             if (data.session) {
+                console.log('Login bem-sucedido! Redirecionando...');
                 router.push('/backoffice/dashboard');
                 router.refresh();
             }
         } catch (err: any) {
-            setError('Erro ao fazer login. Tente novamente.');
-            console.error('Login error:', err);
+            console.error('Exceção no login:', err);
+            setError('Erro de conexão. Verifique sua internet e tente novamente.');
         } finally {
             setLoading(false);
         }
