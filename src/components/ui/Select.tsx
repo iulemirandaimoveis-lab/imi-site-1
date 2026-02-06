@@ -1,61 +1,54 @@
 'use client'
-
-import { SelectHTMLAttributes, forwardRef } from 'react'
+import { forwardRef, SelectHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
     label?: string
     error?: string
-    helperText?: string
     options: { value: string; label: string }[]
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-    ({ className, label, error, helperText, options, id, ...props }, ref) => {
-        const selectId = id || label?.toLowerCase().replace(/\s+/g, '-')
-
+    ({ className, label, error, options, id, ...props }, ref) => {
         return (
-            <div className="w-full">
+            <div className="relative">
                 {label && (
-                    <label
-                        htmlFor={selectId}
-                        className="block text-sm font-medium text-neutral-700 mb-2"
-                    >
+                    <label htmlFor={id} className='block text-xs font-semibold
+            text-slate-500 uppercase tracking-widest mb-2'>
                         {label}
-                        {props.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                 )}
-                <select
-                    ref={ref}
-                    id={selectId}
-                    className={cn(
-                        'w-full px-4 py-3 rounded-xl border transition-all duration-200 bg-neutral-50/50',
-                        'focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500',
-                        error
-                            ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                            : 'border-neutral-200 hover:border-neutral-300',
-                        'disabled:bg-neutral-100 disabled:cursor-not-allowed',
-                        className
-                    )}
-                    {...props}
-                >
-                    {options.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
-                {error && (
-                    <p className="mt-1 text-sm text-red-600">{error}</p>
-                )}
-                {helperText && !error && (
-                    <p className="mt-1 text-sm text-neutral-500">{helperText}</p>
-                )}
+                <div className="relative">
+                    <select
+                        ref={ref}
+                        id={id}
+                        className={cn(
+                            'w-full h-12 px-4 bg-white border border-slate-200 rounded-lg',
+                            'text-slate-900 text-sm placeholder:text-slate-400',
+                            'transition-all duration-200 appearance-none cursor-pointer',
+                            'focus:outline-none focus:ring-2 focus:ring-navy-900/10 focus:border-navy-900',
+                            'hover:border-slate-300',
+                            error && 'border-red-500 focus:ring-red-500/10',
+                            className
+                        )}
+                        {...props}
+                    >
+                        {options.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                        <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+                {error && <p className='mt-1 text-xs text-red-600'>{error}</p>}
             </div>
         )
     }
 )
-
 Select.displayName = 'Select'
-
 export default Select

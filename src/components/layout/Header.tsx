@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Button from '@/components/ui/Button';
 
 const navigation = [
-    { label: 'IMI - Apresentação', href: '/' },
     { label: 'Avaliações', href: '/avaliacoes' },
     { label: 'Imóveis', href: '/imoveis' },
     { label: 'Crédito', href: '/credito' },
     { label: 'Consultoria', href: '/consultoria' },
     { label: 'Inteligência', href: '/inteligencia' },
-    { label: 'Projetos', href: '/projetos' },
     { label: 'Sobre', href: '/sobre' },
     { label: 'Contato', href: '/contato' },
 ];
@@ -38,6 +39,7 @@ const itemVariants = {
 
 export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
 
     // Close menu on resize if above mobile breakpoint
     useEffect(() => {
@@ -61,9 +63,9 @@ export default function Header() {
 
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-[100] bg-white/70 backdrop-blur-xl border-b border-gray-100/50">
+            <header className="fixed top-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-header">
                 <div className="container-custom">
-                    <div className="flex items-center justify-between h-20 lg:h-24">
+                    <div className="flex items-center justify-between h-16 lg:h-20">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-3 group z-[110]" onClick={() => setIsOpen(false)}>
                             <div className="flex items-center gap-3">
@@ -73,8 +75,8 @@ export default function Header() {
                                 >
                                     IMI
                                 </span>
-                                <div className="h-6 w-px bg-gray-200"></div>
-                                <span className="text-[10px] sm:text-[11px] font-medium text-gray-500 uppercase tracking-[0.15em] leading-[1.1]">
+                                <div className="h-6 w-px bg-slate-200"></div>
+                                <span className="text-[10px] sm:text-[11px] font-medium text-slate-500 uppercase tracking-[0.15em] leading-[1.1]">
                                     Inteligência<br />Imobiliária
                                 </span>
                             </div>
@@ -86,10 +88,14 @@ export default function Header() {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className="relative text-gray-600 font-medium hover:text-navy-600 transition-colors duration-300 text-sm tracking-tight"
+                                    className={cn(
+                                        "relative text-sm font-medium tracking-tight transition-colors duration-300",
+                                        pathname === item.href
+                                            ? "text-navy-900 after:absolute after:left-0 after:bottom-[-4px] after:w-full after:h-0.5 after:bg-gold-600"
+                                            : "text-slate-500 hover:text-navy-900"
+                                    )}
                                 >
                                     {item.label}
-                                    <span className="absolute left-0 bottom-[-4px] w-0 h-0.5 bg-accent-600 group-hover:w-full transition-all duration-300"></span>
                                 </Link>
                             ))}
                         </nav>
@@ -97,10 +103,10 @@ export default function Header() {
                         {/* Mobile Toggle */}
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="md:hidden p-2 rounded-xl hover:bg-gray-100 transition text-navy-600 z-[110]"
+                            className="md:hidden p-2 rounded-lg hover:bg-slate-50 transition text-navy-900 z-[110]"
                             aria-label="Toggle menu"
                         >
-                            {isOpen ? <X size={28} /> : <Menu size={28} />}
+                            {isOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
                 </div>
@@ -112,7 +118,7 @@ export default function Header() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[90] md:hidden"
+                            className="fixed inset-0 bg-navy-900/20 backdrop-blur-sm z-[90] md:hidden"
                             onClick={() => setIsOpen(false)}
                         />
                     )}
@@ -125,25 +131,42 @@ export default function Header() {
                             initial="hidden"
                             animate="visible"
                             exit="exit"
-                            className="md:hidden fixed inset-x-0 top-0 pt-24 pb-12 bg-white z-[95] shadow-2xl overflow-y-auto max-h-[100vh] flex flex-col"
+                            className="md:hidden fixed inset-x-0 top-0 pt-[env(safe-area-inset-top,20px)] bg-white z-[95] shadow-2xl overflow-y-auto h-[100dvh] flex flex-col"
                         >
-                            <nav className="px-6 py-4 flex flex-col space-y-1">
+                            <div className="h-16 flex items-center justify-end px-6 mb-4">
+                                {/* Placeholder for close button alignment if needed, handled by absolute toggle */}
+                            </div>
+
+                            <nav className="px-6 flex flex-col space-y-1">
                                 {navigation.map((item) => (
                                     <motion.div key={item.href} variants={itemVariants}>
                                         <Link
                                             href={item.href}
                                             onClick={() => setIsOpen(false)}
-                                            className="block text-xl font-display font-medium text-gray-800 hover:text-navy-600 py-4 px-4 hover:bg-gray-50 rounded-xl transition-all"
+                                            className={cn(
+                                                "block text-lg font-medium py-3 px-4 rounded-xl transition-all h-12 flex items-center",
+                                                pathname === item.href
+                                                    ? "text-navy-900 bg-slate-50 border-l-2 border-gold-600"
+                                                    : "text-slate-600 hover:text-navy-900 hover:bg-slate-50"
+                                            )}
                                         >
                                             {item.label}
                                         </Link>
                                     </motion.div>
                                 ))}
 
+                                <motion.div variants={itemVariants} className="pt-6 mt-6 border-t border-slate-100">
+                                    <Button asChild fullWidth variant="primary" className="h-14">
+                                        <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">
+                                            Falar pelo WhatsApp
+                                        </a>
+                                    </Button>
+                                </motion.div>
+
                                 {/* Mobile Footer in Menu */}
-                                <div className="mt-8 p-6 bg-neutral-50 rounded-2xl mx-4">
-                                    <p className="text-sm font-bold text-neutral-900 mb-1">Iule Miranda</p>
-                                    <p className="text-[10px] text-neutral-400 uppercase tracking-widest">CRECI 17933 | CNAI 53290</p>
+                                <div className="mt-8 p-6 bg-slate-50 rounded-2xl">
+                                    <p className="text-sm font-bold text-navy-900 mb-1">Iule Miranda</p>
+                                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">CRECI 17933 | CNAI 53290</p>
                                 </div>
                             </nav>
                         </motion.div>

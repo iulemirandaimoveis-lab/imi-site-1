@@ -5,35 +5,41 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    @apply m-0 p-0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply text-gray-700 m-0 p-0 overflow-x-hidden;
+    @apply text-slate-600 bg-white;
   }
-}
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  ::selection {
+    @apply bg-navy-900/10 text-navy-900;
   }
 }
 
 @layer components {
   .container-custom {
-    @apply max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20;
+    @apply mx-auto w-full max-w-7xl px-6 sm:px-8 md:px-12 lg:px-16;
   }
 
   .section-padding {
-    @apply py-16 md:py-24 lg:py-32;
+    @apply py-16 sm:py-20 md:py-24 lg:py-32;
   }
 
-  .hero-padding {
-    @apply pt-[104px] pb-16 md:pt-[120px] md:pb-20 lg:pt-[144px] lg:pb-32;
+  .prose-custom {
+    @apply max-w-none text-base leading-relaxed text-slate-600;
+  }
+
+  .prose-custom p {
+    @apply mb-4;
+  }
+
+  .prose-custom strong {
+    @apply font-semibold text-slate-900;
   }
 }
 
 * {
-  @apply transition-colors duration-200;
   -webkit-tap-highlight-color: transparent;
 }

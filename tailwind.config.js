@@ -16,7 +16,9 @@ const config: Config = {
                     900: '#020617',
                 },
                 gold: {
-                    600: '#D4AF37',
+                    400: '#E5C158',
+                    500: '#D4AF37',
+                    600: '#B8952F',
                 },
                 // Sober, professional color palette
                 primary: {
@@ -78,6 +80,12 @@ const config: Config = {
             maxWidth: {
                 '8xl': '88rem',
                 '9xl': '96rem',
+            },
+            boxShadow: {
+                'soft': '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
+                'card': '0 4px 20px rgba(0,0,0,0.06)',
+                'card-hover': '0 8px 30px rgba(0,0,0,0.08)',
+                'header': '0 1px 3px rgba(0,0,0,0.05)',
             },
             animation: {
                 'fade-in': 'fadeIn 0.6s ease-in-out',

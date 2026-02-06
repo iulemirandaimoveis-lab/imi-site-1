@@ -77,7 +77,7 @@ export default function WebsiteLayout({
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
             />
             <Header />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow pt-16 lg:pt-20">{children}</main>
             <Footer />
         </div>
     )
