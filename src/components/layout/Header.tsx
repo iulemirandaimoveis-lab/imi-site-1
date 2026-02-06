@@ -61,8 +61,8 @@ export default function Header() {
 
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
+            <header className="fixed top-0 left-0 right-0 z-[100] bg-white/70 backdrop-blur-xl border-b border-gray-100/50">
+                <div className="container-custom">
                     <div className="flex items-center justify-between h-20 lg:h-24">
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-3 group z-[110]" onClick={() => setIsOpen(false)}>
@@ -150,8 +150,6 @@ export default function Header() {
                     )}
                 </AnimatePresence>
             </header>
-            {/* Spacer to push content down below fixed header */}
-            <div className="h-20 lg:h-24" />
         </>
     );
 }

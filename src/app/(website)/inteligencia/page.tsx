@@ -37,9 +37,9 @@ export default function MarketIntelligencePage() {
     return (
         <div className="bg-neutral-50 min-h-screen pb-20">
             {/* Hero Section */}
-            <section className="bg-neutral-900 text-white py-20 lg:py-32 relative overflow-hidden">
+            <section className="bg-neutral-900 text-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20 bg-[url('/hero-bg.jpg')] bg-cover bg-center" />
-                <div className="container-custom relative z-10">
+                <div className="container-custom hero-padding relative z-10">
                     <motion.div
                         initial="hidden"
                         animate="visible"

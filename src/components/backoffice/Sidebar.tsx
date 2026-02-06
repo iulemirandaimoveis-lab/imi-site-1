@@ -17,7 +17,7 @@ import {
     Ticket,
     MessageSquare
 } from 'lucide-react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 const sidebarItems = [
@@ -35,7 +35,7 @@ export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
-    const supabase = createClientComponentClient();
+    const supabase = createClient();
 
     const handleLogout = async () => {
         await supabase.auth.signOut();

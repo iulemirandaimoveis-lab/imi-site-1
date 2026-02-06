@@ -14,7 +14,6 @@ const footerNavigation = {
         { name: 'Sobre', href: '/sobre' },
         { name: 'Conteúdo', href: '/conteudo' },
         { name: 'Contato', href: '/contato' },
-        { name: 'Backoffice', href: '/backoffice' },
     ],
     legal: [
         { name: 'Política de Privacidade', href: '/privacidade' },
@@ -28,7 +27,7 @@ export default function Footer() {
     return (
         <footer className="bg-neutral-900 border-t-4 border-accent-600">
             {/* Main Footer */}
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div className="mx-auto max-w-7xl px-6 sm:px-10 py-12 lg:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
                     {/* Brand - Takes more space */}
                     <div className="lg:col-span-6">

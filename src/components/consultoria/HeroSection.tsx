@@ -6,13 +6,13 @@ import Link from 'next/link';
 
 export function HeroSection() {
     return (
-        <section className="relative min-h-[90vh] flex items-center justify-center bg-gradient-to-br from-navy-700 via-navy-600 to-blue-700 overflow-hidden">
+        <section className="relative min-h-[90dvh] flex items-center justify-center bg-gradient-to-br from-navy-700 via-navy-600 to-blue-700 overflow-hidden">
             {/* Background pattern */}
             <div className="absolute inset-0 opacity-10">
                 <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat" />
             </div>
 
-            <div className="container mx-auto px-4 py-20 relative z-10">
+            <div className="container-custom hero-padding relative z-10">
                 <div className="max-w-4xl mx-auto text-center">
 
                     {/* Badge */}

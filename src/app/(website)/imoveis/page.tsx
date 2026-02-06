@@ -31,7 +31,7 @@ export default function ImoveisPage() {
         <div className="bg-white">
             {/* Hero */}
             <section className="bg-gradient-to-br from-primary-900 to-primary-800 text-white">
-                <div className="container-custom py-16 lg:py-24">
+                <div className="container-custom hero-padding">
                     <motion.div
                         initial="hidden"
                         animate="visible"
@@ -51,7 +51,7 @@ export default function ImoveisPage() {
 
             {/* Filters */}
             <section className="bg-neutral-50 border-b border-neutral-200">
-                <div className="container-custom py-8">
+                <div className="container-custom py-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <Select
                             label="Tipo"
@@ -102,7 +102,7 @@ export default function ImoveisPage() {
             </section>
 
             {/* Properties Grid */}
-            <section className="section-padding">
+            <section className="py-12 md:py-20 lg:py-24">
                 <div className="container-custom">
                     <motion.div
                         initial="hidden"
@@ -141,10 +141,10 @@ export default function ImoveisPage() {
                         )}
                     </motion.div>
                 </div>
-            </section>
+            </section >
 
             {/* CTA Section */}
-            <section className="section-padding bg-primary-50">
+            < section className="section-padding bg-primary-50" >
                 <div className="container-custom">
                     <motion.div
                         initial="hidden"
@@ -170,8 +170,8 @@ export default function ImoveisPage() {
                         </motion.div>
                     </motion.div>
                 </div>
-            </section>
+            </section >
 
-        </div>
+        </div >
     )
 }

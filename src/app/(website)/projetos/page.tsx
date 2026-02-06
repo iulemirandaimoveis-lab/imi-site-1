@@ -8,8 +8,8 @@ export const metadata = {
 export default function ProjetosPage() {
     return (
         <div className="bg-white min-h-screen">
-            <section className="py-20 lg:py-32 bg-neutral-900 text-white">
-                <div className="container mx-auto px-4">
+            <section className="bg-neutral-900 text-white">
+                <div className="container-custom hero-padding">
                     <div className="max-w-3xl">
                         <h1 className="text-4xl lg:text-6xl font-display font-bold mb-6">Projetos Especiais</h1>
                         <p className="text-xl text-neutral-300 leading-relaxed">

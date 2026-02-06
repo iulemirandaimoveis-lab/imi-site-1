@@ -1,139 +1,136 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { signIn } from '@/lib/supabase';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 
-export default function BackofficeLoginPage() {
-    const router = useRouter();
-
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+export default function BackofficeLogin() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+    const router = useRouter()
+    const supabase = createClient()
 
     const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
+        e.preventDefault()
+        setError('')
+        setLoading(true)
 
         try {
-            const { data, error: signInError } = await signIn(email, password);
+            const { data, error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
 
-            if (signInError) {
-                // Ignore API message to avoid leaking emails or details
-                setError('Falha na autenticação. Verifique suas credenciais e tente novamente.');
-                return;
+            if (authError) {
+                console.error('Supabase auth error:', authError.message)
+                setError('Falha na autenticação. Verifique suas credenciais e tente novamente.')
+                return
             }
 
-            if (data?.session) {
-                router.push('/backoffice/dashboard');
-                router.refresh();
+            if (data.session) {
+                router.push('/backoffice/dashboard')
+                router.refresh()
             }
-        } catch (err: any) {
-            setError('Erro ao conectar com o serviço de autenticação.');
+        } catch (err) {
+            console.error('Login error:', err)
+            setError('Erro inesperado. Tente novamente.')
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-neutral-50 px-4 relative overflow-hidden">
-            {/* Background elements for premium look */}
-            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-primary-50 rounded-full blur-3xl opacity-50" />
-            <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent-50 rounded-full blur-3xl opacity-50" />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 sm:p-10">
+                <div className="text-center mb-8">
+                    <h1 className="text-2xl font-bold text-gray-900 font-display">
+                        IMI Backoffice
+                    </h1>
+                    <div className="w-12 h-1 bg-blue-800 mx-auto mt-3 mb-4 rounded-full" />
+                    <p className="text-sm text-gray-500 tracking-wide uppercase">
+                        Plataforma de Inteligência Imobiliária
+                    </p>
+                </div>
 
-            <div className="w-full max-w-md relative z-10">
-                <div className="bg-white border border-neutral-200 rounded-2xl shadow-2xl p-8 md:p-10">
-                    <div className="text-center mb-10">
-                        <h1 className="text-3xl font-display font-bold text-navy-900 mb-3 tracking-tight">
-                            IMI Backoffice
-                        </h1>
-                        <div className="w-12 h-1 bg-accent-600 mx-auto rounded-full mb-4" />
-                        <p className="text-sm text-neutral-500 font-medium">
-                            Plataforma de Inteligência Imobiliária
-                        </p>
+                <form onSubmit={handleLogin} className="space-y-6">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                            E-mail de Acesso
+                        </label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
+                         text-gray-900 placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent
+                         transition-all duration-200"
+                            placeholder="seu@email.com"
+                            required
+                        />
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        <div>
-                            <label htmlFor="email" className="block text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em] mb-2 px-1">
-                                E-mail de Acesso
-                            </label>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                            Senha
+                        </label>
+                        <div className="relative">
                             <input
-                                id="email"
-                                type="email"
-                                name="email"
-                                autoComplete="username"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
+                           text-gray-900 placeholder-gray-400
+                           focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent
+                           transition-all duration-200"
+                                placeholder="Digite sua senha"
                                 required
-                                className="w-full px-5 py-4 bg-neutral-50 border border-neutral-100 rounded-xl text-neutral-900 focus:bg-white focus:ring-2 focus:ring-accent-600/20 focus:border-accent-600 outline-none transition-all duration-200"
-                                placeholder="vazio@email.com"
-                                disabled={loading}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400
+                           hover:text-gray-600 transition-colors"
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
                         </div>
-
-                        <div>
-                            <label htmlFor="password" className="block text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em] mb-2 px-1">
-                                Senha
-                            </label>
-                            <div className="relative">
-                                <input
-                                    id="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    className="w-full px-5 py-4 bg-neutral-50 border border-neutral-100 rounded-xl text-neutral-900 focus:bg-white focus:ring-2 focus:ring-accent-600/20 focus:border-accent-600 outline-none transition-all duration-200 placeholder-neutral-300"
-                                    placeholder="••••••••"
-                                    disabled={loading}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-accent-600 transition-colors"
-                                    disabled={loading}
-                                >
-                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                </button>
-                            </div>
-                        </div>
-
-                        {error && (
-                            <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3">
-                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse flex-shrink-0" />
-                                <p className="text-xs text-red-600 font-semibold leading-relaxed">
-                                    Falha na autenticação. Verifique suas credenciais e tente novamente.
-                                </p>
-                            </div>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-navy-900 hover:bg-navy-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-navy-900/10 hover:shadow-navy-900/20 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-3 active:scale-[0.98]"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    <span>Autenticando...</span>
-                                </>
-                            ) : (
-                                <span>Entrar na Plataforma</span>
-                            )}
-                        </button>
-                    </form>
-
-                    <div className="mt-8 pt-8 border-t border-neutral-100 text-center">
-                        <p className="text-[10px] text-neutral-400 uppercase tracking-widest">
-                            © {new Date().getFullYear()} IMI – Curadoria Técnica
-                        </p>
                     </div>
+
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                            <p className="text-red-600 text-sm">{error}</p>
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-gray-900 text-white py-4 rounded-xl font-medium
+                       hover:bg-gray-800 transition-all duration-200
+                       disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                        {loading ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <span>Autenticando...</span>
+                            </>
+                        ) : (
+                            'Entrar na Plataforma'
+                        )}
+                    </button>
+                </form>
+
+                <div className="mt-8 pt-6 border-t border-gray-100 text-center">
+                    <p className="text-xs text-gray-400 uppercase tracking-wider">
+                        2026 IMI — Curadoria Técnica
+                    </p>
                 </div>
             </div>
         </div>
-    );
+    )
 }

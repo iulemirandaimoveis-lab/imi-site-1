@@ -8,7 +8,7 @@ export default function SobrePage() {
         <div className="bg-white">
             {/* Hero */}
             <section className="bg-gradient-to-br from-primary-900 to-primary-800 text-white">
-                <div className="container-custom py-16 lg:py-24">
+                <div className="container-custom hero-padding">
                     <motion.div
                         initial="hidden"
                         animate="visible"

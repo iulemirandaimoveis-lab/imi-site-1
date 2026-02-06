@@ -10,22 +10,22 @@ export default function HomePage() {
     return (
         <div className="bg-neutral-50">
             {/* Hero Section - Mobile First Authority */}
-            <section className="relative h-[95dvh] lg:h-[90vh] flex items-end lg:items-center overflow-hidden">
+            <section className="relative min-h-[95dvh] flex items-center overflow-hidden bg-neutral-900">
                 {/* Background Image (User Photo) */}
                 <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: "url('/hero-bg.jpg')" }}
                 >
                     {/* Modern Overlay - Gradient from bottom (Mobile) and left (Desktop) */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/60 to-transparent lg:bg-gradient-to-r lg:from-neutral-900 lg:via-neutral-900/50 lg:to-transparent opacity-95 lg:opacity-90" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/40 to-transparent lg:bg-gradient-to-r lg:from-neutral-900 lg:via-neutral-900/50 lg:to-transparent opacity-95 lg:opacity-90" />
                 </div>
 
-                <div className="relative container-custom w-full pb-16 lg:pb-0 pt-32 lg:pt-0">
+                <div className="container-custom relative z-10 hero-padding">
                     <motion.div
                         initial="hidden"
                         animate="visible"
                         variants={staggerContainer}
-                        className="max-w-2xl text-left"
+                        className="max-w-2xl"
                     >
                         <motion.h1
                             variants={slideUp}
@@ -48,7 +48,7 @@ export default function HomePage() {
                             variants={slideUp}
                             className="flex flex-col sm:flex-row gap-4"
                         >
-                            <Button asChild size="lg" className="bg-white text-neutral-900 hover:bg-neutral-100 border-none shadow-xl text-base h-14 px-8">
+                            <Button asChild size="lg" className="bg-white text-neutral-900 hover:bg-neutral-100 border-none shadow-xl">
                                 <Link href="/avaliacoes#form">Solicitar Avaliação</Link>
                             </Button>
                         </motion.div>
@@ -57,7 +57,7 @@ export default function HomePage() {
             </section>
 
             {/* Value Pillars - Stacked Cards */}
-            <section className="py-20 bg-white">
+            <section className="py-16 md:py-24 bg-white">
                 <div className="container-custom">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
                         {/* Card 1 */}
@@ -125,7 +125,7 @@ export default function HomePage() {
                         Entre em contato hoje para agendar uma consulta inicial ou solicitar um orçamento de avaliação.
                     </p>
                     <Button asChild size="lg">
-                        <Link href="/contato">Falar pelo WhatsApp</Link>
+                        <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">Falar pelo WhatsApp</a>
                     </Button>
                 </div>
             </section>

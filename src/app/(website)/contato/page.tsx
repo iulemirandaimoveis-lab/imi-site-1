@@ -43,7 +43,7 @@ export default function ContatoPage() {
         <div className="bg-white">
             {/* Hero */}
             <section className="bg-gradient-to-br from-primary-900 to-primary-800 text-white">
-                <div className="container-custom py-16 lg:py-24">
+                <div className="container-custom hero-padding">
                     <motion.div
                         initial="hidden"
                         animate="visible"
@@ -61,7 +61,7 @@ export default function ContatoPage() {
             </section>
 
             {/* Contact Content */}
-            <section className="section-padding">
+            <section className="py-12 md:py-20 lg:py-24 overflow-hidden">
                 <div className="container-custom">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
                         {/* Contact Info */}
@@ -84,8 +84,8 @@ export default function ContatoPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-neutral-900 mb-1">E-mail</h3>
-                                        <a href="mailto:contato@imi.com.br" className="text-primary-700 hover:underline">
-                                            contato@imi.com.br
+                                        <a href="mailto:iulemirandaimoveis@gmail.com" className="text-primary-700 hover:underline">
+                                            iulemirandaimoveis@gmail.com
                                         </a>
                                     </div>
                                 </motion.div>
@@ -98,8 +98,8 @@ export default function ContatoPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-neutral-900 mb-1">WhatsApp</h3>
-                                        <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" className="text-primary-700 hover:underline">
-                                            (11) 99999-9999
+                                        <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer" className="text-primary-700 hover:underline">
+                                            (81) 99723-0455
                                         </a>
                                         <p className="text-sm text-neutral-600 mt-1">
                                             Atendimento de segunda a sexta, 9h às 18h
@@ -115,8 +115,8 @@ export default function ContatoPage() {
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-neutral-900 mb-1">LinkedIn</h3>
-                                        <a href="https://linkedin.com/in/iule-miranda" target="_blank" rel="noopener noreferrer" className="text-primary-700 hover:underline">
-                                            linkedin.com/in/iule-miranda
+                                        <a href="https://linkedin.com/in/iule-miranda-imoveis" target="_blank" rel="noopener noreferrer" className="text-primary-700 hover:underline">
+                                            linkedin.com/in/iule-miranda-imoveis
                                         </a>
                                     </div>
                                 </motion.div>

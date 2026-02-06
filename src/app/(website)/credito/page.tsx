@@ -92,7 +92,7 @@ export default function CreditoPage() {
             {/* Hero */}
             <section className="bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/pattern-grid.svg')] opacity-10"></div>
-                <div className="container-custom py-20 lg:py-28 relative">
+                <div className="container-custom hero-padding relative">
                     <motion.div
                         initial="hidden"
                         animate="visible"
@@ -210,8 +210,8 @@ export default function CreditoPage() {
                                                 key={plan.value}
                                                 onClick={() => setSelectedPlan(plan)}
                                                 className={`p-4 rounded-xl border-2 transition-all text-center ${selectedPlan.value === plan.value
-                                                        ? 'border-primary-700 bg-primary-50'
-                                                        : 'border-neutral-200 hover:border-primary-300'
+                                                    ? 'border-primary-700 bg-primary-50'
+                                                    : 'border-neutral-200 hover:border-primary-300'
                                                     }`}
                                             >
                                                 <p className="font-bold text-lg text-neutral-900">
@@ -247,7 +247,7 @@ export default function CreditoPage() {
                                 <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                                     <Button asChild size="lg">
                                         <a
-                                            href={`https://wa.me/5511999999999?text=Olá! Tenho interesse em um consórcio de ${formatCurrency(selectedPlan.value)}`}
+                                            href={`https://wa.me/5581997230455?text=Olá! Tenho interesse em um consórcio de ${formatCurrency(selectedPlan.value)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
@@ -394,7 +394,7 @@ export default function CreditoPage() {
                         <motion.div variants={slideUp} className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Button asChild size="lg" variant="secondary">
                                 <a
-                                    href="https://wa.me/5511999999999?text=Olá! Gostaria de saber mais sobre crédito imobiliário."
+                                    href="https://wa.me/5581997230455?text=Olá! Gostaria de saber mais sobre crédito imobiliário."
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >

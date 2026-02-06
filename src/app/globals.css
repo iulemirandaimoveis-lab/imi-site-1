@@ -5,16 +5,31 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    @apply m-0 p-0;
   }
 
   body {
-    @apply text-gray-700;
+    @apply text-gray-700 m-0 p-0 overflow-x-hidden;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  .hero-padding {
+    @apply pt-[104px] pb-16 md:pt-[120px] md:pb-20 lg:pt-[144px] lg:pb-32;
   }
 }
 
