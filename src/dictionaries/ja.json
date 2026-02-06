@@ -1,0 +1,32 @@
+{
+    "Header": {
+        "presentation": "IMI - プレゼンテーション",
+        "services": "不動産鑑定",
+        "properties": "物件一覧",
+        "credit": "ローン",
+        "consulting": "コンサルティング",
+        "intelligence": "市場分析",
+        "projects": "プロジェクト",
+        "about": "会社概要",
+        "contact": "お問い合わせ",
+        "whatsapp": "WhatsAppで相談"
+    },
+    "Home": {
+        "hero_title": "知性、メソッド、そして安全性。\n不動産意思決定における確信。",
+        "hero_subtitle": "戦略的コンサルティングと技術的評価。\n不確実性を確実な資本へと変換します。",
+        "cta_appraisal": "鑑定を依頼する",
+        "cta_whatsapp": "WhatsAppで相談",
+        "card_appraisals_title": "技術的鑑定評価",
+        "card_appraisals_desc": "司法目的、銀行保証、相続のための厳格な基準（NBR 14653）に基づく報告書。何よりも技術的な正確さを重視します。",
+        "card_consulting_title": "戦略的コンサルティング",
+        "card_consulting_desc": "投資家のための実現可能性分析と市場インテリジェンス。「感覚」ではなく、データに基づいた意思決定を。",
+        "card_brokerage_title": "厳選された仲介",
+        "card_brokerage_desc": "厳選された物件の売買および賃貸。資産の質と取引の法的安全性に焦点を当てています。",
+        "method_pre": "IMI メソッド",
+        "method_title": "不動産市場にアマチュアリズムの余地はありません。複雑なデータを安全な資本決定へと変えます。",
+        "method_cta": "私たちの軌跡",
+        "final_cta_title": "技術的な鑑定が必要ですか？",
+        "final_cta_desc": "初回相談のご予約や鑑定のお見積もり依頼は、今すぐお問い合わせください。",
+        "final_cta_btn": "WhatsAppで相談"
+    }
+}

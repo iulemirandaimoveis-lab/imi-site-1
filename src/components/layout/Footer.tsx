@@ -1,28 +1,41 @@
 import Link from 'next/link'
-import Image from 'next/image'
 
-const footerNavigation = {
-    services: [
-        { name: 'Avaliações', href: '/avaliacoes' },
-        { name: 'Imóveis', href: '/imoveis' },
-        { name: 'Crédito', href: '/credito' },
-        { name: 'Consultoria', href: '/consultoria' },
-        { name: 'Inteligência', href: '/inteligencia' },
-        { name: 'Projetos', href: '/projetos' },
-    ],
-    company: [
-        { name: 'Sobre', href: '/sobre' },
-        { name: 'Conteúdo', href: '/conteudo' },
-        { name: 'Contato', href: '/contato' },
-    ],
-    legal: [
-        { name: 'Política de Privacidade', href: '/privacidade' },
-        { name: 'Termos de Uso', href: '/termos' },
-    ],
+interface FooterProps {
+    lang?: string;
+    dict: {
+        presentation: string;
+        services: string;
+        properties: string;
+        credit: string;
+        consulting: string;
+        intelligence: string;
+        projects: string;
+        about: string;
+        contact: string;
+    }
 }
 
-export default function Footer() {
+export default function Footer({ lang = 'pt', dict }: FooterProps) {
     const currentYear = new Date().getFullYear()
+
+    const footerNavigation = {
+        services: [
+            { name: dict.services, href: `/${lang}/avaliacoes` },
+            { name: dict.properties, href: `/${lang}/imoveis` },
+            { name: dict.credit, href: `/${lang}/credito` },
+            { name: dict.consulting, href: `/${lang}/consultoria` },
+            { name: dict.intelligence, href: `/${lang}/inteligencia` },
+            { name: dict.projects, href: `/${lang}/projetos` },
+        ],
+        company: [
+            { name: dict.about, href: `/${lang}/sobre` },
+            { name: dict.contact, href: `/${lang}/contato` },
+        ],
+        legal: [
+            { name: 'Política de Privacidade', href: `/${lang}/privacidade` },
+            { name: 'Termos de Uso', href: `/${lang}/termos` },
+        ],
+    }
 
     return (
         <footer className="bg-navy-900">
@@ -36,8 +49,9 @@ export default function Footer() {
                             IMI – Inteligência Imobiliária
                         </div>
                         <p className="text-neutral-400 mb-6 max-w-md leading-relaxed">
-                            Decisões imobiliárias baseadas em inteligência, método e segurança.
-                            Avaliações técnicas, consultoria estratégica e corretagem com curadoria.
+                            {lang === 'en' ? 'Real estate decisions based on intelligence, method, and security.' :
+                                lang === 'ja' ? '知性、メソッド、安全性に基づいた不動産の意思決定。' :
+                                    'Decisões imobiliárias baseadas em inteligência, método e segurança.'}
                         </p>
 
                         {/* Credentials Box */}
@@ -93,14 +107,11 @@ export default function Footer() {
                                 </a>
                             </div>
                         </div>
-
-                        {/* Professional Badges */}
-                        {/* Professional Badges removed for premium look */}
                     </div>
 
                     {/* Services */}
                     <div className="lg:col-span-3">
-                        <h3 className="text-white font-semibold mb-4">Serviços</h3>
+                        <h3 className="text-white font-semibold mb-4">{dict.services}</h3>
                         <ul className="space-y-3">
                             {footerNavigation.services.map((item) => (
                                 <li key={item.name}>
@@ -137,8 +148,17 @@ export default function Footer() {
                 <div className="mt-12 pt-8 border-t border-neutral-800">
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                         <p className="text-sm text-neutral-500">
-                            © {currentYear} IMI – Inteligência Imobiliária. Todos os direitos reservados.
+                            © {currentYear} IMI – Inteligência Imobiliária. {lang === 'en' ? 'All rights reserved.' : lang === 'ja' ? '全著作権所有。' : 'Todos os direitos reservados.'}
                         </p>
+
+                        {/* Seletor Sutil de Idiomas */}
+                        <div className="flex items-center space-x-3 text-xs font-bold text-neutral-600 uppercase tracking-widest">
+                            <Link href="/pt" className={lang === 'pt' ? 'text-gold-500' : 'hover:text-gold-500 transition-colors'}>PT</Link>
+                            <span className="text-neutral-800">|</span>
+                            <Link href="/en" className={lang === 'en' ? 'text-gold-500' : 'hover:text-gold-500 transition-colors'}>EN</Link>
+                            <span className="text-neutral-800">|</span>
+                            <Link href="/ja" className={lang === 'ja' ? 'text-gold-500' : 'hover:text-gold-500 transition-colors'}>JP</Link>
+                        </div>
                         <div className="flex space-x-6">
                             {footerNavigation.legal.map((item) => (
                                 <Link

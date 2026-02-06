@@ -8,38 +8,35 @@ import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Button from '@/components/ui/Button';
 
-const navigation = [
-    { label: 'Avaliações', href: '/avaliacoes' },
-    { label: 'Imóveis', href: '/imoveis' },
-    { label: 'Crédito', href: '/credito' },
-    { label: 'Consultoria', href: '/consultoria' },
-    { label: 'Inteligência', href: '/inteligencia' },
-    { label: 'Sobre', href: '/sobre' },
-    { label: 'Contato', href: '/contato' },
-];
+interface HeaderProps {
+    lang: string;
+    dict: {
+        presentation: string;
+        services: string;
+        properties: string;
+        credit: string;
+        consulting: string;
+        intelligence: string;
+        projects: string;
+        about: string;
+        contact: string;
+        whatsapp: string;
+    }
+}
 
-const menuVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.3,
-            ease: 'easeOut',
-            staggerChildren: 0.05,
-        },
-    },
-    exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, x: -10 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
-};
-
-export default function Header() {
+export default function Header({ lang, dict }: HeaderProps) {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
+
+    const navigation = [
+        { label: dict.services, href: `/${lang}/avaliacoes` },
+        { label: dict.properties, href: `/${lang}/imoveis` },
+        { label: dict.credit, href: `/${lang}/credito` },
+        { label: dict.consulting, href: `/${lang}/consultoria` },
+        { label: dict.intelligence, href: `/${lang}/inteligencia` },
+        { label: dict.about, href: `/${lang}/sobre` },
+        { label: dict.contact, href: `/${lang}/contato` },
+    ];
 
     // Close menu on resize if above mobile breakpoint
     useEffect(() => {
@@ -67,7 +64,7 @@ export default function Header() {
                 <div className="container-custom">
                     <div className="flex items-center justify-between h-16 lg:h-20">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center space-x-3 group z-[110]" onClick={() => setIsOpen(false)}>
+                        <Link href={`/${lang}`} className="flex items-center space-x-3 group z-[110]" onClick={() => setIsOpen(false)}>
                             <div className="flex items-center gap-3">
                                 <span
                                     className="text-2xl font-bold text-navy-900 tracking-tight transition-colors"
@@ -98,6 +95,13 @@ export default function Header() {
                                     {item.label}
                                 </Link>
                             ))}
+
+                            {/* Lang Selector Simple */}
+                            <div className="flex items-center gap-2 ml-4 border-l border-slate-200 pl-4">
+                                <Link href="/pt" className={cn("text-xs font-bold uppercase", lang === 'pt' ? "text-navy-900" : "text-slate-400 hover:text-navy-700")}>PT</Link>
+                                <Link href="/en" className={cn("text-xs font-bold uppercase", lang === 'en' ? "text-navy-900" : "text-slate-400 hover:text-navy-700")}>EN</Link>
+                                <Link href="/ja" className={cn("text-xs font-bold uppercase", lang === 'ja' ? "text-navy-900" : "text-slate-400 hover:text-navy-700")}>JP</Link>
+                            </div>
                         </nav>
 
                         {/* Mobile Toggle */}
@@ -134,7 +138,7 @@ export default function Header() {
                             className="md:hidden fixed inset-x-0 top-0 pt-[env(safe-area-inset-top,20px)] bg-white z-[95] shadow-2xl overflow-y-auto h-[100dvh] flex flex-col"
                         >
                             <div className="h-16 flex items-center justify-end px-6 mb-4">
-                                {/* Placeholder for close button alignment if needed, handled by absolute toggle */}
+                                {/* Placeholder */}
                             </div>
 
                             <nav className="px-6 flex flex-col space-y-1">
@@ -158,10 +162,16 @@ export default function Header() {
                                 <motion.div variants={itemVariants} className="pt-6 mt-6 border-t border-slate-100">
                                     <Button asChild fullWidth variant="primary" className="h-14">
                                         <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">
-                                            Falar pelo WhatsApp
+                                            {dict.whatsapp}
                                         </a>
                                     </Button>
                                 </motion.div>
+
+                                <div className="mt-4 flex justify-center gap-6">
+                                    <Link href="/pt" className={cn("text-sm font-bold uppercase p-2", lang === 'pt' ? "text-navy-900 underline decoration-gold-600" : "text-slate-400")}>Português</Link>
+                                    <Link href="/en" className={cn("text-sm font-bold uppercase p-2", lang === 'en' ? "text-navy-900 underline decoration-gold-600" : "text-slate-400")}>English</Link>
+                                    <Link href="/ja" className={cn("text-sm font-bold uppercase p-2", lang === 'ja' ? "text-navy-900 underline decoration-gold-600" : "text-slate-400")}>日本語</Link>
+                                </div>
 
                                 {/* Mobile Footer in Menu */}
                                 <div className="mt-8 p-6 bg-slate-50 rounded-2xl">
@@ -176,3 +186,22 @@ export default function Header() {
         </>
     );
 }
+
+const menuVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.3,
+            ease: 'easeOut',
+            staggerChildren: 0.05,
+        },
+    },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+};

@@ -1,0 +1,32 @@
+{
+    "Header": {
+        "presentation": "IMI - Presentation",
+        "services": "Appraisals",
+        "properties": "Properties",
+        "credit": "Credit",
+        "consulting": "Consulting",
+        "intelligence": "Intelligence",
+        "projects": "Projects",
+        "about": "About",
+        "contact": "Contact",
+        "whatsapp": "Chat on WhatsApp"
+    },
+    "Home": {
+        "hero_title": "Intelligence,\nmethod and security\nin real estate decisions",
+        "hero_subtitle": "Strategic consulting and technical appraisals.\nWe transform uncertainty into secure capital.",
+        "cta_appraisal": "Request Appraisal",
+        "cta_whatsapp": "Chat on WhatsApp",
+        "card_appraisals_title": "Technical Appraisals",
+        "card_appraisals_desc": "Reports following strict normative standards (NBR 14653) for judicial purposes, bank guarantees, and inventories. Technical precision above all.",
+        "card_consulting_title": "Strategic Consulting",
+        "card_consulting_desc": "Feasibility analysis and market intelligence for investors. Decisions based on data, not \"feeling\".",
+        "card_brokerage_title": "Curated Brokerage",
+        "card_brokerage_desc": "Sale and rental of selected properties. Focus on asset quality and legal security of the transaction.",
+        "method_pre": "The IMI Method",
+        "method_title": "The real estate market leaves no room for amateurism. We transform complex data into secure capital decisions.",
+        "method_cta": "Our Trajectory",
+        "final_cta_title": "Need a technical appraisal?",
+        "final_cta_desc": "Contact us today to schedule an initial consultation or request an appraisal quote.",
+        "final_cta_btn": "Chat on WhatsApp"
+    }
+}
