@@ -23,7 +23,8 @@ export default function BackofficeLoginPage() {
             const { data, error: signInError } = await signIn(email, password);
 
             if (signInError) {
-                setError(signInError.message || 'Falha na autenticação. Verifique suas credenciais.');
+                // Ignore API message to avoid leaking emails or details
+                setError('Falha na autenticação. Verifique suas credenciais e tente novamente.');
                 return;
             }
 
@@ -64,11 +65,13 @@ export default function BackofficeLoginPage() {
                             <input
                                 id="email"
                                 type="email"
+                                name="email"
+                                autoComplete="username"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-5 py-4 bg-neutral-50 border border-neutral-100 rounded-xl text-neutral-900 focus:bg-white focus:ring-2 focus:ring-accent-600/20 focus:border-accent-600 outline-none transition-all duration-200 placeholder-neutral-300"
-                                placeholder="digite seu e-mail"
+                                className="w-full px-5 py-4 bg-neutral-50 border border-neutral-100 rounded-xl text-neutral-900 focus:bg-white focus:ring-2 focus:ring-accent-600/20 focus:border-accent-600 outline-none transition-all duration-200"
+                                placeholder="vazio@email.com"
                                 disabled={loading}
                             />
                         </div>

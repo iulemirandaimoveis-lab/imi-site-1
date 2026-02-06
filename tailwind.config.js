@@ -11,9 +11,9 @@ const config: Config = {
             colors: {
                 navy: {
                     600: '#1E40AF',
-                    700: '#1E3A8A',
-                    800: '#172554',
-                    900: '#1e3a8a', // Using a dark blue for navy-900
+                    700: '#111827',
+                    800: '#0f172a',
+                    900: '#020617',
                 },
                 gold: {
                     600: '#D4AF37',
