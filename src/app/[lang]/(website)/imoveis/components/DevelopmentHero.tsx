@@ -44,16 +44,28 @@ export default function DevelopmentHero({ development }: DevelopmentHeroProps) {
                         variants={staggerContainer}
                         className="max-w-4xl"
                     >
-                        <motion.div variants={slideUp} className="mb-6">
-                            <Badge className={
-                                development.status === 'launch' ? 'bg-gold-500 text-navy-900' : 'bg-white/10 text-white backdrop-blur-md'
-                            }>
-                                {development.status === 'launch' && 'Lançamento'}
-                                {development.status === 'ready' && 'Pronta Entrega'}
-                                {development.status === 'under_construction' && 'Em Construção'}
-                            </Badge>
-                        </motion.div>
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+                            <motion.div variants={slideUp}>
+                                <Badge className={
+                                    development.status === 'launch' ? 'bg-gold-500 text-navy-900' : 'bg-white/10 text-white backdrop-blur-md'
+                                }>
+                                    {development.status === 'launch' && 'Lançamento'}
+                                    {development.status === 'ready' && 'Pronta Entrega'}
+                                    {development.status === 'under_construction' && 'Em Construção'}
+                                </Badge>
+                            </motion.div>
 
+                            {development.developerLogo && (
+                                <motion.div variants={slideUp} className="relative w-32 h-12 md:w-40 md:h-16">
+                                    <Image
+                                        src={development.developerLogo}
+                                        alt={development.developer}
+                                        fill
+                                        className="object-contain object-left md:object-right filter brightness-0 invert opacity-80"
+                                    />
+                                </motion.div>
+                            )}
+                        </div>
                         <motion.h1 variants={slideUp} className="font-display text-4xl md:text-6xl lg:text-7xl text-white font-bold mb-6 leading-[1.1]">
                             {development.name}
                         </motion.h1>

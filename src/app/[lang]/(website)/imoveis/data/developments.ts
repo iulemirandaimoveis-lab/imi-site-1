@@ -7,6 +7,7 @@ export const developments: Development[] = [
         slug: 'setai-beach-resort',
         name: 'Setai Beach Resort & Residence',
         developer: 'Setai Grupo GP',
+        developerLogo: '/images/logos/setai.png',
         status: 'launch',
         location: {
             neighborhood: 'Ponta de Campina',
@@ -48,7 +49,7 @@ export const developments: Development[] = [
             max: 6068412
         },
         images: {
-            main: '', // Placeholder — estrutura pronta para upload
+            main: '/images/developments/setai-beach-resort.jpg',
             gallery: []
         },
         videoUrl: undefined, // Estrutura pronta para embed
@@ -99,6 +100,7 @@ export const developments: Development[] = [
         slug: 'setai-pininfarina',
         name: 'Setai by Pininfarina',
         developer: 'Setai Grupo GP',
+        developerLogo: '/images/logos/setai.png',
         status: 'launch',
         location: {
             neighborhood: 'Altiplano Cabo Branco',
@@ -168,6 +170,7 @@ export const developments: Development[] = [
         slug: 'heritage-one',
         name: 'Heritage One',
         developer: 'Setai Grupo GP',
+        developerLogo: '/images/logos/setai.png',
         status: 'launch',
         location: {
             neighborhood: 'Bessa (Aeroclube)',
@@ -231,6 +234,7 @@ export const developments: Development[] = [
         slug: 'setai-aurus',
         name: 'Setai Aurus',
         developer: 'Setai Grupo GP',
+        developerLogo: '/images/logos/setai.png',
         status: 'launch',
         location: {
             neighborhood: 'Areia Dourada',
@@ -284,6 +288,7 @@ export const developments: Development[] = [
         slug: 'setai-houses',
         name: 'Setai Houses Resort',
         developer: 'Setai Grupo GP',
+        developerLogo: '/images/logos/setai.png',
         status: 'launch',
         location: {
             neighborhood: 'Intermares',
@@ -340,6 +345,7 @@ export const developments: Development[] = [
         slug: 'setai-miraj',
         name: 'Setai Miraj',
         developer: 'Setai Grupo GP',
+        developerLogo: '/images/logos/setai.png',
         status: 'launch',
         location: {
             neighborhood: 'Jardim Oceania (Bessa)',
@@ -397,6 +403,7 @@ export const developments: Development[] = [
         slug: 'setai-sailor',
         name: 'Setai Sailor',
         developer: 'Setai Grupo GP',
+        developerLogo: '/images/logos/setai.png',
         status: 'launch',
         location: {
             neighborhood: 'Praia do Poço',
@@ -451,6 +458,7 @@ export const developments: Development[] = [
         slug: 'imoveis-prontos',
         name: 'Imóveis Prontos — Pronta Entrega',
         developer: 'Setai Grupo GP',
+        developerLogo: '/images/logos/setai.png',
         status: 'ready',
         location: {
             neighborhood: 'Diversos',

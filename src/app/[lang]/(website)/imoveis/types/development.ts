@@ -52,6 +52,7 @@ export interface Development {
     slug: string;                        // URL-friendly: "setai-beach-resort"
     name: string;                        // Nome comercial
     developer: string;                   // "Setai Grupo GP"
+    developerLogo?: string;              // URL da logo da construtora
     status: DevelopmentStatus;
     location: DevelopmentLocation;
     deliveryDate?: string;               // Ex: "Dezembro 2026"
