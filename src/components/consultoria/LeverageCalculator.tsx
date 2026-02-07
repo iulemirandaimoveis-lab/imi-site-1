@@ -1,36 +1,31 @@
 'use client';
 
 import { useState } from 'react';
-import Card from '@/components/ui/Card';
 
 export function LeverageCalculator() {
     const [propertyValue, setPropertyValue] = useState(500000);
-    const [appreciationRate, setAppreciationRate] = useState(5); // 5% per year
+    const [appreciationRate, setAppreciationRate] = useState(5);
 
-    // Scenario A: All Cash
-    const cashInvestment = propertyValue;
-    const cashProfit5Years = propertyValue * Math.pow((1 + appreciationRate / 100), 5) - propertyValue;
-    const cashRoi = (cashProfit5Years / cashInvestment) * 100;
-
-    // Scenario B: Leveraged (40% Down)
     const downPayment = propertyValue * 0.40;
-    const loanAmount = propertyValue - downPayment;
-    // For simplicity, assuming rent covers mortgage (breakeven cashflow)
-    // Profit is purely appreciation on the FULL asset value, but gained on a SMALLER investment
+    const cashProfit5Years = propertyValue * Math.pow((1 + appreciationRate / 100), 5) - propertyValue;
+    const cashRoi = (cashProfit5Years / propertyValue) * 100;
+
     const leveragedProfit5Years = (propertyValue * Math.pow((1 + appreciationRate / 100), 5)) - propertyValue;
-    // Debt stays naturally constant (amortization ignored for simpler visual impact of leverage)
     const leveragedRoi = (leveragedProfit5Years / downPayment) * 100;
 
     return (
-        <Card className="p-8 h-full bg-white border-neutral-200">
-            <h3 className="text-xl font-bold text-neutral-900 mb-2">Poder da Alavancagem</h3>
-            <p className="text-sm text-neutral-500 mb-6">Como o financiamento multiplica seu retorno sobre o capital investido.</p>
+        <div className="bg-white p-8 rounded-3xl shadow-soft border border-slate-100 h-full flex flex-col">
+            <h3 className="text-xl font-bold text-navy-900 mb-2 font-display">Poder da Alavancagem</h3>
+            <p className="text-sm text-slate-500 mb-8">Saiba como o crédito inteligente multiplica o retorno sobre seu capital no tempo.</p>
 
-            <div className="space-y-6">
+            <div className="space-y-8 flex-grow">
                 <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Valorização Anual Esperada: <span className="text-primary-700 font-bold">{appreciationRate}%</span>
-                    </label>
+                    <div className="flex justify-between mb-4">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                            Valorização Anual Esperada
+                        </label>
+                        <span className="font-bold text-navy-900">{appreciationRate}%</span>
+                    </div>
                     <input
                         type="range"
                         min="2"
@@ -38,30 +33,34 @@ export function LeverageCalculator() {
                         step="0.5"
                         value={appreciationRate}
                         onChange={(e) => setAppreciationRate(Number(e.target.value))}
-                        className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-navy-900"
                     />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-4">
-                    {/* Scenario A */}
-                    <div className="p-4 bg-neutral-50 rounded-lg text-center border border-neutral-100">
-                        <p className="text-xs font-semibold text-neutral-500 uppercase">Pagamento à Vista (Cash)</p>
-                        <p className="text-2xl font-bold text-neutral-800 mt-2">{cashRoi.toFixed(0)}%</p>
-                        <p className="text-xs text-neutral-400">ROI em 5 Anos</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Investimento à Vista</div>
+                        <div className="text-3xl font-bold text-navy-900 mb-1">{cashRoi.toFixed(0)}%</div>
+                        <p className="text-[10px] text-slate-400 font-medium">ROI Estimado em 5 Anos</p>
                     </div>
 
-                    {/* Scenario B */}
-                    <div className="p-4 bg-primary-50 rounded-lg text-center border border-primary-100 ring-1 ring-primary-500/20">
-                        <p className="text-xs font-semibold text-primary-700 uppercase">Financiado (Alavancado)</p>
-                        <p className="text-2xl font-bold text-primary-700 mt-2">{leveragedRoi.toFixed(0)}%</p>
-                        <p className="text-xs text-primary-600/70">ROI em 5 Anos</p>
+                    <div className="p-6 bg-navy-900 rounded-2xl border border-navy-800 text-white relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-gold-500 opacity-10 rounded-full blur-2xl -mr-12 -mt-12" />
+                        <div className="relative z-10">
+                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Financiado (40% down)</div>
+                            <div className="text-3xl font-bold text-gold-500 mb-1">{leveragedRoi.toFixed(0)}%</div>
+                            <p className="text-[10px] text-slate-400 font-medium">ROI Alavancado em 5 Anos</p>
+                        </div>
                     </div>
                 </div>
 
-                <div className="text-xs text-neutral-500 bg-neutral-50 p-3 rounded mt-4">
-                    <span className="font-bold">Insight:</span> Ao usar o dinheiro do banco (com juros saudáveis), você ganha a valorização sobre o valor TOTAL do imóvel (${propertyValue.toLocaleString()}), tendo investido apenas a entrada (${downPayment.toLocaleString()}).
+                <div className="bg-gold-500/5 border border-gold-500/10 p-4 rounded-xl">
+                    <p className="text-xs text-navy-900/80 leading-relaxed font-medium">
+                        <span className="text-gold-500 font-bold block mb-1">Insight Estratégico:</span>
+                        Ao usar o crédito bancário, você ganha a valorização sobre o valor TOTAL do imóvel, tendo investido apenas a entrada. Isso gera um efeito multiplicador no seu capital.
+                    </p>
                 </div>
             </div>
-        </Card>
+        </div>
     );
 }

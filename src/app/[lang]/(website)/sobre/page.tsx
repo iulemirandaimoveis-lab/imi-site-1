@@ -2,219 +2,219 @@
 
 import { motion } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/animations'
+import { Target, Users, Award, TrendingUp, Linkedin, MessageCircle } from 'lucide-react'
+import Button from '@/components/ui/Button'
+import Image from 'next/image'
 
-export default function SobrePage() {
+export default function AboutPage() {
+    const values = [
+        {
+            icon: Target,
+            title: 'Missão',
+            description: 'Fornecer inteligência imobiliária de alta qualidade, capacitando clientes a tomar decisões informadas e estratégicas no mercado imobiliário brasileiro e internacional.'
+        },
+        {
+            icon: TrendingUp,
+            title: 'Visão',
+            description: 'Ser referência nacional em inteligência imobiliária, reconhecidos pela excelência técnica, inovação e compromisso com resultados mensuráveis.'
+        },
+        {
+            icon: Award,
+            title: 'Excelência',
+            description: 'Compromisso inabalável com os mais altos padrões técnicos e metodológicos em todas as nossas entregas, seguindo normas ABNT e certificações profissionais.'
+        },
+        {
+            icon: Users,
+            title: 'Relacionamento',
+            description: 'Construir parcerias duradouras baseadas em confiança, transparência e resultados consistentes, colocando o sucesso do cliente no centro de tudo.'
+        }
+    ]
+
+    const stats = [
+        { number: '15+', label: 'Anos de Experiência' },
+        { number: '500+', label: 'Projetos Realizados' },
+        { number: 'R$ 200M+', label: 'em Ativos Avaliados' },
+        { number: '98%', label: 'Satisfação dos Clientes' }
+    ]
+
     return (
-        <div className="bg-white">
-            {/* Hero */}
-            <section className="bg-gradient-to-br from-primary-900 to-primary-800 text-white">
-                <div className="container-custom hero-padding">
+        <>
+            {/* HERO */}
+            <section className="bg-navy-900 text-white section-padding relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-gold-500/5 -skew-x-12 translate-x-1/4" />
+
+                <div className="container-custom relative z-10">
                     <motion.div
+                        className="max-w-3xl"
+                        variants={slideUp}
                         initial="hidden"
                         animate="visible"
-                        variants={staggerContainer}
-                        className="max-w-3xl"
                     >
-                        <motion.h1 variants={slideUp} className="text-display-md md:text-display-lg font-bold mb-6">
-                            Sobre a IMI
-                        </motion.h1>
-                        <motion.p variants={slideUp} className="text-xl text-primary-100">
-                            Inteligência, método e segurança em decisões imobiliárias.
-                        </motion.p>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-px bg-gold-500" />
+                            <span className="text-gold-500 font-semibold uppercase tracking-[0.2em] text-xs">
+                                Sobre Nós
+                            </span>
+                        </div>
+
+                        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
+                            Inteligência Imobiliária para Decisões Assertivas
+                        </h1>
+
+                        <p className="text-slate-300 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
+                            Há mais de uma década transformando o mercado imobiliário brasileiro através de tecnologia, dados precisos e expertise especializada.
+                        </p>
                     </motion.div>
                 </div>
             </section>
 
-            {/* Mission */}
+            {/* VALORES */}
+            <section className="section-padding">
+                <div className="container-custom">
+                    <h2 className="font-display text-3xl md:text-4xl font-bold text-navy-900 mb-4 text-center">
+                        Nossos Valores
+                    </h2>
+                    <p className="text-slate-600 text-lg max-w-2xl mx-auto text-center mb-12">
+                        Princípios que guiam cada decisão e relacionamento com nossos clientes
+                    </p>
+
+                    <motion.div
+                        className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+                        variants={staggerContainer}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                    >
+                        {values.map((item, index) => (
+                            <motion.div
+                                key={index}
+                                variants={slideUp}
+                                className="p-8 rounded-xl bg-white border border-slate-100 shadow-soft hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1"
+                            >
+                                <div className="w-12 h-12 bg-navy-900/10 text-navy-900 rounded-xl flex items-center justify-center mb-6">
+                                    <item.icon className="w-5 h-5" strokeWidth={1.5} />
+                                </div>
+                                <h3 className="text-xl font-bold text-navy-900 mb-3 font-display">
+                                    {item.title}
+                                </h3>
+                                <p className="text-slate-600 leading-relaxed text-sm">
+                                    {item.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* FUNDADOR */}
+            <section className="section-padding bg-slate-50">
+                <div className="container-custom">
+                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+                        <motion.div
+                            className="relative aspect-[4/5] rounded-2xl overflow-hidden"
+                            variants={slideUp}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                        >
+                            <Image
+                                src="/images/profile/iule-miranda.jpg"
+                                alt="Iule Miranda - Fundador IMI Inteligência Imobiliária"
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                        </motion.div>
+
+                        <motion.div
+                            variants={slideUp}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                        >
+                            <h2 className="font-display text-3xl md:text-4xl font-bold text-navy-900 mb-6">
+                                Iule Miranda
+                            </h2>
+                            <div className="space-y-4 text-slate-600 leading-relaxed">
+                                <p>
+                                    Engenheiro Civil e Avaliador Imobiliário certificado pelo CNAI (n° 53290),
+                                    com mais de 15 anos de experiência no mercado imobiliário brasileiro e internacional.
+                                </p>
+                                <p>
+                                    Especialista em inteligência de mercado, avaliações patrimoniais e consultoria
+                                    para investimentos imobiliários de médio e alto padrão, com atuação destacada
+                                    no mercado do Nordeste e assessoria para investidores brasileiros nos EUA.
+                                </p>
+                                <p>
+                                    Formação técnica sólida aliada à visão estratégica de negócios, desenvolvendo
+                                    soluções customizadas que agregam valor real aos projetos de nossos clientes
+                                    através de análise de dados, inteligência de mercado e expertise regulatória.
+                                </p>
+                            </div>
+                            <div className="mt-8">
+                                <Button asChild variant="outline" size="lg">
+                                    <a
+                                        href="https://www.linkedin.com/in/iule-miranda"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Linkedin className="w-5 h-5 mr-3" />
+                                        Conectar no LinkedIn
+                                    </a>
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* NÚMEROS */}
             <section className="section-padding">
                 <div className="container-custom">
                     <motion.div
+                        className="grid md:grid-cols-4 gap-8 text-center"
+                        variants={staggerContainer}
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
-                        variants={staggerContainer}
-                        className="max-w-4xl mx-auto"
                     >
-                        <motion.h2 variants={slideUp} className="text-display-sm font-bold text-neutral-900 mb-8 text-center">
-                            Nossa Missão
-                        </motion.h2>
-                        <motion.p variants={slideUp} className="text-xl text-neutral-700 text-center mb-12">
-                            Transformar decisões imobiliárias em processos seguros, fundamentados e estratégicos,
-                            utilizando inteligência de mercado, metodologia técnica e análise de dados.
-                        </motion.p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <motion.div variants={slideUp} className="text-center">
-                                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-primary-700" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-                                    </svg>
+                        {stats.map((stat, index) => (
+                            <motion.div
+                                key={index}
+                                variants={slideUp}
+                            >
+                                <div className="w-16 h-16 bg-navy-900 text-white rounded-full flex items-center justify-center font-bold text-2xl mx-auto mb-4">
+                                    {index + 1}
                                 </div>
-                                <h3 className="text-xl font-bold text-neutral-900 mb-2">Inteligência</h3>
-                                <p className="text-neutral-600">
-                                    Análise de dados e mercado para decisões fundamentadas
-                                </p>
-                            </motion.div>
-
-                            <motion.div variants={slideUp} className="text-center">
-                                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-primary-700" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                                    </svg>
+                                <div className="font-display text-4xl font-bold text-navy-900 mb-2">
+                                    {stat.number}
                                 </div>
-                                <h3 className="text-xl font-bold text-neutral-900 mb-2">Método</h3>
-                                <p className="text-neutral-600">
-                                    Processos técnicos e conformidade normativa
-                                </p>
-                            </motion.div>
-
-                            <motion.div variants={slideUp} className="text-center">
-                                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 flex items-center justify-center">
-                                    <svg className="w-8 h-8 text-primary-700" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
+                                <div className="text-slate-600">
+                                    {stat.label}
                                 </div>
-                                <h3 className="text-xl font-bold text-neutral-900 mb-2">Segurança</h3>
-                                <p className="text-neutral-600">
-                                    Redução de risco e transparência em todas as etapas
-                                </p>
                             </motion.div>
-                        </div>
+                        ))}
                     </motion.div>
                 </div>
             </section>
 
-            {/* Professional Profile */}
-            <section className="section-padding bg-neutral-50">
-                <div className="container-custom">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={staggerContainer}
-                        className="max-w-4xl mx-auto"
-                    >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
-                            <motion.div variants={slideUp} className="md:col-span-1">
-                                <div className="aspect-[3/4] md:aspect-[4/5] relative rounded-2xl overflow-hidden shadow-2xl border border-neutral-100 group">
-                                    <div
-                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                                        style={{ backgroundImage: "url('/about-profile.jpg')" }}
-                                    />
-                                    {/* Overlay Gradient for depth */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                                </div>
-                            </motion.div>
-
-                            <motion.div variants={slideUp} className="md:col-span-2">
-                                <h2 className="text-display-sm font-bold text-neutral-900 mb-4">
-                                    Iule Miranda
-                                </h2>
-                                <div className="flex items-center space-x-4 text-sm text-neutral-600 mb-6">
-                                    <span className="font-semibold">CRECI 17933</span>
-                                    <span className="text-neutral-400">|</span>
-                                    <span className="font-semibold">CNAI 53290</span>
-                                </div>
-                                <div className="prose-custom">
-                                    <p className="text-lg text-neutral-700 mb-4">
-                                        Especialista em avaliações imobiliárias e consultoria estratégica, com
-                                        certificação CNAI (Certificação Nacional de Avaliador Imobiliário) e registro
-                                        ativo no CRECI.
-                                    </p>
-                                    <p className="text-neutral-700 mb-4">
-                                        Atuação focada em transformar dados de mercado em decisões seguras,
-                                        utilizando metodologia técnica normativa e análise fundamentada.
-                                    </p>
-                                    <p className="text-neutral-700">
-                                        Experiência em avaliações para venda, financiamento, processos judiciais
-                                        e gestão patrimonial, além de consultoria para investidores e análise
-                                        de viabilidade de empreendimentos.
-                                    </p>
-                                </div>
-                            </motion.div>
-                        </div>
-                    </motion.div>
+            {/* CTA FINAL */}
+            <section className="bg-navy-900 text-white section-padding text-center relative overflow-hidden">
+                <div className="container-custom relative z-10">
+                    <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+                        Vamos Conversar?
+                    </h2>
+                    <p className="text-slate-400 text-lg mb-10 max-w-2xl mx-auto font-light">
+                        Conte-nos sobre seu projeto e descubra como podemos ajudar você a alcançar seus objetivos no mercado imobiliário.
+                    </p>
+                    <Button asChild size="lg" className="bg-white text-navy-900 hover:bg-slate-100">
+                        <a href="/contato">
+                            <MessageCircle className="w-5 h-5 mr-3" />
+                            Entrar em Contato
+                        </a>
+                    </Button>
                 </div>
             </section>
-
-            {/* Values */}
-            <section className="section-padding">
-                <div className="container-custom">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={staggerContainer}
-                        className="max-w-4xl mx-auto"
-                    >
-                        <motion.h2 variants={slideUp} className="text-display-sm font-bold text-neutral-900 mb-12 text-center">
-                            Nossos Valores
-                        </motion.h2>
-
-                        <div className="space-y-8">
-                            <motion.div variants={slideUp} className="flex gap-6">
-                                <div className="flex-shrink-0">
-                                    <div className="w-12 h-12 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
-                                        1
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">Transparência</h3>
-                                    <p className="text-neutral-700">
-                                        Processos claros, informações acessíveis e comunicação direta.
-                                        Sem promessas vazias ou marketing agressivo.
-                                    </p>
-                                </div>
-                            </motion.div>
-
-                            <motion.div variants={slideUp} className="flex gap-6">
-                                <div className="flex-shrink-0">
-                                    <div className="w-12 h-12 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
-                                        2
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">Rigor Técnico</h3>
-                                    <p className="text-neutral-700">
-                                        Metodologia normativa, conformidade regulatória e fundamentação
-                                        técnica em todas as análises e recomendações.
-                                    </p>
-                                </div>
-                            </motion.div>
-
-                            <motion.div variants={slideUp} className="flex gap-6">
-                                <div className="flex-shrink-0">
-                                    <div className="w-12 h-12 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
-                                        3
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">Foco no Cliente</h3>
-                                    <p className="text-neutral-700">
-                                        Soluções personalizadas baseadas em objetivos reais.
-                                        Cada cliente tem necessidades únicas que merecem atenção específica.
-                                    </p>
-                                </div>
-                            </motion.div>
-
-                            <motion.div variants={slideUp} className="flex gap-6">
-                                <div className="flex-shrink-0">
-                                    <div className="w-12 h-12 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold">
-                                        4
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">Ética Profissional</h3>
-                                    <p className="text-neutral-700">
-                                        Compromisso com as melhores práticas do mercado, respeito às normas
-                                        e atuação sempre em benefício do cliente.
-                                    </p>
-                                </div>
-                            </motion.div>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
-        </div>
+        </>
     )
 }

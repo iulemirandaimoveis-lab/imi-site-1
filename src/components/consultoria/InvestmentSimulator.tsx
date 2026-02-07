@@ -1,29 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Card from '@/components/ui/Card';
 import { motion } from 'framer-motion';
+import { TrendingUp, DollarSign, PieChart, Info } from 'lucide-react';
 
 export function InvestmentSimulator() {
     const [propertyValue, setPropertyValue] = useState(500000);
     const [downPaymentPercent, setDownPaymentPercent] = useState(40);
     const [interestRate, setInterestRate] = useState(6.5);
-    const [rentalYield, setRentalYield] = useState(8); // Short term average
+    const [rentalYield, setRentalYield] = useState(8);
 
     const [monthlyCashflow, setMonthlyCashflow] = useState(0);
     const [cocReturn, setCocReturn] = useState(0);
 
-    // Calculation Logic
     useEffect(() => {
         const downPayment = propertyValue * (downPaymentPercent / 100);
         const loanAmount = propertyValue - downPayment;
 
-        // Monthly Mortgage (Simple approximation)
         const monthlyRate = interestRate / 100 / 12;
-        const numberOfPayments = 30 * 12; // 30 Years
+        const numberOfPayments = 30 * 12;
         const monthlyMortgage = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
 
-        // Expenses (Approx 40% of gross rent for Short Term - includes management, HOA, taxes)
         const grossMonthlyIncome = (propertyValue * (rentalYield / 100)) / 12;
         const expenses = grossMonthlyIncome * 0.40;
 
@@ -31,7 +28,7 @@ export function InvestmentSimulator() {
         const cashflow = netOperatingIncome - monthlyMortgage;
 
         const annualCashflow = cashflow * 12;
-        const initialInvestment = downPayment + (propertyValue * 0.04); // Closing costs approx 4%
+        const initialInvestment = downPayment + (propertyValue * 0.04);
 
         const cashOnCash = (annualCashflow / initialInvestment) * 100;
 
@@ -40,131 +37,149 @@ export function InvestmentSimulator() {
     }, [propertyValue, downPaymentPercent, interestRate, rentalYield]);
 
     return (
-        <Card className="p-8 bg-white shadow-xl border-neutral-200" id="simulator">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="bg-white rounded-3xl overflow-hidden shadow-soft border border-slate-100" id="simulator">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
                 {/* Inputs */}
-                <div className="space-y-8">
-                    <div>
-                        <h3 className="text-xl font-bold text-neutral-900 mb-6 flex items-center gap-2">
-                            <span className="w-1 h-6 bg-primary-600 rounded-full" />
-                            Parâmetros do Investimento
-                        </h3>
+                <div className="p-8 md:p-12 space-y-10">
+                    <h3 className="text-2xl font-bold text-navy-900 font-display flex items-center gap-3">
+                        <TrendingUp className="w-6 h-6 text-gold-500" />
+                        Configurar Cenário
+                    </h3>
 
-                        <div className="space-y-6">
-                            {/* Property Value */}
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                    Valor do Imóvel: <span className="text-primary-700 font-bold">${propertyValue.toLocaleString()}</span>
+                    <div className="space-y-8">
+                        {/* Property Value */}
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                                <label className="text-sm font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                                    Valor do Imóvel
                                 </label>
-                                <input
-                                    type="range"
-                                    min="200000"
-                                    max="2000000"
-                                    step="50000"
-                                    value={propertyValue}
-                                    onChange={(e) => setPropertyValue(Number(e.target.value))}
-                                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
-                                />
-                                <div className="flex justify-between text-xs text-neutral-500 mt-1">
-                                    <span>$200k</span>
-                                    <span>$2M+</span>
-                                </div>
+                                <span className="text-xl font-bold text-navy-900">${propertyValue.toLocaleString()}</span>
                             </div>
+                            <input
+                                type="range"
+                                min="200000"
+                                max="2000000"
+                                step="50000"
+                                value={propertyValue}
+                                onChange={(e) => setPropertyValue(Number(e.target.value))}
+                                className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-navy-900"
+                            />
+                        </div>
 
-                            {/* Down Payment */}
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                    Entrada (Down Payment): <span className="text-primary-700 font-bold">{downPaymentPercent}%</span>
-                                    <span className="text-xs text-neutral-500 ml-2">(${(propertyValue * (downPaymentPercent / 100)).toLocaleString()})</span>
+                        {/* Down Payment */}
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                                <label className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+                                    Entrada (Down Payment)
                                 </label>
-                                <input
-                                    type="range"
-                                    min="25"
-                                    max="100"
-                                    step="5"
-                                    value={downPaymentPercent}
-                                    onChange={(e) => setDownPaymentPercent(Number(e.target.value))}
-                                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
-                                />
+                                <span className="text-xl font-bold text-navy-900">{downPaymentPercent}%</span>
                             </div>
+                            <input
+                                type="range"
+                                min="25"
+                                max="100"
+                                step="5"
+                                value={downPaymentPercent}
+                                onChange={(e) => setDownPaymentPercent(Number(e.target.value))}
+                                className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-navy-900"
+                            />
+                            <div className="text-xs text-slate-400 font-medium">Equivalente a: ${(propertyValue * (downPaymentPercent / 100)).toLocaleString()}</div>
+                        </div>
 
+                        <div className="grid md:grid-cols-2 gap-8">
                             {/* Interest Rate */}
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                    Taxa de Juros (Anual): <span className="text-primary-700 font-bold">{interestRate}%</span>
-                                </label>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Taxa de Juros (a.a.)
+                                    </label>
+                                    <span className="font-bold text-navy-900">{interestRate}%</span>
+                                </div>
                                 <input
                                     type="range"
                                     min="4"
-                                    max="9"
+                                    max="10"
                                     step="0.25"
                                     value={interestRate}
                                     onChange={(e) => setInterestRate(Number(e.target.value))}
-                                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+                                    className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-navy-900"
                                 />
                             </div>
 
                             {/* Yield */}
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                                    Retorno Bruto (Yield): <span className="text-primary-700 font-bold">{rentalYield}%</span>
-                                </label>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                        Yield Bruto (%)
+                                    </label>
+                                    <span className="font-bold text-navy-900">{rentalYield}%</span>
+                                </div>
                                 <input
                                     type="range"
                                     min="4"
-                                    max="12"
+                                    max="15"
                                     step="0.5"
                                     value={rentalYield}
                                     onChange={(e) => setRentalYield(Number(e.target.value))}
-                                    className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+                                    className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-navy-900"
                                 />
-                                <p className="text-xs text-neutral-500 mt-1">Estimativa baseada em Short-Term Rental (Airbnb)</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Outputs */}
-                <div className="bg-neutral-900 rounded-2xl p-8 text-white flex flex-col justify-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-32 bg-primary-600 rounded-full opacity-10 blur-3xl -mr-16 -mt-16"></div>
-                    <div className="absolute bottom-0 left-0 p-32 bg-secondary-900 rounded-full opacity-10 blur-3xl -ml-16 -mb-16"></div>
+                {/* Result */}
+                <div className="bg-navy-900 p-8 md:p-12 text-white flex flex-col justify-between relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-gold-500 opacity-5 rounded-full blur-3xl -mr-32 -mt-32" />
 
-                    <div className="relative z-10 space-y-8">
+                    <div className="relative z-10 space-y-12">
                         <div>
-                            <p className="text-neutral-400 text-sm font-medium uppercase tracking-wider">Cashflow Mensal Estimado</p>
-                            <div className="flex items-baseline gap-1 mt-1">
-                                <span className="text-4xl font-display font-bold text-green-400">
-                                    ${Math.max(0, monthlyCashflow).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <DollarSign className="w-4 h-4 text-gold-500" />
+                                Fluxo de Caixa Mensal Limpo
+                            </p>
+                            <div className="flex items-baseline gap-2">
+                                <span className={`text-5xl font-bold font-display ${monthlyCashflow >= 0 ? 'text-white' : 'text-red-400'}`}>
+                                    ${Math.abs(monthlyCashflow).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                 </span>
-                                <span className="text-neutral-400">/mês</span>
+                                <span className="text-slate-500 font-medium">/ mês</span>
                             </div>
-                            <p className="text-xs text-neutral-500 mt-2">Líquido após hipoteca e despesas operacionais</p>
+                            {monthlyCashflow < 0 && <p className="text-red-400 text-xs mt-2 font-medium">Saldo Negativo no Cenário Atual</p>}
                         </div>
 
-                        <div className="w-full h-px bg-neutral-800" />
+                        <div className="h-px bg-white/10" />
 
                         <div>
-                            <p className="text-neutral-400 text-sm font-medium uppercase tracking-wider">Retorno sobre Capital (CoC)</p>
-                            <div className="flex items-baseline gap-1 mt-1">
-                                <span className={`text-4xl font-display font-bold ${cocReturn > 0 ? 'text-blue-400' : 'text-red-400'}`}>
+                            <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <PieChart className="w-4 h-4 text-gold-500" />
+                                Retorno Cash-on-Cash
+                            </p>
+                            <div className="flex items-baseline gap-2">
+                                <span className={`text-5xl font-bold font-display ${cocReturn > 0 ? 'text-gold-500' : 'text-red-400'}`}>
                                     {cocReturn.toFixed(1)}%
                                 </span>
-                                <span className="text-neutral-400">a.a.</span>
+                                <span className="text-slate-500 font-medium">ao ano</span>
                             </div>
-                            <p className="text-xs text-neutral-500 mt-2">Retorno percentual sobre o dinheiro investido (Entrada + Custos)</p>
                         </div>
 
-                        <div className="pt-4">
-                            <button className="w-full py-3 px-4 bg-white text-neutral-900 font-bold rounded-lg hover:bg-neutral-100 transition-colors">
-                                Receber Relatório Detalhado
-                            </button>
+                        <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex gap-3 text-xs text-slate-400 leading-relaxed">
+                            <Info className="w-4 h-4 text-gold-500 flex-shrink-0" />
+                            <p>
+                                Estimativa líquida após hipoteca, impostos, HOA e taxas de gestão. Calculado com base no capital inicial investido (entrada + custos de fechamento).
+                            </p>
                         </div>
+                    </div>
+
+                    <div className="mt-12 relative z-10">
+                        <button className="w-full bg-white text-navy-900 py-4 rounded-xl font-bold hover:bg-slate-100 transition-all duration-300 shadow-xl">
+                            Receber Plano Detalhado
+                        </button>
                     </div>
                 </div>
             </div>
-            <p className="text-xs text-neutral-400 mt-6 text-center italic">
-                *Simulação ilustrativa. Não considere como garantia de ganhos. Valores variam conforme localização e gestão.
-            </p>
-        </Card>
+            <div className="bg-slate-50 py-4 px-8 text-[10px] text-slate-400 text-center uppercase tracking-tighter">
+                * Simulação informativa para fins de projeção. Resultados reais podem variar conforme mercado e gestão.
+            </div>
+        </div>
     );
 }

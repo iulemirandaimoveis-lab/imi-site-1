@@ -1,32 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import Card from '@/components/ui/Card';
+import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 export function StressTestCalculator() {
-    const [vacancyRate, setVacancyRate] = useState(30); // 30% vacancy
+    const [vacancyRate, setVacancyRate] = useState(30);
 
-    // Simple logic: Can you survive if the property is empty X% of the time?
-    const grossIncome = 50000; // illustrative annual income
+    const grossIncome = 50000;
     const expenses = 20000;
     const mortgage = 24000;
 
-    // Adjusted Income
     const effectiveIncome = grossIncome * ((100 - vacancyRate) / 100);
     const netPosition = effectiveIncome - expenses - mortgage;
 
     const isSafe = netPosition > 0;
 
     return (
-        <Card className="p-8 h-full bg-white border-neutral-200">
-            <h3 className="text-xl font-bold text-neutral-900 mb-2">Stress Test (Teste de Estresse)</h3>
-            <p className="text-sm text-neutral-500 mb-6">Seu investimento sobrevive a uma crise ou baixa ocupação?</p>
+        <div className="bg-white p-8 rounded-3xl shadow-soft border border-slate-100 h-full flex flex-col">
+            <h3 className="text-xl font-bold text-navy-900 mb-2 font-display">Teste de Estresse</h3>
+            <p className="text-sm text-slate-500 mb-8">Avalie a resiliência do seu investimento frente a períodos de baixa ocupação.</p>
 
-            <div className="space-y-6">
+            <div className="space-y-8 flex-grow">
                 <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                        Taxa de Vacância (Tempo vazio): <span className="font-bold">{vacancyRate}%</span>
-                    </label>
+                    <div className="flex justify-between mb-4">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                            Simular Taxa de Vacância
+                        </label>
+                        <span className={`font-bold ${vacancyRate > 50 ? 'text-red-500' : 'text-navy-900'}`}>{vacancyRate}%</span>
+                    </div>
                     <input
                         type="range"
                         min="0"
@@ -34,37 +35,38 @@ export function StressTestCalculator() {
                         step="5"
                         value={vacancyRate}
                         onChange={(e) => setVacancyRate(Number(e.target.value))}
-                        className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${isSafe ? 'bg-green-200 accent-green-600' : 'bg-red-200 accent-red-600'}`}
+                        className={`w-full h-2 rounded-lg appearance-none cursor-pointer transition-colors duration-500 ${isSafe ? 'bg-slate-100 accent-navy-900' : 'bg-red-100 accent-red-500'}`}
                     />
                 </div>
 
-                <div className={`p-6 rounded-lg border-2 ${isSafe ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'} transition-colors duration-300`}>
-                    <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-full ${isSafe ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                            {isSafe ? (
-                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            ) : (
-                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            )}
-                        </div>
-                        <div>
-                            <h4 className={`font-bold ${isSafe ? 'text-green-800' : 'text-red-800'}`}>
-                                {isSafe ? 'Saldo Positivo' : 'Fluxo de Caixa Negativo'}
-                            </h4>
-                            <p className="text-sm text-neutral-600">
-                                {isSafe
-                                    ? `Mesmo com ${vacancyRate}% de desocupação, o imóvel se paga e gera lucro.`
-                                    : `Cuidado: Com ${vacancyRate}% de vacância, você precisará tirar dinheiro do bolso.`
-                                }
-                            </p>
-                        </div>
+                <div className={`p-8 rounded-2xl border-2 transition-all duration-500 flex flex-col items-center text-center ${isSafe ? 'bg-green-50/50 border-green-100' : 'bg-red-50 border-red-100 shadow-lg shadow-red-500/10'}`}>
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isSafe ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                        {isSafe ? <CheckCircle2 className="w-8 h-8" /> : <AlertTriangle className="w-8 h-8 animate-pulse" />}
+                    </div>
+
+                    <h4 className={`text-xl font-bold mb-3 font-display ${isSafe ? 'text-green-900' : 'text-red-900'}`}>
+                        {isSafe ? 'Investimento Resiliente' : 'Alerta de Fluxo de Caixa'}
+                    </h4>
+
+                    <p className={`text-sm leading-relaxed ${isSafe ? 'text-green-700/80' : 'text-red-700/80'}`}>
+                        {isSafe
+                            ? `Mesmo com o imóvel vazio em ${vacancyRate}% do ano, sua operação continua solvente e saudável.`
+                            : `Atenção: Com ${vacancyRate}% de vacância, o aluguel não cobre as despesas e financiamento no cenário simulado.`
+                        }
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mt-auto">
+                    <div className="text-center">
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Ponto de Equilíbrio</div>
+                        <div className="text-sm font-bold text-navy-900">12% de Vacância</div>
+                    </div>
+                    <div className="text-center">
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Margem de Segurança</div>
+                        <div className="text-sm font-bold text-navy-900">Alta</div>
                     </div>
                 </div>
             </div>
-        </Card>
+        </div>
     );
 }

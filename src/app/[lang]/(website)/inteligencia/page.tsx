@@ -13,173 +13,268 @@ import {
     BarChart,
     Bar
 } from 'recharts'
-import Card from '@/components/ui/Card'
 import { fadeIn, slideUp, staggerContainer } from '@/lib/animations'
+import { Calculator, BarChart3, TrendingUp, Map, ArrowUpRight, MessageCircle } from 'lucide-react'
+import Button from '@/components/ui/Button'
 
 const marketData = [
-    { month: 'Jan', value: 8500 },
-    { month: 'Fev', value: 8600 },
-    { month: 'Mar', value: 8800 },
-    { month: 'Abr', value: 8900 },
-    { month: 'Mai', value: 9200 },
-    { month: 'Jun', value: 9500 },
+    { month: 'Jul', value: 8900 },
+    { month: 'Ago', value: 9100 },
+    { month: 'Set', value: 9250 },
+    { month: 'Out', value: 9400 },
+    { month: 'Nov', value: 9650 },
+    { month: 'Dez', value: 9850 },
 ]
 
 const neighborhoodData = [
-    { name: 'Jardins', value: 18500 },
-    { name: 'Itaim', value: 22000 },
-    { name: 'V. Nova', value: 19800 },
-    { name: 'Moema', value: 16500 },
-    { name: 'Pinheiros', value: 15400 },
+    { name: 'Cabo Branco', value: 15200 },
+    { name: 'Altiplano', value: 10800 },
+    { name: 'Bessa', value: 11500 },
+    { name: 'J. Oceania', value: 9800 },
+    { name: 'Manaíra', value: 8600 },
 ]
 
 export default function MarketIntelligencePage() {
     return (
-        <div className="bg-neutral-50 min-h-screen pb-20">
-            {/* Hero Section */}
-            <section className="bg-neutral-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 opacity-20 bg-[url('/hero-bg.jpg')] bg-cover bg-center" />
-                <div className="container-custom hero-padding relative z-10">
+        <>
+            {/* HERO */}
+            <section className="bg-navy-900 text-white section-padding relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-1/3 h-full bg-gold-500/5 -skew-x-12 translate-x-1/4" />
+
+                <div className="container-custom relative z-10">
                     <motion.div
+                        className="max-w-3xl"
+                        variants={slideUp}
                         initial="hidden"
                         animate="visible"
-                        variants={staggerContainer}
-                        className="max-w-3xl"
                     >
-                        <motion.h1
-                            variants={slideUp}
-                            className="text-4xl md:text-6xl font-display font-bold mb-6"
-                        >
-                            Inteligência de Mercado
-                        </motion.h1>
-                        <motion.p
-                            variants={slideUp}
-                            className="text-xl text-neutral-300 max-w-2xl font-light"
-                        >
-                            Dados atualizados, tendências e análises exclusivas para fundamentar suas decisões de investimento.
-                        </motion.p>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-px bg-gold-500" />
+                            <span className="text-gold-500 font-semibold uppercase tracking-[0.2em] text-xs">
+                                Market Intelligence
+                            </span>
+                        </div>
+
+                        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
+                            Inteligência de Mercado: João Pessoa/PB
+                        </h1>
+
+                        <p className="text-slate-300 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
+                            Dados precisos, tendências e análises exclusivas para fundamentar seus investimentos no mercado imobiliário que mais cresce no Nordeste.
+                        </p>
                     </motion.div>
                 </div>
             </section>
 
-            <div className="container-custom -mt-16 z-20 relative">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <Card className="p-6 border-l-4 border-primary-500 shadow-xl">
-                        <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-2">Valorização Média (12m)</h3>
-                        <div className="flex items-end gap-2">
-                            <span className="text-4xl font-bold text-neutral-900">+12.4%</span>
-                            <span className="text-green-600 font-medium mb-1">↑ Alta</span>
-                        </div>
-                        <p className="text-xs text-neutral-400 mt-2">Setor de Alto Padrão - SP</p>
-                    </Card>
-
-                    <Card className="p-6 border-l-4 border-accent-500 shadow-xl">
-                        <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-2">Liquidez Média</h3>
-                        <div className="flex items-end gap-2">
-                            <span className="text-4xl font-bold text-neutral-900">45 Dias</span>
-                            <span className="text-neutral-600 font-medium mb-1">Ativos Premium</span>
-                        </div>
-                        <p className="text-xs text-neutral-400 mt-2">Imóveis acima de R$ 2MM</p>
-                    </Card>
-
-                    <Card className="p-6 border-l-4 border-neutral-800 shadow-xl">
-                        <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-2">Custo Médio m²</h3>
-                        <div className="flex items-end gap-2">
-                            <span className="text-4xl font-bold text-neutral-900">R$ 18.230</span>
-                            <span className="text-neutral-600 font-medium mb-1">/m²</span>
-                        </div>
-                        <p className="text-xs text-neutral-400 mt-2">Bairros Monitorados</p>
-                    </Card>
-                </div>
-
-                {/* Charts Area */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-                    <Card className="p-8">
-                        <h3 className="text-xl font-bold text-neutral-900 mb-6 font-display">Tendência de Preço (m²)</h3>
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={marketData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
-                                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#666' }} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#666' }} />
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                    />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="value"
-                                        stroke="#0f3352"
-                                        strokeWidth={3}
-                                        dot={{ r: 4, fill: '#0f3352' }}
-                                        activeDot={{ r: 6 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </Card>
-
-                    <Card className="p-8">
-                        <h3 className="text-xl font-bold text-neutral-900 mb-6 font-display">Valor por Região (R$/m²)</h3>
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={neighborhoodData} layout="vertical">
-                                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#eee" />
-                                    <XAxis type="number" hide />
-                                    <YAxis dataKey="name" type="category" width={80} axisLine={false} tickLine={false} />
-                                    <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px' }} />
-                                    <Bar dataKey="value" fill="#a88a5a" radius={[0, 4, 4, 0]} barSize={30} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </Card>
-                </div>
-
-                {/* Tools Section */}
-                <div className="mb-16">
-                    <h2 className="text-3xl font-display font-bold text-neutral-900 mb-8">Ferramentas Exclusivas</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <a href="/avaliacoes" className="group">
-                            <Card hover className="h-full p-8 border border-neutral-200">
-                                <div className="w-12 h-12 bg-primary-100 text-primary-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-900 group-hover:text-white transition-colors">
-                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 7h6m0 36v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                    </svg>
+            {/* STATS */}
+            <section className="section-padding bg-slate-50">
+                <div className="container-custom">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 -mt-24 relative z-20">
+                        {[
+                            {
+                                label: 'Valorização (12m)',
+                                value: '+15.2%',
+                                detail: 'Alto Padrão - João Pessoa',
+                                icon: ArrowUpRight,
+                                color: 'text-green-600'
+                            },
+                            {
+                                label: 'Liquidez Média',
+                                value: '60 Dias',
+                                detail: 'Ativos Premium (> R$ 1.5M)',
+                                icon: TrendingUp,
+                                color: 'text-navy-900'
+                            },
+                            {
+                                label: 'Custo Médio m²',
+                                value: 'R$ 9.850',
+                                detail: 'Bairros de Orla e Altiplano',
+                                icon: Map,
+                                color: 'text-navy-900'
+                            }
+                        ].map((stat, i) => (
+                            <motion.div
+                                key={i}
+                                variants={slideUp}
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                className="bg-white p-8 rounded-2xl border border-slate-100 shadow-soft"
+                            >
+                                <div className="flex justify-between items-start mb-4">
+                                    <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">{stat.label}</h3>
+                                    <stat.icon className="w-5 h-5 text-gold-500" />
                                 </div>
-                                <h3 className="text-xl font-bold text-neutral-900 mb-3">Calculadora de Valuation</h3>
-                                <p className="text-neutral-600 mb-4 text-sm">Estime o valor de mercado do seu imóvel com base em dados de transações recentes.</p>
-                                <span className="text-primary-700 font-semibold text-sm group-hover:underline">Acessar ferramenta →</span>
-                            </Card>
-                        </a>
-
-                        <a href="#" className="group">
-                            <Card hover className="h-full p-8 border border-neutral-200">
-                                <div className="w-12 h-12 bg-primary-100 text-primary-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-900 group-hover:text-white transition-colors">
-                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
+                                <div className="flex items-baseline gap-2">
+                                    <span className={`text-4xl font-bold font-display ${stat.color}`}>{stat.value}</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-neutral-900 mb-3">Comparador de Bairros</h3>
-                                <p className="text-neutral-600 mb-4 text-sm">Compare métricas de segurança, valorização e liquidez entre diferentes regiões.</p>
-                                <span className="text-primary-700 font-semibold text-sm group-hover:underline">Em breve →</span>
-                            </Card>
-                        </a>
+                                <p className="text-xs text-slate-400 mt-2 font-medium">{stat.detail}</p>
+                            </motion.div>
+                        ))}
+                    </div>
 
-                        <a href="/consultoria" className="group">
-                            <Card hover className="h-full p-8 border border-neutral-200">
-                                <div className="w-12 h-12 bg-primary-100 text-primary-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-900 group-hover:text-white transition-colors">
-                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <h3 className="text-xl font-bold text-neutral-900 mb-3">Simulador de Retorno</h3>
-                                <p className="text-neutral-600 mb-4 text-sm">Calcule o ROI potencial de investimentos imobiliários considerando vacância e impostos.</p>
-                                <span className="text-primary-700 font-semibold text-sm group-hover:underline">Agendar consultoria →</span>
-                            </Card>
-                        </a>
+                    {/* GRÁFICOS */}
+                    <div className="grid lg:grid-cols-2 gap-8 mt-16">
+                        <motion.div
+                            variants={fadeIn}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            className="bg-white p-8 rounded-2xl border border-slate-100 shadow-soft"
+                        >
+                            <h3 className="text-xl font-bold text-navy-900 mb-8 font-display flex items-center gap-3">
+                                <TrendingUp className="w-5 h-5 text-gold-500" />
+                                Tendência de Preço (R$/m²)
+                            </h3>
+                            <div className="h-[350px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={marketData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                        <XAxis
+                                            dataKey="month"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: '#64748b', fontSize: 12 }}
+                                        />
+                                        <YAxis
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: '#64748b', fontSize: 12 }}
+                                            domain={['dataMin - 500', 'dataMax + 500']}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{
+                                                borderRadius: '12px',
+                                                border: 'none',
+                                                boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                                                padding: '12px'
+                                            }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="value"
+                                            stroke="#001F3F"
+                                            strokeWidth={4}
+                                            dot={{ r: 6, fill: '#001F3F', strokeWidth: 2, stroke: '#fff' }}
+                                            activeDot={{ r: 8, fill: '#D4AF37' }}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </motion.div>
+
+                        <motion.div
+                            variants={fadeIn}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            className="bg-white p-8 rounded-2xl border border-slate-100 shadow-soft"
+                        >
+                            <h3 className="text-xl font-bold text-navy-900 mb-8 font-display flex items-center gap-3">
+                                <Map className="w-5 h-5 text-gold-500" />
+                                Valorização por Bairro (R$/m²)
+                            </h3>
+                            <div className="h-[350px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={neighborhoodData} layout="vertical">
+                                        <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
+                                        <XAxis type="number" hide />
+                                        <YAxis
+                                            dataKey="name"
+                                            type="category"
+                                            width={100}
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: '#475569', fontWeight: 500 }}
+                                        />
+                                        <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none' }} />
+                                        <Bar dataKey="value" fill="#001F3F" radius={[0, 8, 8, 0]} barSize={32}>
+                                            {neighborhoodData.map((_entry, index) => (
+                                                <rect key={index} fill={index === 0 ? '#D4AF37' : '#001F3F'} />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </motion.div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+
+            {/* TOOLS */}
+            <section className="section-padding">
+                <div className="container-custom">
+                    <h2 className="font-display text-3xl md:text-4xl font-bold text-navy-900 mb-12 text-center">
+                        Ferramentas de Análise
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                icon: Calculator,
+                                title: 'Calculadora de Valuation',
+                                href: '/avaliacoes',
+                                desc: 'Estime o valor real de mercado com base em dados técnicos e transações recentes processadas por IA.'
+                            },
+                            {
+                                icon: BarChart3,
+                                title: 'Comparador de Bairros',
+                                href: '#',
+                                desc: 'Análise comparativa de ROI, liquidez e potencial de valorização entre as principais regiões da Paraíba.'
+                            },
+                            {
+                                icon: TrendingUp,
+                                title: 'Simulador de Retorno',
+                                href: '/consultoria',
+                                desc: 'Calcule o rendimento potencial do seu investimento considerando aluguel por temporada e valorização.'
+                            }
+                        ].map((tool, i) => (
+                            <a href={tool.href} key={i} className="group">
+                                <motion.div
+                                    variants={slideUp}
+                                    initial="hidden"
+                                    whileInView="visible"
+                                    viewport={{ once: true }}
+                                    className="h-full p-8 rounded-2xl bg-white border border-slate-100 shadow-soft hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300"
+                                >
+                                    <div className="w-14 h-14 bg-navy-900/10 text-navy-900 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-navy-900 group-hover:text-white transition-all duration-300">
+                                        <tool.icon className="w-6 h-6" strokeWidth={1.5} />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-navy-900 mb-4 font-display">
+                                        {tool.title}
+                                    </h3>
+                                    <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                                        {tool.desc}
+                                    </p>
+                                    <span className="text-sm font-bold text-navy-900 flex items-center gap-2">
+                                        Acessar Ferramenta
+                                        <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                                    </span>
+                                </motion.div>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA FINAL */}
+            <section className="bg-navy-900 text-white section-padding text-center relative overflow-hidden">
+                <div className="container-custom relative z-10">
+                    <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+                        Análise Personalizada?
+                    </h2>
+                    <p className="text-slate-400 text-lg mb-10 max-w-2xl mx-auto font-light">
+                        Precisa de um estudo de viabilidade ou dossiê completo de mercado para seu próximo projeto?
+                    </p>
+                    <Button asChild size="lg" className="bg-white text-navy-900 hover:bg-slate-100">
+                        <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">
+                            <MessageCircle className="w-5 h-5 mr-3" />
+                            Solicitar Estudo de Mercado
+                        </a>
+                    </Button>
+                </div>
+            </section>
+        </>
     )
 }

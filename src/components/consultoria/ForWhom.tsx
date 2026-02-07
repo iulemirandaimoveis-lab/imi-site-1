@@ -1,146 +1,89 @@
 'use client';
 
-import { CheckCircle, XCircle } from 'lucide-react';
+import { ShieldCheck, PlusCircle, MinusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { slideUp, staggerContainer } from '@/lib/animations';
 
 export function ForWhom() {
+    const categories = [
+        {
+            title: 'Perfil Ideal',
+            icon: PlusCircle,
+            color: 'text-gold-500',
+            borderColor: 'border-gold-500/20',
+            bgColor: 'bg-white',
+            items: [
+                { title: 'Capital Regularizado', desc: 'Mínimo de USD 100k disponíveis para investir.' },
+                { title: 'Busca Renda em USD', desc: 'Objetivo de proteger patrimônio com fluxo em dólar.' },
+                { title: 'Visão de Longo Prazo', desc: 'Horizonte de investimento superior a 5 anos.' }
+            ]
+        },
+        {
+            title: 'Não é para quem',
+            icon: MinusCircle,
+            color: 'text-slate-400',
+            borderColor: 'border-slate-100',
+            bgColor: 'bg-slate-50',
+            items: [
+                { title: 'Busca Ganho Rápido', desc: 'Trabalhamos com tese de renda, não especulação.' },
+                { title: 'Capital não Declarado', desc: 'Todo processo segue rigoroso compliance fiscal.' },
+                { title: 'Necessidade de Liquidez', desc: 'Imóveis exigem prazos de maturação estratégica.' }
+            ]
+        }
+    ];
+
     return (
-        <section className="py-20 bg-offwhite">
-            <div className="container mx-auto px-4">
-                <div className="max-w-6xl mx-auto">
-
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-bold text-navy-700 mb-4">
-                            Esta Consultoria é Para Você?
-                        </h2>
-                        <p className="text-lg text-gray-600">
-                            Transparência total: saiba se este caminho faz sentido para seu perfil
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-8">
-
-                        {/* Para Quem É */}
-                        <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-2xl p-8 border-2 border-green-100">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 bg-green-100 rounded-xl">
-                                    <CheckCircle className="w-6 h-6 text-green-600" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-900">
-                                    Para Quem É
-                                </h3>
-                            </div>
-
-                            <ul className="space-y-4">
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Investidor com Capital Declarado</p>
-                                        <p className="text-sm text-gray-600 mt-1">Mínimo USD 100k disponível e regularizado no Brasil</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Busca Renda em USD</p>
-                                        <p className="text-sm text-gray-600 mt-1">Objetivo de cashflow previsível em moeda forte</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Valoriza Governança</p>
-                                        <p className="text-sm text-gray-600 mt-1">Aceita estruturas jurídicas e gestão profissional</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Visão de Longo Prazo</p>
-                                        <p className="text-sm text-gray-600 mt-1">Horizonte mínimo de 5 anos</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Entende Compliance</p>
-                                        <p className="text-sm text-gray-600 mt-1">Disposto a seguir processos legais e fiscais</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Para Quem NÃO É */}
-                        <div className="bg-white/80 backdrop-blur-md shadow-soft rounded-2xl p-8 border-2 border-red-100">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="p-3 bg-red-100 rounded-xl">
-                                    <XCircle className="w-6 h-6 text-red-600" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-900">
-                                    Não é Para Quem
-                                </h3>
-                            </div>
-
-                            <ul className="space-y-4">
-                                <li className="flex items-start gap-3">
-                                    <XCircle className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Busca "Ganho Rápido"</p>
-                                        <p className="text-sm text-gray-600 mt-1">Não trabalhamos com especulação ou promessas irreais</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <XCircle className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Quer Fazer Sozinho</p>
-                                        <p className="text-sm text-gray-600 mt-1">Estruturas internacionais exigem parceiros locais</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <XCircle className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Rejeita Processos</p>
-                                        <p className="text-sm text-gray-600 mt-1">Compliance e governança não são opcionais</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <XCircle className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Capital Irregular</p>
-                                        <p className="text-sm text-gray-600 mt-1">100% do capital deve estar declarado à Receita</p>
-                                    </div>
-                                </li>
-
-                                <li className="flex items-start gap-3">
-                                    <XCircle className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Precisa Liquidez Imediata</p>
-                                        <p className="text-sm text-gray-600 mt-1">Imóveis não são ativos líquidos de curto prazo</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-
-                    </div>
-
-                    {/* CTA */}
-                    <div className="mt-12 text-center">
-                        <p className="text-gray-600 mb-6">
-                            Se você se identificou com o perfil ideal, vamos conversar.
-                        </p>
-                        <button className="bg-navy-600 hover:bg-navy-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:shadow-lg">
-                            Agendar Análise Gratuita
-                        </button>
-                    </div>
-
+        <section className="section-padding bg-slate-50">
+            <div className="container-custom">
+                <div className="max-w-4xl mx-auto text-center mb-16">
+                    <h2 className="text-3xl md:text-5xl font-bold text-navy-900 mb-6 font-display">
+                        Esta Consultoria é Para Você?
+                    </h2>
+                    <p className="text-lg text-slate-600 max-w-2xl mx-auto font-light">
+                        Transparência é um dos nossos pilares. Saiba se sua tese de investimento está alinhada com nossa expertise internacional.
+                    </p>
                 </div>
+
+                <motion.div
+                    className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto"
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                >
+                    {categories.map((cat, i) => (
+                        <motion.div
+                            key={i}
+                            variants={slideUp}
+                            className={`p-10 rounded-3xl border ${cat.borderColor} ${cat.bgColor} shadow-soft`}
+                        >
+                            <div className="flex items-center gap-4 mb-10">
+                                <div className={`w-12 h-12 ${cat.color} bg-white rounded-2xl flex items-center justify-center shadow-sm`}>
+                                    <cat.icon className="w-6 h-6" strokeWidth={2} />
+                                </div>
+                                <h3 className="text-2xl font-bold text-navy-900 font-display">{cat.title}</h3>
+                            </div>
+
+                            <ul className="space-y-8">
+                                {cat.items.map((item, j) => (
+                                    <li key={j} className="flex gap-4">
+                                        <div className="mt-1 flex-shrink-0">
+                                            {i === 0 ? (
+                                                <ShieldCheck className="w-5 h-5 text-gold-500" />
+                                            ) : (
+                                                <div className="w-5 h-px bg-slate-300 mt-2.5" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-navy-900 mb-1">{item.title}</p>
+                                            <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </motion.div>
+                    ))}
+                </motion.div>
             </div>
         </section>
     );
