@@ -47,69 +47,17 @@ export default function AdvancedFilter({ filters, onFilterChange, locations, max
     // Initial state for mobile drawer (cloned from props)
     const [mobileFilters, setMobileFilters] = useState<FilterState>(filters);
 
-    // Close dropdowns when clicking outside
+    // Lock body scroll when mobile filter is open
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (!(event.target as Element).closest('.filter-dropdown')) {
-                setActiveDropdown(null);
-            }
+        if (isMobileOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
         };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    // Helper to update specific filter field
-    const updateFilter = (key: keyof FilterState, value: any) => {
-        const newFilters = { ...filters, [key]: value };
-        onFilterChange(newFilters);
-    };
-
-    // Helper for mobile state
-    const updateMobileFilter = (key: keyof FilterState, value: any) => {
-        setMobileFilters(prev => ({ ...prev, [key]: value }));
-    };
-
-    const applyMobileFilters = () => {
-        onFilterChange(mobileFilters);
-        setIsMobileOpen(false);
-    };
-
-    const clearFilters = () => {
-        const reset: FilterState = {
-            status: [],
-            type: [],
-            bedrooms: null,
-            priceRange: [0, maxPrice],
-            location: null,
-            sort: 'relevant'
-        };
-        onFilterChange(reset);
-        setMobileFilters(reset);
-        setActiveDropdown(null);
-    };
-
-    const formatCurrency = (val: number) => {
-        if (val >= 1000000) return `R$ ${(val / 1000000).toFixed(1)} mi`;
-        if (val >= 1000) return `R$ ${(val / 1000).toFixed(0)} k`;
-        return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    };
-
-    // Dropdown Button Component
-    const FilterButton = ({ label, icon: Icon, active, onClick, hasValue }: any) => (
-        <button
-            onClick={onClick}
-            className={cn(
-                "filter-dropdown flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all border",
-                active || hasValue
-                    ? "bg-imi-900 border-imi-900 text-white shadow-md ring-2 ring-imi-100"
-                    : "bg-white border-imi-200 text-imi-600 hover:border-imi-400 hover:bg-imi-50"
-            )}
-        >
-            {Icon && <Icon className="w-4 h-4" />}
-            <span>{label}</span>
-            <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", active ? "rotate-180" : "")} />
-        </button>
-    );
+    }, [isMobileOpen]);
 
     return (
         <div className="sticky top-20 z-40 w-full">
@@ -118,14 +66,15 @@ export default function AdvancedFilter({ filters, onFilterChange, locations, max
                 <div className="container-custom">
                     <div className="flex items-center justify-between gap-4">
 
-                        {/* Mobile Toggle */}
-                        <button
+                        {/* Mobile Toggle - Improved UI */}
+                        <motion.button
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => setIsMobileOpen(true)}
-                            className="lg:hidden flex items-center gap-2 bg-imi-900 text-white px-5 py-3 rounded-full font-bold text-sm shadow-lg w-full justify-center"
+                            className="lg:hidden flex items-center gap-2 bg-imi-900 text-white px-5 py-3 rounded-full font-bold text-sm shadow-lg w-full justify-center active:bg-imi-800 transition-colors"
                         >
                             <SlidersHorizontal className="w-4 h-4" />
                             Filtrar Imóveis
-                        </button>
+                        </motion.button>
 
                         {/* Desktop Filters */}
                         <div className="hidden lg:flex items-center gap-3 overflow-visible">
@@ -143,6 +92,7 @@ export default function AdvancedFilter({ filters, onFilterChange, locations, max
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
                                         className="filter-dropdown absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-imi-100 p-2 overflow-hidden z-50"
                                     >
                                         <button
@@ -287,138 +237,150 @@ export default function AdvancedFilter({ filters, onFilterChange, locations, max
             {/* Mobile Filter Sheet (Full Screen) */}
             <AnimatePresence>
                 {isMobileOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: '100%' }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: '100%' }}
-                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="fixed inset-0 z-50 bg-white flex flex-col pt-safe-top"
-                    >
-                        {/* Header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-imi-100">
-                            <h2 className="font-display text-2xl font-bold text-imi-900">Filtrar Imóveis</h2>
-                            <button onClick={() => setIsMobileOpen(false)} className="p-2 bg-imi-50 rounded-full">
-                                <X className="w-6 h-6 text-imi-500" />
-                            </button>
-                        </div>
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsMobileOpen(false)}
+                            className="fixed inset-0 bg-black/60 z-50 lg:hidden backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, y: '100%' }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: '100%' }}
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="fixed inset-x-0 bottom-0 top-12 z-50 bg-white rounded-t-[2rem] flex flex-col overflow-hidden shadow-2xl lg:hidden"
+                        >
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-6 py-5 border-b border-imi-100 bg-white">
+                                <h2 className="font-display text-xl font-bold text-imi-900">Filtrar Imóveis</h2>
+                                <button
+                                    onClick={() => setIsMobileOpen(false)}
+                                    className="p-2 bg-imi-50 rounded-full hover:bg-imi-100 transition-colors"
+                                >
+                                    <X className="w-5 h-5 text-imi-500" />
+                                </button>
+                            </div>
 
-                        {/* Content Scroll */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                            {/* Content Scroll */}
+                            <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-white">
 
-                            {/* Location Section */}
-                            <div>
-                                <h3 className="text-sm font-bold text-imi-400 uppercase tracking-widest mb-4">Localização</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    <button
-                                        onClick={() => updateMobileFilter('location', null)}
-                                        className={cn(
-                                            "px-4 py-2 rounded-lg text-sm font-medium border transition-all",
-                                            !mobileFilters.location
-                                                ? "bg-imi-900 border-imi-900 text-white"
-                                                : "bg-white border-imi-200 text-imi-600"
-                                        )}
-                                    >
-                                        Todas
-                                    </button>
-                                    {locations.map(loc => (
+                                {/* Location Section */}
+                                <div>
+                                    <h3 className="text-xs font-bold text-imi-400 uppercase tracking-widest mb-4">Localização</h3>
+                                    <div className="flex flex-wrap gap-2">
                                         <button
-                                            key={loc}
-                                            onClick={() => updateMobileFilter('location', loc)}
+                                            onClick={() => updateMobileFilter('location', null)}
                                             className={cn(
-                                                "px-4 py-2 rounded-lg text-sm font-medium border transition-all",
-                                                mobileFilters.location === loc
-                                                    ? "bg-imi-900 border-imi-900 text-white"
+                                                "px-4 py-2.5 rounded-xl text-sm font-medium border transition-all",
+                                                !mobileFilters.location
+                                                    ? "bg-imi-900 border-imi-900 text-white shadow-lg shadow-imi-900/10"
                                                     : "bg-white border-imi-200 text-imi-600"
                                             )}
                                         >
-                                            {loc}
+                                            Todas
                                         </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Type Section */}
-                            <div>
-                                <h3 className="text-sm font-bold text-imi-400 uppercase tracking-widest mb-4">Tipo do Imóvel</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {TYPE_OPTIONS.map(opt => {
-                                        const isSelected = mobileFilters.type.includes(opt.value);
-                                        return (
+                                        {locations.map(loc => (
                                             <button
-                                                key={opt.value}
-                                                onClick={() => {
-                                                    const newTypes = isSelected
-                                                        ? mobileFilters.type.filter(t => t !== opt.value)
-                                                        : [...mobileFilters.type, opt.value];
-                                                    updateMobileFilter('type', newTypes);
-                                                }}
+                                                key={loc}
+                                                onClick={() => updateMobileFilter('location', loc)}
                                                 className={cn(
-                                                    "px-4 py-3 rounded-xl text-sm font-medium border text-left flex justify-between items-center transition-all",
-                                                    isSelected
-                                                        ? "bg-imi-50 border-imi-900 text-imi-900 ring-1 ring-imi-900"
+                                                    "px-4 py-2.5 rounded-xl text-sm font-medium border transition-all",
+                                                    mobileFilters.location === loc
+                                                        ? "bg-imi-900 border-imi-900 text-white shadow-lg shadow-imi-900/10"
                                                         : "bg-white border-imi-200 text-imi-600"
                                                 )}
                                             >
-                                                {opt.label}
-                                                {isSelected && <Check className="w-4 h-4 text-imi-900" />}
+                                                {loc}
                                             </button>
-                                        );
-                                    })}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Bedrooms Section */}
-                            <div>
-                                <h3 className="text-sm font-bold text-imi-400 uppercase tracking-widest mb-4">Quartos</h3>
-                                <div className="flex gap-3 overflow-x-auto pb-2">
-                                    <button
-                                        onClick={() => updateMobileFilter('bedrooms', null)}
-                                        className={cn(
-                                            "flex-1 min-w-[80px] py-3 rounded-xl text-sm font-bold border justify-center flex transition-all",
-                                            !mobileFilters.bedrooms
-                                                ? "bg-imi-900 border-imi-900 text-white"
-                                                : "bg-white border-imi-200 text-imi-600"
-                                        )}
-                                    >
-                                        Todos
-                                    </button>
-                                    {[1, 2, 3, 4].map(num => (
+                                {/* Type Section */}
+                                <div>
+                                    <h3 className="text-xs font-bold text-imi-400 uppercase tracking-widest mb-4">Tipo do Imóvel</h3>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {TYPE_OPTIONS.map(opt => {
+                                            const isSelected = mobileFilters.type.includes(opt.value);
+                                            return (
+                                                <button
+                                                    key={opt.value}
+                                                    onClick={() => {
+                                                        const newTypes = isSelected
+                                                            ? mobileFilters.type.filter(t => t !== opt.value)
+                                                            : [...mobileFilters.type, opt.value];
+                                                        updateMobileFilter('type', newTypes);
+                                                    }}
+                                                    className={cn(
+                                                        "px-4 py-3 rounded-xl text-sm font-medium border text-left flex justify-between items-center transition-all",
+                                                        isSelected
+                                                            ? "bg-imi-50 border-imi-900 text-imi-900 ring-1 ring-imi-900"
+                                                            : "bg-white border-imi-200 text-imi-600"
+                                                    )}
+                                                >
+                                                    {opt.label}
+                                                    {isSelected && <Check className="w-4 h-4 text-imi-900" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Bedrooms Section */}
+                                <div>
+                                    <h3 className="text-xs font-bold text-imi-400 uppercase tracking-widest mb-4">Quartos</h3>
+                                    <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
                                         <button
-                                            key={num}
-                                            onClick={() => updateMobileFilter('bedrooms', num)}
+                                            onClick={() => updateMobileFilter('bedrooms', null)}
                                             className={cn(
-                                                "flex-1 min-w-[80px] py-3 rounded-xl text-sm font-bold border justify-center flex transition-all",
-                                                mobileFilters.bedrooms === num
-                                                    ? "bg-imi-900 border-imi-900 text-white"
+                                                "flex-1 min-w-[80px] py-3 rounded-xl text-sm font-bold border justify-center flex transition-all shrink-0",
+                                                !mobileFilters.bedrooms
+                                                    ? "bg-imi-900 border-imi-900 text-white shadow-lg shadow-imi-900/10"
                                                     : "bg-white border-imi-200 text-imi-600"
                                             )}
                                         >
-                                            {num}+
+                                            Todos
                                         </button>
-                                    ))}
+                                        {[1, 2, 3, 4].map(num => (
+                                            <button
+                                                key={num}
+                                                onClick={() => updateMobileFilter('bedrooms', num)}
+                                                className={cn(
+                                                    "flex-1 min-w-[80px] py-3 rounded-xl text-sm font-bold border justify-center flex transition-all shrink-0",
+                                                    mobileFilters.bedrooms === num
+                                                        ? "bg-imi-900 border-imi-900 text-white shadow-lg shadow-imi-900/10"
+                                                        : "bg-white border-imi-200 text-imi-600"
+                                                )}
+                                            >
+                                                {num}+
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Footer Actions */}
-                        <div className="p-6 border-t border-imi-100 bg-white/95 backdrop-blur-sm pb-safe-bottom">
-                            <div className="flex gap-4">
-                                <Button
-                                    variant="outline"
-                                    className="flex-1 justify-center border-imi-200"
-                                    onClick={clearFilters}
-                                >
-                                    Limpar
-                                </Button>
-                                <Button
-                                    className="flex-[2] justify-center bg-imi-900 text-white"
-                                    onClick={applyMobileFilters}
-                                >
-                                    Ver Resultados
-                                </Button>
+                            {/* Footer Actions */}
+                            <div className="p-6 border-t border-imi-100 bg-white/95 backdrop-blur-sm pb-10">
+                                <div className="flex gap-4">
+                                    <Button
+                                        variant="outline"
+                                        className="flex-1 justify-center border-imi-200 h-12 rounded-xl"
+                                        onClick={clearFilters}
+                                    >
+                                        Limpar
+                                    </Button>
+                                    <Button
+                                        className="flex-[2] justify-center bg-imi-900 text-white h-12 rounded-xl shadow-xl shadow-imi-900/20"
+                                        onClick={applyMobileFilters}
+                                    >
+                                        Ver {mobileFilters.type.length > 0 ? "Resultados" : "Imóveis"}
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </div>
