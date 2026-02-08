@@ -204,7 +204,7 @@ export const developments: Development[] = [
             max: 1448343
         },
         images: {
-            main: 'https://setaigrupogp.com.br/wp-content/uploads/2025/05/02-Fachada-4-scaled.jpg',
+            main: '/images/developments/heritage-one.png',
             gallery: [
                 'https://setaigrupogp.com.br/wp-content/uploads/2024/10/Rectangle-9-1.jpg',
                 'https://setaigrupogp.com.br/wp-content/uploads/2024/10/Rectangle-9-3.jpg'
@@ -271,7 +271,7 @@ export const developments: Development[] = [
             max: 7564704
         },
         images: {
-            main: 'https://setaigrupogp.com.br/wp-content/uploads/2025/05/setai_aurus_empreendimento-scaled.jpg',
+            main: '/images/developments/setai-aurus.png',
             gallery: [
                 'https://setaigrupogp.com.br/wp-content/uploads/2025/05/09-Gourmet-scaled.jpg',
                 'https://setaigrupogp.com.br/wp-content/uploads/2025/05/21-Piscina-scaled.jpg',
@@ -396,7 +396,7 @@ export const developments: Development[] = [
             max: 2149143
         },
         images: {
-            main: 'https://setaigrupogp.com.br/wp-content/uploads/2025/06/01-Fachada.png',
+            main: '/images/developments/setai-miraj.png',
             gallery: [
                 'https://setaigrupogp.com.br/wp-content/uploads/2025/06/22-Lazer-privativo.png',
                 'https://setaigrupogp.com.br/wp-content/uploads/2025/06/07-Piscina-Terreo.png',
@@ -460,7 +460,7 @@ export const developments: Development[] = [
             max: 1120084
         },
         images: {
-            main: 'https://setaigrupogp.com.br/wp-content/uploads/2025/06/01-Fachada-3-scaled.jpg',
+            main: '/images/developments/setai-sailor.png',
             gallery: [
                 'https://setaigrupogp.com.br/wp-content/uploads/2025/06/10-Spa-scaled.jpg',
                 'https://setaigrupogp.com.br/wp-content/uploads/2025/06/09-Pub-scaled.jpg',
@@ -519,7 +519,7 @@ export const developments: Development[] = [
             max: 2310250
         },
         images: {
-            main: 'https://setaigrupogp.com.br/wp-content/uploads/2024/09/Fachada-Yacht.jpg',
+            main: '/images/developments/ready-properties.png',
             gallery: [
                 'https://setaigrupogp.com.br/wp-content/uploads/2024/09/Piscina-Yacht.jpg',
                 'https://setaigrupogp.com.br/wp-content/uploads/2024/09/Lobby-Yacht.jpg'
@@ -563,7 +563,12 @@ export const developments: Development[] = [
         features: ['Localização premium', 'Construtora de referência'],
         specs: { bedroomsRange: '3-4', areaRange: '80-200m²' },
         priceRange: { min: 800000, max: 3000000 },
-        images: { main: '', gallery: [], videos: [], floorPlans: [] },
+        images: {
+            main: '/images/developments/alliance-premium.png',
+            gallery: [],
+            videos: [],
+            floorPlans: []
+        },
         units: [],
         tags: ['pernambuco', 'luxo'],
         order: 10,
@@ -592,7 +597,12 @@ export const developments: Development[] = [
         features: ['Construtora portuguesa', 'Qualidade europeia'],
         specs: { bedroomsRange: '2-4', areaRange: '60-180m²' },
         priceRange: { min: 600000, max: 2500000 },
-        images: { main: '', gallery: [], videos: [], floorPlans: [] },
+        images: {
+            main: '/images/developments/rio-ave.png',
+            gallery: [],
+            videos: [],
+            floorPlans: []
+        },
         units: [],
         tags: ['pernambuco'],
         order: 11,

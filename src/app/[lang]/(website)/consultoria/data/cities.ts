@@ -63,7 +63,7 @@ export const consultingCities: ConsultingCity[] = [
         flag: '🇦🇪',
         tagline: 'Tax-free e alto luxo no Oriente',
         description: 'Dubai oferece isenção total de impostos sobre renda e ganho de capital. Mercado imobiliário dinâmico com yields superiores à média global. Regulação moderna via RERA e DLD.',
-        heroImage: 'https://images.unsplash.com/photo-1512453979798-5ea936a7d40c?w=1920&q=80',
+        heroImage: '/images/consultoria/dubai-hero.png',
         investmentProfile: {
             avgYield: '6-9% a.a.',
             avgPrice: 'AED 800k–5M',
