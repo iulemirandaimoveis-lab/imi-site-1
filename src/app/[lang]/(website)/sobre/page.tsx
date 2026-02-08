@@ -43,17 +43,25 @@ export default function AboutPage() {
             <section className="bg-imi-900 text-white section-padding relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-accent-500/5 -skew-x-12 translate-x-1/4" />
                 <div className="container-custom relative z-10">
-                    <div className="max-w-3xl">
+                    <div className="max-w-4xl">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-12 h-px bg-accent-500" />
                             <span className="text-accent-500 font-semibold uppercase tracking-[0.2em] text-xs">Quem Somos</span>
                         </div>
-                        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-                            Sobre a IMI
+                        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-8 tracking-tight">
+                            Sobre
                         </h1>
-                        <p className="text-imi-300 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
-                            Transformando o mercado imobiliário através de tecnologia, dados precisos e expertise especializada há mais de uma década.
-                        </p>
+                        <div className="space-y-6 text-imi-200 text-lg md:text-xl font-light leading-relaxed">
+                            <p>
+                                A <strong className="text-white font-semibold">Iule Miranda Imóveis (IMI)</strong> é uma empresa imobiliária de posicionamento técnico e institucional, especializada em avaliações imobiliárias, perícias judiciais e extrajudiciais, corretagem estratégica e consultoria imobiliária no Brasil e em mercados internacionais selecionados.
+                            </p>
+                            <p>
+                                À frente da IMI está <strong className="text-white font-semibold">Iule Miranda</strong>, corretor de imóveis, perito judicial e extrajudicial, avaliador imobiliário e empresário, com atuação focada em inteligência imobiliária, estruturação patrimonial e tomada de decisão baseada em análise técnica e estratégica.
+                            </p>
+                            <p className="text-accent-400 font-medium">
+                                A IMI atua com prioridade técnica antes do viés comercial, oferecendo segurança, clareza e consistência em decisões imobiliárias de médio e longo prazo.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -126,18 +134,16 @@ export default function AboutPage() {
                             </h2>
                             <div className="space-y-4 text-imi-500 leading-relaxed">
                                 <p>
-                                    Engenheiro Civil e Avaliador Imobiliário certificado pelo CNAI (n° 53290),
-                                    com mais de 15 anos de experiência no mercado imobiliário brasileiro e internacional.
+                                    <strong className="text-imi-900">Iule Miranda</strong> é corretor de imóveis, perito judicial e extrajudicial, avaliador imobiliário e empresário, com atuação focada em inteligência imobiliária, estruturação patrimonial e tomada de decisão baseada em análise técnica e estratégica.
                                 </p>
                                 <p>
-                                    Especialista em inteligência de mercado, avaliações patrimoniais e consultoria
-                                    para investimentos imobiliários de médio e alto padrão, com atuação destacada
-                                    no mercado do Nordeste e assessoria para investidores brasileiros nos EUA.
+                                    Formação técnica sólida com mais de 15 anos de experiência no mercado imobiliário brasileiro e internacional, com foco em avaliações patrimoniais, perícias judiciais e extrajudiciais, e consultoria para investimentos de médio e alto padrão.
                                 </p>
                                 <p>
-                                    Formação técnica sólida aliada à visão estratégica de negócios, desenvolvendo
-                                    soluções customizadas que agregam valor real aos projetos de nossos clientes
-                                    através de análise de dados, inteligência de mercado e expertise regulatória.
+                                    Atuação destacada no mercado do Nordeste e assessoria especializada para investidores brasileiros em mercados internacionais selecionados, incluindo Estados Unidos e Emirados Árabes Unidos.
+                                </p>
+                                <p className="text-imi-900 font-medium">
+                                    A IMI atua com prioridade técnica antes do viés comercial, oferecendo segurança, clareza e consistência em decisões imobiliárias de médio e longo prazo.
                                 </p>
                             </div>
                             <div className="mt-8">

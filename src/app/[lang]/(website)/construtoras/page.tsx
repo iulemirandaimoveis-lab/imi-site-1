@@ -28,7 +28,7 @@ const staticDevelopers: Developer[] = [
         id: '1',
         name: 'Setai Grupo GP',
         slug: 'setai-grupo-gp',
-        logo_url: '/images/developers/setai.svg',
+        logo_url: '/images/logos/setai.png',
         website: 'https://setaigrupogp.com.br',
         city: 'João Pessoa',
         state: 'PB',
@@ -39,7 +39,7 @@ const staticDevelopers: Developer[] = [
         id: '2',
         name: 'Alliance Incorporadora',
         slug: 'alliance',
-        logo_url: '/images/developers/alliance.svg',
+        logo_url: '/images/logos/alliance.png',
         website: 'https://alliance.com.br',
         city: 'João Pessoa',
         state: 'PB',
@@ -50,7 +50,7 @@ const staticDevelopers: Developer[] = [
         id: '3',
         name: 'Rio Ave Brasil',
         slug: 'rio-ave',
-        logo_url: '/images/developers/rio-ave.svg',
+        logo_url: '/images/logos/rioave.png',
         website: 'https://rioavebrasil.com.br',
         city: 'Recife',
         state: 'PE',
@@ -61,7 +61,7 @@ const staticDevelopers: Developer[] = [
         id: '4',
         name: 'Moura Dubeux',
         slug: 'moura-dubeux',
-        logo_url: '/images/developers/moura-dubeux.svg',
+        logo_url: '/images/logos/mouradubeux.svg',
         website: 'https://mouradubeux.com.br',
         city: 'Recife',
         state: 'PE',
@@ -72,11 +72,33 @@ const staticDevelopers: Developer[] = [
         id: '5',
         name: 'Cyrela',
         slug: 'cyrela',
-        logo_url: '/images/developers/cyrela.svg',
+        logo_url: '/images/logos/cyrela.svg',
         website: 'https://cyrela.com.br',
         city: 'São Paulo',
         state: 'SP',
         description: 'Líder nacional em alto padrão residencial.',
+        development_count: 2
+    },
+    {
+        id: '6',
+        name: 'DAMAC Properties',
+        slug: 'damac',
+        logo_url: '/images/logos/damac.png',
+        website: 'https://damacproperties.com',
+        city: 'Dubai',
+        state: 'UAE',
+        description: 'Incorporadora líder em Dubai com projetos icônicos.',
+        development_count: 2
+    },
+    {
+        id: '7',
+        name: 'Kempinski Hotels',
+        slug: 'kempinski',
+        logo_url: '/images/logos/kempinski.jpg',
+        website: 'https://kempinski.com',
+        city: 'Miami',
+        state: 'FL',
+        description: 'Excelência europeia em hospitalidade e residências de luxo.',
         development_count: 2
     }
 ];
@@ -134,26 +156,26 @@ export default function ConstrutoresPage({ params: { lang } }: { params: { lang:
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
                                 className="group bg-white rounded-3xl overflow-hidden border border-imi-100 hover:border-accent-500/30 hover:shadow-card-hover transition-all duration-500"
                             >
-                                {/* Logo Area - Fundo escuro para logos claras */}
-                                <div className="relative aspect-[16/9] bg-gradient-to-br from-imi-900 via-imi-800 to-imi-900 flex items-center justify-center p-8">
+                                {/* Logo Area - Fundo claro para logos em cores originais */}
+                                <div className="relative aspect-[16/9] bg-gradient-to-br from-imi-50 via-white to-imi-50 flex items-center justify-center p-8 border-b border-imi-100">
                                     {dev.logo_url ? (
                                         <Image
                                             src={dev.logo_url}
                                             alt={dev.name}
                                             width={180}
                                             height={80}
-                                            className="object-contain max-h-20 filter brightness-0 invert opacity-90 group-hover:opacity-100 transition-opacity"
+                                            className="object-contain max-h-20 opacity-80 group-hover:opacity-100 transition-opacity"
                                         />
                                     ) : (
                                         <div className="flex flex-col items-center gap-3">
-                                            <Building2 className="w-16 h-16 text-imi-600" strokeWidth={1} />
-                                            <span className="text-imi-400 font-bold text-sm uppercase tracking-wider">{dev.name}</span>
+                                            <Building2 className="w-16 h-16 text-imi-400" strokeWidth={1} />
+                                            <span className="text-imi-600 font-bold text-sm uppercase tracking-wider">{dev.name}</span>
                                         </div>
                                     )}
 
                                     {/* Badge de quantidade */}
                                     {dev.development_count && dev.development_count > 0 && (
-                                        <div className="absolute top-4 right-4 bg-accent-500 text-white text-xs font-bold px-3 py-1.5 rounded-full">
+                                        <div className="absolute top-4 right-4 bg-imi-900 text-white text-xs font-bold px-3 py-1.5 rounded-full">
                                             {dev.development_count} {dev.development_count === 1 ? 'empreendimento' : 'empreendimentos'}
                                         </div>
                                     )}

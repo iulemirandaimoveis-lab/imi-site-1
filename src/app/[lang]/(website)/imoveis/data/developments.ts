@@ -98,7 +98,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '3-4', areaRange: '48-120m²' },
         priceRange: { min: 900000, max: 2500000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2666&auto=format&fit=crop',
+            main: '/images/developments/setai-casas-verticais.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -132,7 +132,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '1', areaRange: '16-62m²' },
         priceRange: { min: 350000, max: 950000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=2670&auto=format&fit=crop',
+            main: '/images/developments/setai-aquamaris.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -200,7 +200,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '3-4', areaRange: '120-200m²' },
         priceRange: { min: 1200000, max: 3500000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=2670&auto=format&fit=crop',
+            main: '/images/developments/alliance-aura.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -236,7 +236,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '1-3', areaRange: '50-196m²' },
         priceRange: { min: 650000, max: 2200000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1574958269340-fa927503f3dd?q=80&w=2548&auto=format&fit=crop',
+            main: '/images/developments/rio-ave-raizes.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -270,7 +270,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '1-2', areaRange: '35-70m²' },
         priceRange: { min: 450000, max: 950000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=2670&auto=format&fit=crop',
+            main: '/images/developments/rio-ave-vivant.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -304,7 +304,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '3-4', areaRange: '118-335m²' },
         priceRange: { min: 1500000, max: 5500000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2670&auto=format&fit=crop',
+            main: '/images/developments/moura-dubeux-cais-avenida.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -338,7 +338,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '1-2', areaRange: '26-97m²' },
         priceRange: { min: 380000, max: 1200000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1493246318656-5bfd4cfb29b8?q=80&w=2672&auto=format&fit=crop',
+            main: '/images/developments/infinity-recife.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -374,7 +374,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '4', areaRange: '300-600m²' },
         priceRange: { min: 15000000, max: 45000000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?q=80&w=2574&auto=format&fit=crop',
+            main: '/images/developments/capri-dolce-gabbana.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -408,7 +408,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '3-4', areaRange: '150-250m²' },
         priceRange: { min: 4500000, max: 9000000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1545558014-b6a4a259c19d?q=80&w=2670&auto=format&fit=crop',
+            main: '/images/developments/zen-cyrela-yoo.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -442,7 +442,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '1-3', areaRange: '25-120m²' },
         priceRange: { min: 450000, max: 2200000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1481253127861-534498168948?q=80&w=2573&auto=format&fit=crop',
+            main: '/images/developments/escape-eden-brooklin.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -480,7 +480,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '3-6', areaRange: '185-465m²' },
         priceRange: { min: 3500000, max: 12000000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=2670&auto=format&fit=crop',
+            main: '/images/developments/damac-lagoons-dubai.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -516,7 +516,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '1-4', areaRange: '55-280m²' },
         priceRange: { min: 1800000, max: 8500000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=2574&auto=format&fit=crop',
+            main: '/images/developments/damac-hills-2.png',
             gallery: [],
             videos: [],
             floorPlans: []
@@ -554,7 +554,7 @@ export const developments: Development[] = [
         specs: { bedroomsRange: '1-4', areaRange: '75-350m²' },
         priceRange: { min: 4200000, max: 18000000 },
         images: {
-            main: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2670&auto=format&fit=crop',
+            main: '/images/developments/kempinski-miami.png',
             gallery: [],
             videos: [],
             floorPlans: []
