@@ -62,7 +62,7 @@ export default function DevelopmentCard({ development, index, lang }: Developmen
                                     src={development.developerLogo}
                                     alt={development.developer}
                                     fill
-                                    className="object-contain"
+                                    className="object-contain grayscale brightness-0 opacity-80 group-hover:opacity-100 transition-all"
                                     sizes="(max-width: 768px) 120px, 160px"
                                 />
                             </div>
@@ -105,7 +105,7 @@ export default function DevelopmentCard({ development, index, lang }: Developmen
                                     src={development.developerLogo}
                                     alt={development.developer}
                                     fill
-                                    className="object-contain"
+                                    className="object-contain grayscale brightness-0 opacity-90"
                                     sizes="64px"
                                 />
                             </div>

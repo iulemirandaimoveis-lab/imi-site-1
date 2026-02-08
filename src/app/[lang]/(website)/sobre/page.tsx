@@ -151,14 +151,10 @@ export default function AboutPage() {
                                     href="https://www.linkedin.com/in/iule-miranda"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-4 group"
+                                    className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-[#0077b5] text-white font-medium transition-all duration-300 border border-[#0077b5] hover:bg-white hover:text-[#0077b5] shadow-lg shadow-[#0077b5]/20 group"
                                 >
-                                    <div className="w-12 h-12 bg-white text-imi-600 rounded-xl flex items-center justify-center shadow-soft border border-imi-100 group-hover:bg-[#0077b5] group-hover:text-white group-hover:border-[#0077b5] transition-all duration-300">
-                                        <Linkedin className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-imi-600 font-medium group-hover:text-imi-900 transition-colors">
-                                        Conectar no LinkedIn
-                                    </span>
+                                    <Linkedin className="w-5 h-5 transition-transform group-hover:scale-110" strokeWidth={2} />
+                                    <span>Conectar no LinkedIn</span>
                                 </a>
                             </div>
                         </motion.div>
