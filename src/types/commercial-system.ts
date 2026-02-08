@@ -258,3 +258,167 @@ export interface GenerateImageResponse {
     image_url: string;
     ai_request_id: string;
 }
+
+// Types for Ads Management & Analytics
+export type AdsPlatform = 'google_ads' | 'meta_ads' | 'linkedin_ads' | 'tiktok_ads';
+export type AdsAccountStatus = 'active' | 'inactive' | 'error' | 'expired';
+export type CampaignStatus = 'active' | 'paused' | 'ended' | 'deleted';
+export type InsightType =
+    | 'high_cpa'
+    | 'low_conversion'
+    | 'budget_waste'
+    | 'opportunity'
+    | 'audience_fatigue'
+    | 'creative_decline'
+    | 'bid_optimization'
+    | 'targeting_improvement'
+    | 'budget_reallocation';
+export type InsightSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
+export type InsightStatus = 'open' | 'acknowledged' | 'in_progress' | 'resolved' | 'dismissed';
+
+export interface AdsAccount {
+    id: string;
+    tenant_id: string;
+    platform: AdsPlatform;
+    account_id: string;
+    account_name: string;
+    currency: string;
+    timezone: string;
+    access_token: string | null;
+    refresh_token: string | null;
+    token_expires_at: string | null;
+    account_metadata: any;
+    status: AdsAccountStatus;
+    last_sync_at: string | null;
+    sync_frequency_hours: number;
+    created_at: string;
+    updated_at: string;
+    created_by: string | null;
+}
+
+export interface AdsCampaign {
+    id: string;
+    ads_account_id: string;
+    tenant_id: string;
+    campaign_id: string;
+    campaign_name: string;
+    platform: AdsPlatform;
+    status: CampaignStatus;
+    objective: string | null;
+    budget_type: string | null;
+    budget_amount: number | null;
+    currency: string;
+    start_date: string | null;
+    end_date: string | null;
+    campaign_metadata: any;
+    ai_analysis: any | null;
+    ai_recommendations: string[];
+    last_analyzed_at: string | null;
+    created_at: string;
+    updated_at: string;
+    synced_at: string;
+}
+
+export interface AdsMetrics {
+    id: string;
+    campaign_id: string;
+    ads_account_id: string;
+    tenant_id: string;
+    date: string;
+    impressions: number;
+    reach: number;
+    frequency: number;
+    clicks: number;
+    ctr: number;
+    engagements: number;
+    conversions: number;
+    conversion_rate: number;
+    leads: number;
+    sales: number;
+    spend: number;
+    cpc: number;
+    cpm: number;
+    cpa: number;
+    roas: number;
+    revenue: number;
+    raw_data: any;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface AdsInsight {
+    id: string;
+    tenant_id: string;
+    ads_account_id: string | null;
+    campaign_id: string | null;
+    insight_type: InsightType;
+    severity: InsightSeverity;
+    title: string;
+    description: string;
+    ai_analysis: string | null;
+    recommendations: string[];
+    estimated_impact: number | null;
+    current_metric_value: number | null;
+    benchmark_metric_value: number | null;
+    metric_name: string | null;
+    status: InsightStatus;
+    resolved_at: string | null;
+    resolved_by: string | null;
+    resolution_notes: string | null;
+    analysis_start_date: string | null;
+    analysis_end_date: string | null;
+    created_at: string;
+    updated_at: string;
+    ai_request_id: string | null;
+}
+
+export interface AdsCampaignSummary {
+    campaign_id: string;
+    campaign_name: string;
+    platform: AdsPlatform;
+    status: CampaignStatus;
+    tenant_id: string;
+    days_active: number;
+    total_impressions: number;
+    total_clicks: number;
+    avg_ctr: number;
+    total_conversions: number;
+    total_spend: number;
+    avg_cpc: number;
+    avg_cpa: number;
+    avg_roas: number;
+    total_revenue: number;
+    profit: number;
+}
+
+// API Request/Response Types for Ads
+export interface AnalyzeCampaignRequest {
+    tenant_id: string;
+    campaign_id: string;
+    start_date: string;
+    end_date: string;
+}
+
+export interface AnalyzeCampaignResponse {
+    campaign_id: string;
+    insights: AdsInsight[];
+    ai_analysis: any;
+    recommendations: string[];
+    ai_request_id: string;
+    cost_usd: number;
+}
+
+export interface SyncAdsAccountRequest {
+    tenant_id: string;
+    ads_account_id: string;
+    force_full_sync?: boolean;
+}
+
+export interface SyncAdsAccountResponse {
+    ads_account_id: string;
+    campaigns_synced: number;
+    metrics_synced: number;
+    insights_generated: number;
+    last_sync_at: string;
+}
+

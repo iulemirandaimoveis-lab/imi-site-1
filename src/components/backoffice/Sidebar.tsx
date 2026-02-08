@@ -17,7 +17,8 @@ import {
     Banknote,
     FileText,
     FileEdit,
-    Sparkles
+    Sparkles,
+    BarChart3
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -28,6 +29,7 @@ const sidebarItems = [
     { label: 'Construtoras', href: '/backoffice/construtoras', icon: Building },
     { label: 'Leads', href: '/backoffice/leads', icon: Users },
     { label: 'Conteúdos', href: '/backoffice/conteudos', icon: Sparkles, badge: 'IA' },
+    { label: 'Ads', href: '/backoffice/ads', icon: BarChart3, badge: 'IA' },
     { label: 'Consultorias', href: '/backoffice/consultations', icon: Calendar },
     { label: 'Crédito', href: '/backoffice/credito', icon: Banknote },
     { label: 'Avaliações', href: '/backoffice/avaliacoes', icon: FileText },
