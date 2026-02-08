@@ -17,11 +17,13 @@ import {
     CheckCircle2,
     Copy,
     Download,
+    Calendar,
 } from 'lucide-react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import ScheduleModal from '../../components/ScheduleModal';
 
 const supabase = createClient();
 
@@ -49,6 +51,7 @@ export default function PostEditorPage({
     const { id: calendarId, postId } = use(params);
     const [saving, setSaving] = useState(false);
     const [generating, setGenerating] = useState(false);
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
 
     // Busca post
     const { data: post, mutate } = useSWR(
@@ -166,6 +169,15 @@ export default function PostEditorPage({
                         <Save size={16} className="mr-2" />
                         Salvar
                     </Button>
+                    {post.status === 'approved' && (
+                        <Button
+                            className="bg-orange-600 hover:bg-orange-700"
+                            onClick={() => setShowScheduleModal(true)}
+                        >
+                            <Calendar size={16} className="mr-2" />
+                            Agendar
+                        </Button>
+                    )}
                     <Button
                         className="bg-green-600 hover:bg-green-700"
                         onClick={handleApprove}
@@ -373,6 +385,13 @@ export default function PostEditorPage({
                     )}
                 </div>
             </div>
+
+            <ScheduleModal
+                isOpen={showScheduleModal}
+                onClose={() => setShowScheduleModal(false)}
+                contentItemId={postId}
+                onScheduled={() => mutate()}
+            />
         </div>
     );
 }

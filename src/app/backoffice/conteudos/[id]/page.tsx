@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import useSWR from 'swr';
 import { createClient } from '@/lib/supabase/client';
 import {
@@ -13,9 +13,12 @@ import {
     Clock,
     AlertCircle,
     Edit3,
+    Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
+import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { motion } from 'framer-motion';
@@ -58,6 +61,8 @@ export default function CalendarDetailPage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = use(params);
+    const router = useRouter();
+    const [generatingTopic, setGeneratingTopic] = useState<string | null>(null);
 
     // Busca calendário
     const { data: calendar, isLoading: loadingCalendar } = useSWR(
@@ -75,7 +80,7 @@ export default function CalendarDetailPage({
     );
 
     // Busca posts do calendário
-    const { data: posts, isLoading: loadingPosts } = useSWR(
+    const { data: posts, isLoading: loadingPosts, mutate: mutatePosts } = useSWR(
         id ? ['calendar-posts', id] : null,
         async () => {
             const { data, error } = await supabase
@@ -88,6 +93,46 @@ export default function CalendarDetailPage({
             return data;
         }
     );
+
+    const handleGeneratePost = async (suggestion: any) => {
+        setGeneratingTopic(suggestion.topic);
+
+        try {
+            const response = await fetch('/api/ai/generate-from-suggestion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tenant_id: calendar.tenant_id,
+                    calendar_id: id,
+                    topic: suggestion.topic,
+                    content_pillar: suggestion.content_pillar,
+                    objective: suggestion.objective,
+                    suggested_date: suggestion.suggested_date,
+                    platforms: ['instagram_feed', 'facebook', 'linkedin'],
+                }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Erro ao gerar post');
+            }
+
+            const result = await response.json();
+
+            toast.success('Post gerado com sucesso!', {
+                description: `${result.variants?.length || 0} variantes criadas`,
+            });
+
+            await mutatePosts();
+            router.push(`/backoffice/conteudos/${id}/${result.content_item_id}`);
+        } catch (error: any) {
+            toast.error('Erro ao gerar post', {
+                description: error.message,
+            });
+        } finally {
+            setGeneratingTopic(null);
+        }
+    };
 
     const getMonthName = (month: number) => {
         const months = [
@@ -297,9 +342,20 @@ export default function CalendarDetailPage({
                                         variant="default"
                                         size="sm"
                                         className="w-full bg-accent-600 hover:bg-accent-700"
+                                        onClick={() => handleGeneratePost(post)}
+                                        disabled={generatingTopic === post.topic}
                                     >
-                                        <Sparkles size={14} className="mr-2" />
-                                        Gerar com IA
+                                        {generatingTopic === post.topic ? (
+                                            <>
+                                                <Loader2 className="mr-2 animate-spin" size={14} />
+                                                Gerando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Sparkles size={14} className="mr-2" />
+                                                Gerar com IA
+                                            </>
+                                        )}
                                     </Button>
                                 )}
                             </motion.div>
