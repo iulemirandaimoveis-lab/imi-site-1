@@ -147,16 +147,19 @@ export default function AboutPage() {
                                 </p>
                             </div>
                             <div className="mt-8">
-                                <Button asChild variant="outline" size="lg">
-                                    <a
-                                        href="https://www.linkedin.com/in/iule-miranda"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <Linkedin className="w-5 h-5 mr-3" />
+                                <a
+                                    href="https://www.linkedin.com/in/iule-miranda"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-4 group"
+                                >
+                                    <div className="w-12 h-12 bg-white text-imi-600 rounded-xl flex items-center justify-center shadow-soft border border-imi-100 group-hover:bg-[#0077b5] group-hover:text-white group-hover:border-[#0077b5] transition-all duration-300">
+                                        <Linkedin className="w-5 h-5" />
+                                    </div>
+                                    <span className="text-imi-600 font-medium group-hover:text-imi-900 transition-colors">
                                         Conectar no LinkedIn
-                                    </a>
-                                </Button>
+                                    </span>
+                                </a>
                             </div>
                         </motion.div>
                     </div>
