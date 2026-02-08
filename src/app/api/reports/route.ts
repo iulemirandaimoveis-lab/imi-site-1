@@ -1,128 +1,102 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { generateExecutiveReport } from '@/lib/reports/generator';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-
+// GET /api/reports - Lista relatórios
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url)
-        const period = searchParams.get('period') || '30d'
+        const supabase = await createClient();
 
-        // Calcular data de início baseado no período
-        const now = new Date()
-        const startDate = new Date()
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-        switch (period) {
-            case '7d':
-                startDate.setDate(now.getDate() - 7)
-                break
-            case '30d':
-                startDate.setDate(now.getDate() - 30)
-                break
-            case '90d':
-                startDate.setDate(now.getDate() - 90)
-                break
-            case '1y':
-                startDate.setFullYear(now.getFullYear() - 1)
-                break
+        if (authError || !user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Buscar estatísticas
-        const [
-            totalLeads,
-            previousLeads,
-            totalProperties,
-            previousProperties,
-            totalViews,
-            previousViews,
-        ] = await Promise.all([
-            // Leads atuais
-            prisma.client.count({
-                where: { createdAt: { gte: startDate } },
-            }),
-            // Leads período anterior
-            prisma.client.count({
-                where: {
-                    createdAt: {
-                        gte: new Date(startDate.getTime() - (now.getTime() - startDate.getTime())),
-                        lt: startDate,
-                    },
-                },
-            }),
-            // Imóveis atuais
-            prisma.property.count({
-                where: { status: 'AVAILABLE' },
-            }),
-            // Imóveis período anterior
-            prisma.property.count({
-                where: {
-                    status: 'AVAILABLE',
-                    createdAt: {
-                        lt: startDate,
-                    },
-                },
-            }),
-            // Visualizações atuais
-            prisma.property.aggregate({
-                _sum: { viewCount: true },
-                where: { createdAt: { gte: startDate } },
-            }),
-            // Visualizações período anterior
-            prisma.property.aggregate({
-                _sum: { viewCount: true },
-                where: {
-                    createdAt: {
-                        gte: new Date(startDate.getTime() - (now.getTime() - startDate.getTime())),
-                        lt: startDate,
-                    },
-                },
-            }),
-        ])
+        // Busca tenant do usuário
+        const { data: tenantUser } = await supabase
+            .from('tenant_users')
+            .select('tenant_id')
+            .eq('user_id', user.id)
+            .single();
 
-        // Calcular receita potencial (soma dos preços dos imóveis disponíveis)
-        const revenue = await prisma.property.aggregate({
-            _sum: { price: true },
-            where: { status: 'AVAILABLE' },
-        })
-
-        const previousRevenue = await prisma.property.aggregate({
-            _sum: { price: true },
-            where: {
-                status: 'AVAILABLE',
-                createdAt: { lt: startDate },
-            },
-        })
-
-        // Calcular crescimento percentual
-        const calculateGrowth = (current: number, previous: number) => {
-            if (previous === 0) return current > 0 ? 100 : 0
-            return Math.round(((current - previous) / previous) * 100)
+        if (!tenantUser) {
+            return NextResponse.json({ error: 'No tenant found' }, { status: 404 });
         }
 
-        const stats = {
-            totalLeads,
-            totalProperties,
-            totalViews: totalViews._sum.viewCount || 0,
-            totalRevenue: Number(revenue._sum.price || 0),
-            leadsGrowth: calculateGrowth(totalLeads, previousLeads),
-            propertiesGrowth: calculateGrowth(totalProperties, previousProperties),
-            viewsGrowth: calculateGrowth(
-                totalViews._sum.viewCount || 0,
-                previousViews._sum.viewCount || 0
-            ),
-            revenueGrowth: calculateGrowth(
-                Number(revenue._sum.price || 0),
-                Number(previousRevenue._sum.price || 0)
-            ),
-        }
+        // Busca relatórios
+        const { data: reports, error } = await supabase
+            .from('executive_reports')
+            .select('*')
+            .eq('tenant_id', tenantUser.tenant_id)
+            .order('created_at', { ascending: false })
+            .limit(50);
 
-        return NextResponse.json({ stats })
-    } catch (error) {
-        console.error('Erro ao buscar relatórios:', error)
+        if (error) throw error;
+
+        return NextResponse.json({ reports });
+    } catch (error: any) {
+        console.error('Error in GET /api/reports:', error);
         return NextResponse.json(
-            { error: 'Erro ao buscar relatórios' },
+            { error: error.message || 'Internal Server Error' },
             { status: 500 }
-        )
+        );
+    }
+}
+
+// POST /api/reports - Gera novo relatório
+export async function POST(request: NextRequest) {
+    try {
+        const supabase = await createClient();
+
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const body = await request.json();
+        const { report_type, period_start, period_end } = body;
+
+        if (!report_type || !period_start || !period_end) {
+            return NextResponse.json(
+                { error: 'report_type, period_start and period_end are required' },
+                { status: 400 }
+            );
+        }
+
+        // Busca tenant
+        const { data: tenantUser } = await supabase
+            .from('tenant_users')
+            .select('tenant_id')
+            .eq('user_id', user.id)
+            .single();
+
+        if (!tenantUser) {
+            return NextResponse.json({ error: 'No tenant found' }, { status: 404 });
+        }
+
+        // Gera relatório
+        const report = await generateExecutiveReport({
+            tenant_id: tenantUser.tenant_id,
+            report_type,
+            period_start,
+            period_end,
+            generated_by: user.id,
+        });
+
+        return NextResponse.json({ report }, { status: 201 });
+    } catch (error: any) {
+        console.error('Error in POST /api/reports:', error);
+        return NextResponse.json(
+            { error: error.message || 'Internal Server Error' },
+            { status: 500 }
+        );
     }
 }

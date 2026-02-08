@@ -41,7 +41,22 @@ export interface NichePlaybook {
         greetings?: string[];
         objections_handling?: Record<string, string>;
         CTAs?: string[];
+        tone_modifiers?: string[];
     };
+    content_guidelines: {
+        forbidden_terms: string[];
+        required_disclaimers: string[];
+        hashtag_strategy: string;
+        post_length_limits: Record<string, number>;
+        image_style: string;
+    };
+    crm_scripts: {
+        qualification_questions: string[];
+        objection_responses: Record<string, string>;
+        follow_up_sequences: FollowUpSequence[];
+    };
+    whatsapp_templates: WhatsAppTemplate[];
+    email_templates: EmailTemplate[];
     typical_audiences: string[];
     legal_restrictions: string | null;
     campaign_templates: CampaignTemplate[];
@@ -50,6 +65,37 @@ export interface NichePlaybook {
     created_at: string;
     updated_at: string;
 }
+
+export interface FollowUpSequence {
+    trigger: string;
+    channel: 'whatsapp' | 'email' | 'call';
+    message?: string;
+    subject?: string;
+}
+
+export interface WhatsAppTemplate {
+    name: string;
+    category: string;
+    message: string;
+}
+
+export interface EmailTemplate {
+    name: string;
+    subject: string;
+    category: string;
+    body_html: string;
+}
+
+export interface PlaybookVersion {
+    id: string;
+    playbook_id: string;
+    version: number;
+    changes_summary: string | null;
+    snapshot: any;
+    changed_by: string | null;
+    created_at: string;
+}
+
 
 export interface CampaignTemplate {
     type: string;
