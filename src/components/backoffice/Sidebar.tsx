@@ -24,13 +24,13 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 const sidebarItems = [
-    { label: 'Dashboard', href: '/backoffice/dashboard', icon: LayoutDashboard },
+    { label: 'Dashboard', href: '/backoffice', icon: LayoutDashboard },
     { label: 'Imóveis', href: '/backoffice/imoveis', icon: Building2 },
     { label: 'Construtoras', href: '/backoffice/construtoras', icon: Building },
     { label: 'Leads', href: '/backoffice/leads', icon: Users },
     { label: 'Blog & IA', href: '/backoffice/conteudos', icon: Sparkles, badge: 'IA' },
     { label: 'Ads', href: '/backoffice/ads', icon: BarChart3, badge: 'IA' },
-    { label: 'Consultorias', href: '/backoffice/consultations', icon: Calendar },
+    { label: 'Consultoria', href: '/backoffice/consultoria', icon: Calendar },
     { label: 'Crédito', href: '/backoffice/credito', icon: Banknote },
     { label: 'Avaliações', href: '/backoffice/avaliacoes', icon: FileText },
     { label: 'Páginas Inst.', href: '/backoffice/conteudo', icon: FileEdit },
