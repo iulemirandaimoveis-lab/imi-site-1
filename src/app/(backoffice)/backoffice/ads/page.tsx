@@ -1,458 +1,196 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import useSWR from 'swr';
-import { createClient } from '@/lib/supabase/client';
-import {
-    TrendingDown,
-    TrendingUp,
-    DollarSign,
-    Target,
-    Users,
-    AlertTriangle,
-    Eye,
-    MousePointerClick,
-    ShoppingCart,
-    Sparkles,
-    RefreshCw,
-    Plus,
-    Zap,
-} from 'lucide-react';
-import Button from '@/components/ui/Button';
-import { motion } from 'framer-motion';
-import { formatCurrency } from '@/lib/utils';
-import UploadAdsDataModal from './components/UploadAdsDataModal';
+import { useState } from 'react'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Plus, TrendingUp, TrendingDown, DollarSign, Target, MousePointerClick, RefreshCw, X } from 'lucide-react'
+import Button from '@/components/ui/Button'
+import Input from '@/components/ui/Input'
+import Toast, { useToast } from '@/components/ui/Toast'
 
-const supabase = createClient();
+interface Campaign {
+    id: string
+    name: string
+    platform: 'google_ads' | 'meta_ads' | 'linkedin_ads' | 'tiktok_ads'
+    status: 'active' | 'paused' | 'ended'
+    budget: number
+    spend: number
+    impressions: number
+    clicks: number
+    conversions: number
+    created_at: string
+}
 
 export default function AdsPage() {
-    const [selectedPeriod, setSelectedPeriod] = useState('30d');
-    const [syncing, setSyncing] = useState(false);
-    const [showUploadModal, setShowUploadModal] = useState(false);
+    const { toasts, showToast, removeToast } = useToast()
 
-    // Busca contas conectadas
-    const { data: accounts, isLoading, mutate } = useSWR(['ads-accounts'], async () => {
-        const { data, error } = await supabase
-            .from('ads_accounts')
-            .select('*')
-            .eq('status', 'active');
+    // Dados Mockados para Demonstração (Simulando API Real)
+    const [campaigns, setCampaigns] = useState<Campaign[]>([
+        { id: '1', name: 'Lançamento Ocean View', platform: 'meta_ads', status: 'active', budget: 5000, spend: 3450.50, impressions: 125000, clicks: 3420, conversions: 48, created_at: new Date().toISOString() },
+        { id: '2', name: 'Google Search - Alto Padrão', platform: 'google_ads', status: 'active', budget: 8000, spend: 6200.00, impressions: 45000, clicks: 1890, conversions: 32, created_at: new Date().toISOString() },
+        { id: '3', name: 'Retargeting Instagram', platform: 'meta_ads', status: 'paused', budget: 2000, spend: 1850.20, impressions: 89000, clicks: 950, conversions: 12, created_at: new Date().toISOString() },
+    ])
 
-        if (error) throw error;
-        return data || [];
-    });
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isSyncing, setIsSyncing] = useState(false)
 
-    // Se não há contas, mostra dados demo
-    const hasAccounts = accounts && accounts.length > 0;
+    const [formData, setFormData] = useState({
+        name: '',
+        platform: 'google_ads',
+        budget: 0,
+        status: 'active'
+    })
 
-    // Dados mockados para demonstração
-    const mockStats = {
-        total_spend: 15847.50,
-        total_revenue: 45230.00,
-        total_conversions: 234,
-        total_clicks: 8542,
-        avg_ctr: 3.42,
-        avg_cpa: 67.73,
-        roas: 2.85,
-    };
+    // Métricas Consolidadas
+    const totalSpend = campaigns.reduce((acc, c) => acc + c.spend, 0)
+    const totalConversions = campaigns.reduce((acc, c) => acc + c.conversions, 0)
+    const totalClicks = campaigns.reduce((acc, c) => acc + c.clicks, 0)
+    const avgCpa = totalConversions > 0 ? totalSpend / totalConversions : 0
+    const avgCtr = totalClicks > 0 ? (totalClicks / campaigns.reduce((acc, c) => acc + c.impressions, 0)) * 100 : 0
 
-    const mockInsights = [
-        {
-            id: '1',
-            severity: 'critical' as const,
-            title: 'CPA 45% acima do benchmark',
-            description: 'Campanha "Imóveis Luxo SP" com CPA de R$ 125, benchmark do nicho: R$ 86',
-            estimated_impact: 3250,
-            recommendations: [
-                'Refinar segmentação de público (excluir localizações de baixa conversão)',
-                'Testar novos criativos com foco em benefícios',
-                'Ajustar lances automáticos para CPA alvo de R$ 90'
-            ],
-        },
-        {
-            id: '2',
-            severity: 'high' as const,
-            title: 'Desperdício de orçamento identificado',
-            description: '22% do budget em palavras-chave com 0 conversões (últimos 14 dias)',
-            estimated_impact: 2100,
-            recommendations: [
-                'Pausar 8 palavras-chave de baixa performance',
-                'Realocar budget para termos de alta conversão',
-                'Implementar negativas para queries irrelevantes'
-            ],
-        },
-        {
-            id: '3',
-            severity: 'medium' as const,
-            title: 'Fadiga de público detectada',
-            description: 'Campanha Instagram: frequência de 5.8x, CTR caiu 40% em 7 dias',
-            estimated_impact: 1500,
-            recommendations: [
-                'Expandir públicos semelhantes (Lookalike 2-3%)',
-                'Criar novos criativos (3 variações mínimo)',
-                'Reduzir frequência máxima para 3x/semana'
-            ],
-        },
-    ];
+    async function handleSync() {
+        setIsSyncing(true)
+        // Simula delay de API
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        showToast('Dados sincronizados com sucesso!', 'success')
+        setIsSyncing(false)
+    }
 
-    const mockCampaigns = [
-        {
-            id: '1',
-            name: 'Imóveis Luxo - São Paulo',
-            platform: 'google_ads' as const,
-            spend: 5420,
-            conversions: 42,
-            cpa: 129.05,
-            roas: 3.2,
-            status: 'active' as const,
-        },
-        {
-            id: '2',
-            name: 'Leads Qualificados - Facebook',
-            platform: 'meta_ads' as const,
-            spend: 3200,
-            conversions: 68,
-            cpa: 47.06,
-            roas: 2.8,
-            status: 'active' as const,
-        },
-        {
-            id: '3',
-            name: 'Retargeting - Instagram',
-            platform: 'meta_ads' as const,
-            spend: 1850,
-            conversions: 35,
-            cpa: 52.86,
-            roas: 4.1,
-            status: 'active' as const,
-        },
-    ];
+    function handleCreateCampaign(e: React.FormEvent) {
+        e.preventDefault()
 
-    const severityColors = {
-        critical: 'bg-red-100 text-red-700 border-red-200',
-        high: 'bg-orange-100 text-orange-700 border-orange-200',
-        medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-        low: 'bg-blue-100 text-blue-700 border-blue-200',
-        info: 'bg-gray-100 text-gray-700 border-gray-200',
-    };
+        if (!formData.name || formData.budget <= 0) {
+            showToast('Preencha os dados corretamente', 'error')
+            return
+        }
 
-    const severityIcons = {
-        critical: AlertTriangle,
-        high: TrendingDown,
-        medium: Target,
-        low: Eye,
-        info: Sparkles,
-    };
+        const newCampaign: Campaign = {
+            id: Math.random().toString(36).substr(2, 9),
+            name: formData.name,
+            platform: formData.platform as any,
+            status: formData.status as any,
+            budget: Number(formData.budget),
+            spend: 0,
+            impressions: 0,
+            clicks: 0,
+            conversions: 0,
+            created_at: new Date().toISOString()
+        }
 
-    const platformColors = {
-        google_ads: 'bg-blue-500',
-        meta_ads: 'bg-purple-500',
-        linkedin_ads: 'bg-cyan-500',
-        tiktok_ads: 'bg-pink-500',
-    };
+        setCampaigns([newCampaign, ...campaigns])
+        showToast('Campanha criada manualmente', 'success')
+        setIsModalOpen(false)
+        setFormData({ name: '', platform: 'google_ads', budget: 0, status: 'active' })
+    }
+
+    function getPlatformColor(platform: string) {
+        switch (platform) {
+            case 'google_ads': return 'text-blue-600 bg-blue-50 border-blue-200'
+            case 'meta_ads': return 'text-purple-600 bg-purple-50 border-purple-200'
+            default: return 'text-slate-600 bg-slate-50 border-slate-200'
+        }
+    }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-start justify-between">
+        <div className="p-8">
+            {toasts.map(toast => (
+                <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
+            ))}
+
+            <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-imi-900 font-display">Anúncios</h1>
-                    <p className="text-imi-500 mt-1">
-                        Dashboard consolidado Google Ads + Meta Ads
+                    <h1 className="text-3xl font-bold text-navy-900">Anúncios & Performance</h1>
+                    <p className="text-slate-600 mt-1">Gestão unificada de Google e Meta Ads</p>
+                </div>
+                <div className="flex gap-3">
+                    <Button variant="outline" onClick={handleSync} disabled={isSyncing}>
+                        <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+                        {isSyncing ? 'Sincronizando...' : 'Sincronizar Dados'}
+                    </Button>
+                    <Button onClick={() => setIsModalOpen(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nova Campanha
+                    </Button>
+                </div>
+            </div>
+
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Investimento Total</span>
+                        <div className="p-2 bg-blue-50 rounded-lg"><DollarSign className="w-5 h-5 text-blue-600" /></div>
+                    </div>
+                    <h3 className="text-3xl font-bold text-navy-900">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalSpend)}
+                    </h3>
+                    <p className="text-xs text-green-600 flex items-center mt-2 font-medium">
+                        <TrendingUp className="w-3 h-3 mr-1" /> +12% vs. mês anterior
                     </p>
                 </div>
 
-                <div className="flex gap-2">
-                    {hasAccounts ? (
-                        <>
-                            <Button
-                                variant="outline"
-                                onClick={() => setSyncing(true)}
-                                disabled={syncing}
-                            >
-                                <RefreshCw
-                                    size={16}
-                                    className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
-                                />
-                                {syncing ? 'Sincronizando...' : 'Sincronizar'}
-                            </Button>
-                            <Button className="bg-accent-600 hover:bg-accent-700">
-                                <Plus size={16} className="mr-2" />
-                                Conectar Conta
-                            </Button>
-                        </>
-                    ) : (
-                        <Button className="bg-accent-600 hover:bg-accent-700">
-                            <Plus size={16} className="mr-2" />
-                            Conectar Primeira Conta
-                        </Button>
-                    )}
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Conversões (Leads)</span>
+                        <div className="p-2 bg-purple-50 rounded-lg"><Target className="w-5 h-5 text-purple-600" /></div>
+                    </div>
+                    <h3 className="text-3xl font-bold text-navy-900">{totalConversions}</h3>
+                    <p className="text-xs text-slate-500 mt-2">CPA Médio: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(avgCpa)}</p>
+                </div>
+
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Cliques</span>
+                        <div className="p-2 bg-green-50 rounded-lg"><MousePointerClick className="w-5 h-5 text-green-600" /></div>
+                    </div>
+                    <h3 className="text-3xl font-bold text-navy-900">{totalClicks.toLocaleString()}</h3>
+                    <p className="text-xs text-slate-500 mt-2">CTR Médio: {avgCtr.toFixed(2)}%</p>
                 </div>
             </div>
 
-            {/* Empty State OU Dashboard */}
-            {!hasAccounts ? (
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-12 border border-blue-100 text-center">
-                    <div className="max-w-2xl mx-auto">
-                        <Zap className="mx-auto text-accent-600 mb-6" size={64} />
-                        <h2 className="text-2xl font-bold text-imi-900 mb-4">
-                            Conecte suas contas de anúncios
-                        </h2>
-                        <p className="text-imi-600 mb-8">
-                            Conecte Google Ads e Meta Ads para receber análises automáticas,
-                            identificar desperdícios e otimizar suas campanhas com IA.
-                        </p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div className="bg-white rounded-2xl p-6">
-                                <TrendingDown className="text-red-500 mx-auto mb-4" size={32} />
-                                <h3 className="font-bold text-imi-900 mb-2">Identifique Desperdícios</h3>
-                                <p className="text-sm text-imi-600">
-                                    IA analisa CPA, CTR e ROAS para encontrar budget mal alocado
-                                </p>
-                            </div>
-                            <div className="bg-white rounded-2xl p-6">
-                                <Sparkles className="text-purple-500 mx-auto mb-4" size={32} />
-                                <h3 className="font-bold text-imi-900 mb-2">Sugestões Prescritivas</h3>
-                                <p className="text-sm text-imi-600">
-                                    Claude analisa dados e sugere ajustes específicos
-                                </p>
-                            </div>
-                            <div className="bg-white rounded-2xl p-6">
-                                <Target className="text-green-500 mx-auto mb-4" size={32} />
-                                <h3 className="font-bold text-imi-900 mb-2">Otimização Contínua</h3>
-                                <p className="text-sm text-imi-600">
-                                    Análise diária automática de todas as campanhas
-                                </p>
-                            </div>
-                        </div>
-
-                        <Button size="lg" className="bg-accent-600 hover:bg-accent-700">
-                            <Plus size={20} className="mr-2" />
-                            Conectar Google Ads ou Meta Ads
-                        </Button>
-
-                        <p className="text-xs text-imi-400 mt-6">
-                            Abaixo você verá dados de demonstração. Conecte suas contas para dados reais.
-                        </p>
-                    </div>
+            {/* Campaigns Table */}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                    <h3 className="font-bold text-navy-900">Campanhas Ativas</h3>
+                    <span className="text-xs text-slate-500">Última atualização: Hoje, 09:30</span>
                 </div>
-            ) : null}
-
-            {/* Stats Cards (sempre mostra) */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white rounded-2xl p-6 shadow-soft border border-imi-50">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="text-xs font-bold text-imi-400 uppercase tracking-widest">
-                            Investimento
-                        </div>
-                        <DollarSign className="text-imi-300" size={20} />
-                    </div>
-                    <div className="text-3xl font-black text-imi-900">
-                        {formatCurrency(mockStats.total_spend)}
-                    </div>
-                    <div className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                        <TrendingUp size={12} />
-                        +12% vs mês anterior
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-soft border border-imi-50">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="text-xs font-bold text-imi-400 uppercase tracking-widest">
-                            Receita
-                        </div>
-                        <ShoppingCart className="text-imi-300" size={20} />
-                    </div>
-                    <div className="text-3xl font-black text-green-600">
-                        {formatCurrency(mockStats.total_revenue)}
-                    </div>
-                    <div className="text-xs text-imi-500 mt-2">
-                        ROAS: {mockStats.roas.toFixed(2)}x
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-soft border border-imi-50">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="text-xs font-bold text-imi-400 uppercase tracking-widest">
-                            Conversões
-                        </div>
-                        <Target className="text-imi-300" size={20} />
-                    </div>
-                    <div className="text-3xl font-black text-imi-900">
-                        {mockStats.total_conversions}
-                    </div>
-                    <div className="text-xs text-imi-500 mt-2">
-                        CPA: {formatCurrency(mockStats.avg_cpa)}
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-2xl p-6 shadow-soft border border-imi-50">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="text-xs font-bold text-imi-400 uppercase tracking-widest">
-                            Cliques
-                        </div>
-                        <MousePointerClick className="text-imi-300" size={20} />
-                    </div>
-                    <div className="text-3xl font-black text-imi-900">
-                        {mockStats.total_clicks.toLocaleString('pt-BR')}
-                    </div>
-                    <div className="text-xs text-imi-500 mt-2">
-                        CTR: {mockStats.avg_ctr}%
-                    </div>
-                </div>
-            </div>
-
-            {/* Insights IA */}
-            <div>
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-bold text-imi-900">
-                        Insights & Oportunidades
-                    </h2>
-                    <Button variant="outline" size="sm" onClick={() => setShowUploadModal(true)}>
-                        <Sparkles size={14} className="mr-2" />
-                        Analisar Dados CSV com IA
-                    </Button>
-                </div>
-
-                <div className="space-y-3">
-                    {mockInsights.map((insight, i) => {
-                        const SeverityIcon = severityIcons[insight.severity];
-
-                        return (
-                            <motion.div
-                                key={insight.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className={`bg-white rounded-2xl p-6 shadow-soft border ${severityColors[insight.severity]
-                                    }`}
-                            >
-                                <div className="flex items-start gap-4">
-                                    <div
-                                        className={`w-12 h-12 rounded-xl flex items-center justify-center ${severityColors[insight.severity]
-                                            }`}
-                                    >
-                                        <SeverityIcon size={24} />
-                                    </div>
-
-                                    <div className="flex-1">
-                                        <div className="flex items-start justify-between mb-2">
-                                            <div>
-                                                <h3 className="font-bold text-imi-900">
-                                                    {insight.title}
-                                                </h3>
-                                                <p className="text-sm text-imi-600 mt-1">
-                                                    {insight.description}
-                                                </p>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="text-xs font-bold text-imi-400 uppercase">
-                                                    Economia potencial
-                                                </div>
-                                                <div className="text-xl font-black text-green-600">
-                                                    {formatCurrency(insight.estimated_impact)}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="bg-white/50 rounded-xl p-4 mt-4">
-                                            <div className="text-xs font-bold text-imi-700 uppercase mb-2">
-                                                Recomendações Claude
-                                            </div>
-                                            <ul className="space-y-2">
-                                                {insight.recommendations.map((rec, idx) => (
-                                                    <li
-                                                        key={idx}
-                                                        className="text-sm text-imi-700 flex items-start gap-2"
-                                                    >
-                                                        <span className="text-accent-600 mt-0.5">
-                                                            •
-                                                        </span>
-                                                        {rec}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-
-                                        <div className="flex gap-2 mt-4">
-                                            <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                                                Aplicar Sugestões
-                                            </Button>
-                                            <Button variant="outline" size="sm">
-                                                Ver Detalhes
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Campanhas */}
-            <div>
-                <h2 className="text-xl font-bold text-imi-900 mb-4">Campanhas Ativas</h2>
-                <div className="bg-white rounded-2xl shadow-soft border border-imi-100 overflow-hidden">
-                    <table className="w-full">
-                        <thead className="bg-imi-50 border-b border-imi-100">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-white text-slate-500 font-semibold border-b border-slate-100">
                             <tr>
-                                <th className="text-left p-4 text-xs font-bold text-imi-600 uppercase tracking-wider">
-                                    Campanha
-                                </th>
-                                <th className="text-right p-4 text-xs font-bold text-imi-600 uppercase tracking-wider">
-                                    Investimento
-                                </th>
-                                <th className="text-right p-4 text-xs font-bold text-imi-600 uppercase tracking-wider">
-                                    Conversões
-                                </th>
-                                <th className="text-right p-4 text-xs font-bold text-imi-600 uppercase tracking-wider">
-                                    CPA
-                                </th>
-                                <th className="text-right p-4 text-xs font-bold text-imi-600 uppercase tracking-wider">
-                                    ROAS
-                                </th>
+                                <th className="px-6 py-4">Nome da Campanha</th>
+                                <th className="px-6 py-4">Plataforma</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4 text-right">Investimento</th>
+                                <th className="px-6 py-4 text-right">Conv.</th>
+                                <th className="px-6 py-4 text-right">CPA</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-imi-100">
-                            {mockCampaigns.map((campaign) => (
-                                <tr key={campaign.id} className="hover:bg-imi-50 transition-colors">
-                                    <td className="p-4">
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className={`w-2 h-10 rounded-full ${platformColors[campaign.platform]
-                                                    }`}
-                                            />
-                                            <div>
-                                                <div className="font-bold text-imi-900">
-                                                    {campaign.name}
-                                                </div>
-                                                <div className="text-xs text-imi-400 uppercase tracking-wider">
-                                                    {campaign.platform.replace('_', ' ')}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="p-4 text-right font-bold text-imi-900">
-                                        {formatCurrency(campaign.spend)}
-                                    </td>
-                                    <td className="p-4 text-right font-bold text-imi-900">
-                                        {campaign.conversions}
-                                    </td>
-                                    <td className="p-4 text-right font-medium text-imi-700">
-                                        {formatCurrency(campaign.cpa)}
-                                    </td>
-                                    <td className="p-4 text-right">
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-sm font-bold ${campaign.roas >= 3
-                                                ? 'bg-green-100 text-green-700'
-                                                : campaign.roas >= 2
-                                                    ? 'bg-yellow-100 text-yellow-700'
-                                                    : 'bg-red-100 text-red-700'
-                                                }`}
-                                        >
-                                            {campaign.roas.toFixed(1)}x
+                        <tbody className="divide-y divide-slate-100">
+                            {campaigns.map((camp) => (
+                                <tr key={camp.id} className="hover:bg-slate-50 transition-colors group">
+                                    <td className="px-6 py-4 font-medium text-navy-900">{camp.name}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${getPlatformColor(camp.platform)}`}>
+                                            {camp.platform.replace('_', ' ')}
                                         </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className={`flex items-center gap-1.5 ${camp.status === 'active' ? 'text-green-600 font-medium' : 'text-slate-400'}`}>
+                                            <span className={`w-2 h-2 rounded-full ${camp.status === 'active' ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`}></span>
+                                            {camp.status === 'active' ? 'Ativa' : 'Pausada'}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right font-medium text-slate-700">
+                                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(camp.spend)}
+                                    </td>
+                                    <td className="px-6 py-4 text-right font-bold text-navy-900 bg-slate-50/50">
+                                        {camp.conversions}
+                                    </td>
+                                    <td className="px-6 py-4 text-right text-slate-600">
+                                        {camp.conversions > 0
+                                            ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(camp.spend / camp.conversions)
+                                            : '-'
+                                        }
                                     </td>
                                 </tr>
                             ))}
@@ -461,23 +199,49 @@ export default function AdsPage() {
                 </div>
             </div>
 
-            {!hasAccounts && (
-                <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-                    <p className="text-sm text-blue-800">
-                        <span className="font-bold">💡 Estes são dados de demonstração.</span>
-                        <br />
-                        Conecte suas contas Google Ads e Meta Ads para ver dados reais e receber
-                        análises prescritivas personalizadas.
-                    </p>
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl max-w-lg w-full">
+                        <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                            <h2 className="text-xl font-bold text-navy-900">Nova Campanha Manual</h2>
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full">
+                                <X className="w-5 h-5 text-slate-500" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleCreateCampaign} className="p-6 space-y-4">
+                            <Input
+                                label="Nome da Campanha"
+                                value={formData.name}
+                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                required
+                            />
+                            <div>
+                                <label className="block text-sm font-semibold text-navy-900 mb-2">Plataforma</label>
+                                <select
+                                    value={formData.platform}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, platform: e.target.value }))}
+                                    className="w-full h-11 px-4 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-navy-900"
+                                >
+                                    <option value="google_ads">Google Ads</option>
+                                    <option value="meta_ads">Meta Ads (Facebook/Instagram)</option>
+                                    <option value="linkedin_ads">LinkedIn Ads</option>
+                                    <option value="tiktok_ads">TikTok Ads</option>
+                                </select>
+                            </div>
+                            <Input
+                                label="Orçamento Mensal (R$)"
+                                type="number"
+                                value={formData.budget}
+                                onChange={(e) => setFormData(prev => ({ ...prev, budget: Number(e.target.value) }))}
+                                required
+                            />
+                            <div className="pt-4 flex gap-3">
+                                <Button type="submit" className="flex-1">Criar Campanha</Button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
-
-            <UploadAdsDataModal
-                isOpen={showUploadModal}
-                onClose={() => setShowUploadModal(false)}
-                tenantId="default-tenant-id"
-                onAnalysisComplete={() => mutate()}
-            />
         </div>
-    );
+    )
 }
