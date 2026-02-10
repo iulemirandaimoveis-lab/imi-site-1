@@ -123,7 +123,7 @@ export default function ConstrutoresPage({ params: { lang } }: { params: { lang:
                             <span className="text-accent-500 font-bold uppercase tracking-[0.3em] text-xs">Parceiros</span>
                         </motion.div>
                         <motion.h1 variants={slideUp} className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight">
-                            Nossas <br /><span className="text-accent-500 italic">Construtoras</span>
+                            Nossas <br /><span className="text-accent-500 italic">Construtoras Parceiras</span>
                         </motion.h1>
                         <motion.p variants={slideUp} className="text-imi-300 text-lg md:text-xl font-light leading-relaxed max-w-2xl">
                             Trabalhamos com as incorporadoras mais renomadas do mercado, garantindo qualidade construtiva e solidez nos investimentos.
