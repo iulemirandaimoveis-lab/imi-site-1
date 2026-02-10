@@ -1,468 +1,362 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
-import { createClient } from '@/lib/supabase/client'
-import { Plus, Edit, Trash2, Upload, X } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import Input from '@/components/ui/Input'
-import Textarea from '@/components/ui/Textarea'
-import Toast, { useToast } from '@/components/ui/Toast'
-import { uploadFile, deleteFile } from '@/lib/supabase/storage'
+import { useState, useMemo } from 'react';
+import useSWR from 'swr';
+import { createClient } from '@/lib/supabase/client';
+import {
+    Building2, MapPin, TrendingUp, Users, BarChart3, Search, Filter,
+    ExternalLink, Grid3x3, List, ChevronDown, ChevronUp, Award, Star
+} from 'lucide-react';
+import Link from 'next/link';
+import { AnimatePresence, motion } from 'framer-motion';
 
-interface Developer {
-    id: string
-    name: string
-    logo_url: string | null
-    description: string | null
-    website: string | null
-    cnpj: string | null
-    phone: string | null
-    email: string | null
-    active: boolean
-    created_at: string
+const supabase = createClient();
+
+type SortField = 'name' | 'developments_count' | 'leads_count' | 'avg_score';
+type SortDir = 'asc' | 'desc';
+type ViewMode = 'cards' | 'table';
+
+function cn(...c: any[]) { return c.filter(Boolean).join(' '); }
+
+interface DeveloperStats {
+    name: string;
+    developments_count: number;
+    leads_count: number;
+    avg_score: number;
+    regions: string[];
+    cities: string[];
+    total_investment: number;
+    published_count: number;
+    developments: any[];
 }
 
 export default function DevelopersPage() {
-    const supabase = createClient()
-    const { toasts, showToast, removeToast } = useToast()
-    const [developers, setDevelopers] = useState<Developer[]>([])
-    const [isLoading, setIsLoading] = useState(true)
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [editingDeveloper, setEditingDeveloper] = useState<Developer | null>(null)
-    const [isUploading, setIsUploading] = useState(false)
-    const [isSaving, setIsSaving] = useState(false)
+    const [search, setSearch] = useState('');
+    const [regionF, setRegionF] = useState('all');
+    const [showF, setShowF] = useState(false);
+    const [sortField, setSortField] = useState<SortField>('developments_count');
+    const [sortDir, setSortDir] = useState<SortDir>('desc');
+    const [viewMode, setViewMode] = useState<ViewMode>('cards');
 
-    const [formData, setFormData] = useState({
-        name: '',
-        logo_url: '',
-        description: '',
-        website: '',
-        cnpj: '',
-        phone: '',
-        email: '',
-        active: true
-    })
+    const { data: devs, isLoading } = useSWR('devs-for-developers', async () => {
+        const { data, error } = await supabase.from('developments').select('*');
+        if (error) throw error;
+        return data;
+    });
 
-    const [errors, setErrors] = useState<Record<string, string>>({})
+    const developers = useMemo(() => {
+        if (!devs) return [];
 
-    async function fetchDevelopers() {
-        setIsLoading(true)
-        try {
-            const { data, error } = await supabase
-                .from('developers')
-                .select('*')
-                .order('created_at', { ascending: false })
-
-            if (error) {
-                console.error('Stack trace:', error)
-                throw error
+        // Group by developer
+        const grouped = devs.reduce((acc, dev) => {
+            const devName = dev.developer || 'Sem Construtora';
+            if (!acc[devName]) {
+                acc[devName] = {
+                    name: devName,
+                    developments_count: 0,
+                    leads_count: 0,
+                    avg_score: 0,
+                    regions: new Set(),
+                    cities: new Set(),
+                    total_investment: 0,
+                    published_count: 0,
+                    developments: []
+                };
             }
-            setDevelopers(data || [])
-        } catch (err: any) {
-            console.error('Error fetching developers:', err)
-            showToast(err.message || 'Erro ao carregar construtoras', 'error')
-        } finally {
-            setIsLoading(false)
-        }
-    }
+            acc[devName].developments_count++;
+            acc[devName].leads_count += dev.leads_count || 0;
+            acc[devName].avg_score += dev.score || 0;
+            if (dev.region) acc[devName].regions.add(dev.region);
+            if (dev.city) acc[devName].cities.add(dev.city);
+            if (dev.price_min) acc[devName].total_investment += dev.price_min;
+            if (dev.status_comercial === 'publicado') acc[devName].published_count++;
+            acc[devName].developments.push(dev);
+            return acc;
+        }, {} as Record<string, any>);
 
-    useEffect(() => {
-        fetchDevelopers()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+        // Convert to array and calculate averages
+        const result: DeveloperStats[] = Object.values(grouped).map((d: any) => ({
+            name: d.name,
+            developments_count: d.developments_count,
+            leads_count: d.leads_count,
+            avg_score: d.developments_count > 0 ? Math.round(d.avg_score / d.developments_count) : 0,
+            regions: Array.from(d.regions),
+            cities: Array.from(d.cities),
+            total_investment: d.total_investment,
+            published_count: d.published_count,
+            developments: d.developments
+        }));
 
-    function validateForm() {
-        const newErrors: Record<string, string> = {}
+        return result;
+    }, [devs]);
 
-        if (!formData.name.trim()) {
-            newErrors.name = 'Nome é obrigatório'
-        }
+    const filtered = useMemo(() => {
+        if (!developers) return [];
+        let result = developers.filter(d => {
+            const ms = !search || d.name.toLowerCase().includes(search.toLowerCase());
+            const mr = regionF === 'all' || d.regions.includes(regionF);
+            return ms && mr;
+        });
 
-        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Email inválido'
-        }
-
-        if (formData.website && !/^https?:\/\/.+/.test(formData.website)) {
-            newErrors.website = 'URL inválida (deve começar com http:// ou https://)'
-        }
-
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
-    }
-
-    async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        if (!file.type.startsWith('image/')) {
-            showToast('Apenas imagens são permitidas', 'error')
-            return
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            showToast('Imagem deve ter no máximo 5MB', 'error')
-            return
-        }
-
-        setIsUploading(true)
-        try {
-            const timestamp = Date.now()
-            const fileName = `${timestamp}-${file.name.replace(/\s+/g, '-')}`
-
-            const { url, error } = await uploadFile('developers', fileName, file)
-
-            if (error) throw error
-            if (url) {
-                setFormData(prev => ({ ...prev, logo_url: url }))
-                showToast('Logo enviado com sucesso', 'success')
+        // Sort
+        result.sort((a, b) => {
+            const aVal = a[sortField];
+            const bVal = b[sortField];
+            if (sortField === 'name') {
+                return sortDir === 'asc' ? String(aVal).localeCompare(String(bVal)) : String(bVal).localeCompare(String(aVal));
             }
-        } catch (err: any) {
-            showToast(err.message || 'Erro ao enviar logo', 'error')
-        } finally {
-            setIsUploading(false)
+            return sortDir === 'asc' ? Number(aVal) - Number(bVal) : Number(bVal) - Number(aVal);
+        });
+
+        return result;
+    }, [developers, search, regionF, sortField, sortDir]);
+
+    const stats = useMemo(() => ({
+        total: developers.length,
+        totalDevs: devs?.length || 0,
+        totalLeads: developers.reduce((sum, d) => sum + d.leads_count, 0),
+        avgDevsPerBuilder: developers.length > 0 ? Math.round(devs!.length / developers.length) : 0
+    }), [developers, devs]);
+
+    const handleSort = (field: SortField) => {
+        if (sortField === field) {
+            setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortField(field);
+            setSortDir('desc');
         }
-    }
+    };
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault()
-
-        if (!validateForm()) {
-            showToast('Corrija os erros no formulário', 'error')
-            return
-        }
-
-        setIsSaving(true)
-        try {
-            if (editingDeveloper) {
-                const { error } = await supabase
-                    .from('developers')
-                    .update(formData)
-                    .eq('id', editingDeveloper.id)
-
-                if (error) {
-                    console.error('Error updating:', error)
-                    throw error
-                }
-                showToast('Construtora atualizada com sucesso', 'success')
-            } else {
-                const { error } = await supabase
-                    .from('developers')
-                    .insert([formData])
-
-                if (error) {
-                    console.error('Error inserting:', error)
-                    throw error
-                }
-                showToast('Construtora criada com sucesso', 'success')
-            }
-
-            setIsModalOpen(false)
-            resetForm()
-            fetchDevelopers()
-        } catch (err: any) {
-            console.error('Caught error:', err)
-            showToast(err.message || 'Erro ao salvar construtora', 'error')
-        } finally {
-            setIsSaving(false)
-        }
-    }
-
-    async function handleDelete(id: string, logoUrl: string | null) {
-        if (!confirm('Tem certeza que deseja excluir esta construtora?')) return
-
-        try {
-            if (logoUrl) {
-                const path = logoUrl.split('/').pop()
-                if (path) await deleteFile('developers', path)
-            }
-
-            const { error } = await supabase
-                .from('developers')
-                .delete()
-                .eq('id', id)
-
-            if (error) {
-                console.error('Error deleting:', error)
-                throw error
-            }
-            showToast('Construtora excluída com sucesso', 'success')
-            fetchDevelopers()
-        } catch (err: any) {
-            console.error('Caught error:', err)
-            showToast(err.message || 'Erro ao excluir construtora', 'error')
-        }
-    }
-
-    function openEditModal(developer: Developer) {
-        setEditingDeveloper(developer)
-        setFormData({
-            name: developer.name,
-            logo_url: developer.logo_url || '',
-            description: developer.description || '',
-            website: developer.website || '',
-            cnpj: developer.cnpj || '',
-            phone: developer.phone || '',
-            email: developer.email || '',
-            active: developer.active
-        })
-        setErrors({})
-        setIsModalOpen(true)
-    }
-
-    function resetForm() {
-        setFormData({
-            name: '',
-            logo_url: '',
-            description: '',
-            website: '',
-            cnpj: '',
-            phone: '',
-            email: '',
-            active: true
-        })
-        setEditingDeveloper(null)
-        setErrors({})
-    }
-
-    if (isLoading) {
-        return (
-            <div className="p-8">
-                <div className="animate-pulse space-y-4">
-                    <div className="h-8 bg-slate-200 rounded w-1/4"></div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="h-64 bg-slate-200 rounded-xl"></div>
-                        ))}
-                    </div>
-                </div>
+    const SortHeader = ({ field, children }: { field: SortField, children: React.ReactNode }) => (
+        <th onClick={() => handleSort(field)} className="px-4 py-3 text-[10px] font-bold text-imi-400 uppercase tracking-widest cursor-pointer hover:text-imi-900 select-none group">
+            <div className="flex items-center gap-1">
+                {children}
+                {sortField === field && (
+                    sortDir === 'asc' ? <ChevronUp size={12} className="text-accent-500" /> : <ChevronDown size={12} className="text-accent-500" />
+                )}
             </div>
-        )
-    }
+        </th>
+    );
 
     return (
-        <div className="p-8">
-            {toasts.map(toast => (
-                <Toast
-                    key={toast.id}
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => removeToast(toast.id)}
-                />
-            ))}
-
-            <div className="flex items-center justify-between mb-8">
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-imi-900">Construtoras</h1>
-                    <p className="text-slate-600 mt-1">{developers.length} construtoras cadastradas</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-imi-900 font-display">Construtoras</h1>
+                    <p className="text-imi-500 text-sm mt-1">Visão estratégica de parceiros e desenvolvedores.</p>
                 </div>
-                <Button onClick={() => setIsModalOpen(true)}>
-                    <Plus className="w-5 h-5 mr-2" />
-                    Nova Construtora
-                </Button>
+                <div className="flex gap-2">
+                    <div className="flex bg-white rounded-xl border border-imi-100 p-1">
+                        <button onClick={() => setViewMode('cards')} className={cn('p-2 rounded-lg', viewMode === 'cards' ? 'bg-imi-900 text-white' : 'text-imi-400')} title="Cards"><Grid3x3 size={16} /></button>
+                        <button onClick={() => setViewMode('table')} className={cn('p-2 rounded-lg', viewMode === 'table' ? 'bg-imi-900 text-white' : 'text-imi-400')} title="Tabela"><List size={16} /></button>
+                    </div>
+                </div>
             </div>
 
-            {
-                developers.length === 0 ? (
-                    <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
-                        <p className="text-slate-600 mb-4">Nenhuma construtora cadastrada</p>
-                        <Button onClick={() => setIsModalOpen(true)}>
-                            <Plus className="w-5 h-5 mr-2" />
-                            Cadastrar Primeira Construtora
-                        </Button>
+            {/* KPIs */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                    { l: 'Construtoras', v: stats.total, i: Building2, b: 'bg-blue-50' },
+                    { l: 'Empreendimentos', v: stats.totalDevs, i: TrendingUp, b: 'bg-green-50' },
+                    { l: 'Total Leads', v: stats.totalLeads, i: Users, b: 'bg-purple-50' },
+                    { l: 'Média/Construtora', v: stats.avgDevsPerBuilder, i: BarChart3, b: 'bg-accent-500/10' }
+                ].map(k => (
+                    <div key={k.l} className="bg-white rounded-2xl p-4 border border-imi-50 shadow-soft flex items-center gap-3">
+                        <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', k.b)}><k.i size={18} className="text-imi-900" /></div>
+                        <div><div className="text-lg font-black text-imi-900 leading-none">{k.v}</div><div className="text-[10px] font-bold text-imi-400 uppercase tracking-widest">{k.l}</div></div>
                     </div>
-                ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {
-                            developers.map((developer) => (
-                                <div key={developer.id} className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-lg transition-shadow">
-                                    {developer.logo_url ? (
-                                        <div className="relative w-full h-32 mb-4 bg-slate-50 rounded-lg">
-                                            <Image
-                                                src={developer.logo_url}
-                                                alt={developer.name}
-                                                fill
-                                                className="object-contain p-4"
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <div className="w-full h-32 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
-                                            <Upload className="w-8 h-8 text-slate-400" />
-                                        </div>
-                                    )}
+                ))}
+            </div>
 
-                                    <h3 className="text-xl font-bold text-imi-900 mb-2">{developer.name}</h3>
-
-                                    {developer.description && (
-                                        <p className="text-slate-600 text-sm mb-4 line-clamp-2">{developer.description}</p>
-                                    )}
-
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-semibold ${developer.active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'
-                                            }`}>
-                                            {developer.active ? 'Ativa' : 'Inativa'}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex gap-2">
-                                        <Button size="sm" variant="outline" onClick={() => openEditModal(developer)} className="flex-1">
-                                            <Edit className="w-4 h-4 mr-1" />
-                                            Editar
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => handleDelete(developer.id, developer.logo_url)}
-                                            className="flex-1"
-                                        >
-                                            <Trash2 className="w-4 h-4 mr-1" />
-                                            Excluir
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
+            {/* Search + Filters */}
+            <div className="bg-white rounded-2xl shadow-soft border border-imi-50 p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-imi-300" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Buscar construtora..."
+                            className="w-full pl-10 pr-4 h-11 rounded-xl border border-imi-100 text-sm focus:ring-accent-500 focus:border-accent-500"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
                     </div>
-                )
-            }
-
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="sticky top-0 bg-white border-b border-slate-200 px-8 py-6 flex items-center justify-between">
-                            <h2 className="text-2xl font-bold text-imi-900">
-                                {editingDeveloper ? 'Editar Construtora' : 'Nova Construtora'}
-                            </h2>
-                            <button
-                                onClick={() => {
-                                    setIsModalOpen(false)
-                                    resetForm()
-                                }}
-                                className="w-8 h-8 flex items-center justify-center hover:bg-slate-100 rounded-lg transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
+                    <button onClick={() => setShowF(!showF)} className={cn('flex items-center gap-2 px-4 h-11 rounded-xl border text-sm font-bold transition-all', showF ? 'bg-imi-900 text-white border-imi-900' : 'border-imi-100 text-imi-500')}>
+                        <Filter size={16} /> Filtros {showF && '✓'}
+                    </button>
+                </div>
+                <AnimatePresence>{showF && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3 border-t border-imi-50">
+                            <select value={regionF} onChange={e => setRegionF(e.target.value)} className="h-10 rounded-xl border-imi-100 text-xs font-bold">
+                                <option value="all">Região: Todas</option>
+                                <option value="paraiba">Paraíba</option>
+                                <option value="pernambuco">Pernambuco</option>
+                                <option value="sao-paulo">São Paulo</option>
+                            </select>
                         </div>
+                    </motion.div>
+                )}</AnimatePresence>
+            </div>
 
-                        <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                            <Input
-                                label="Nome *"
-                                value={formData.name}
-                                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                error={errors.name}
-                                required
-                            />
-
-                            <div>
-                                <label className="block text-sm font-semibold text-imi-900 mb-2">
-                                    Logo
-                                </label>
-                                <div className="flex gap-4 items-start">
-                                    <div className="flex-1">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleLogoUpload}
-                                            className="w-full text-sm"
-                                            disabled={isUploading}
-                                        />
-                                        <p className="text-xs text-slate-500 mt-1">PNG, JPG ou SVG até 5MB</p>
+            {/* Cards View */}
+            {viewMode === 'cards' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {isLoading ? (
+                        Array(6).fill(0).map((_, i) => <div key={i} className="bg-white rounded-2xl p-6 animate-pulse border border-imi-50 h-48" />)
+                    ) : filtered.length === 0 ? (
+                        <div className="col-span-full bg-white rounded-2xl p-12 text-center text-imi-400 border border-imi-50">Nenhuma construtora encontrada.</div>
+                    ) : (
+                        filtered.map(dev => (
+                            <div key={dev.name} className="bg-white rounded-2xl border border-imi-50 shadow-soft overflow-hidden hover:shadow-lg transition-all group">
+                                <div className="p-6">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="w-12 h-12 bg-imi-900 rounded-xl flex items-center justify-center text-white font-black text-xl">
+                                            {dev.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        {dev.avg_score >= 70 && <Award size={20} className="text-accent-500" />}
                                     </div>
-                                    {isUploading && (
-                                        <span className="text-sm text-slate-600">Enviando...</span>
+
+                                    <h3 className="font-bold text-imi-900 text-lg mb-2 font-display">{dev.name}</h3>
+
+                                    <div className="space-y-2 mb-4">
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-imi-400 flex items-center gap-1"><Building2 size={12} /> Empreendimentos</span>
+                                            <span className="font-bold text-imi-900">{dev.developments_count}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-imi-400 flex items-center gap-1"><Users size={12} /> Leads Gerados</span>
+                                            <span className="font-bold text-green-600">{dev.leads_count}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-imi-400 flex items-center gap-1"><BarChart3 size={12} /> Score Médio</span>
+                                            <span className={cn('font-bold', dev.avg_score >= 70 ? 'text-green-600' : dev.avg_score >= 40 ? 'text-yellow-600' : 'text-red-500')}>
+                                                {dev.avg_score}/100
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-imi-400 flex items-center gap-1"><Star size={12} /> Publicados</span>
+                                            <span className="font-bold text-imi-900">{dev.published_count}/{dev.developments_count}</span>
+                                        </div>
+                                    </div>
+
+                                    {dev.cities.length > 0 && (
+                                        <div className="pt-3 border-t border-imi-50">
+                                            <p className="text-[10px] text-imi-400 uppercase tracking-widest font-bold mb-2">Atuação</p>
+                                            <div className="flex flex-wrap gap-1">
+                                                {dev.cities.slice(0, 3).map((city: string) => (
+                                                    <span key={city} className="text-[9px] bg-imi-50 text-imi-600 px-2 py-1 rounded-lg font-bold flex items-center gap-1">
+                                                        <MapPin size={8} /> {city}
+                                                    </span>
+                                                ))}
+                                                {dev.cities.length > 3 && (
+                                                    <span className="text-[9px] bg-imi-50 text-imi-400 px-2 py-1 rounded-lg font-bold">
+                                                        +{dev.cities.length - 3}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
-                                {formData.logo_url && (
-                                    <div className="mt-4 relative inline-block w-24 h-24 bg-slate-50 rounded-lg">
-                                        <Image
-                                            src={formData.logo_url}
-                                            alt="Preview"
-                                            fill
-                                            className="object-contain p-2"
-                                            sizes="96px"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData(prev => ({ ...prev, logo_url: '' }))}
-                                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 z-10"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
+
+                                <div className="border-t border-imi-50 p-4 bg-imi-50/30">
+                                    <Link
+                                        href={`/backoffice/imoveis?dev=${encodeURIComponent(dev.name)}`}
+                                        className="flex items-center justify-center gap-2 text-sm font-bold text-imi-900 hover:text-accent-600 transition-colors"
+                                    >
+                                        Ver Empreendimentos <ExternalLink size={14} />
+                                    </Link>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
+
+            {/* Table View */}
+            {viewMode === 'table' && (
+                <div className="bg-white rounded-2xl shadow-soft border border-imi-50 overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead>
+                                <tr className="bg-imi-50/50 border-b border-imi-100">
+                                    <SortHeader field="name">Construtora</SortHeader>
+                                    <SortHeader field="developments_count">Empreendimentos</SortHeader>
+                                    <SortHeader field="leads_count">Leads Gerados</SortHeader>
+                                    <SortHeader field="avg_score">Score Médio</SortHeader>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-imi-400 uppercase tracking-widest">Publicados</th>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-imi-400 uppercase tracking-widest">Atuação</th>
+                                    <th className="px-4 py-3 text-[10px] font-bold text-imi-400 uppercase tracking-widest text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-imi-50">
+                                {isLoading ? (
+                                    Array(5).fill(0).map((_, i) => <tr key={i} className="animate-pulse"><td colSpan={7} className="px-4 py-6 h-16 bg-imi-50/20" /></tr>)
+                                ) : filtered.length === 0 ? (
+                                    <tr><td colSpan={7} className="px-4 py-16 text-center text-imi-400">Nenhuma construtora encontrada.</td></tr>
+                                ) : (
+                                    filtered.map(dev => (
+                                        <tr key={dev.name} className="hover:bg-imi-50/30 transition-colors">
+                                            <td className="px-4 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-imi-900 rounded-lg flex items-center justify-center text-white font-black text-sm">
+                                                        {dev.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-imi-900 text-sm">{dev.name}</div>
+                                                        {dev.avg_score >= 70 && (
+                                                            <div className="flex items-center gap-1 text-[9px] text-accent-600 font-bold">
+                                                                <Award size={10} /> Top Performance
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-4">
+                                                <span className="text-sm font-bold text-imi-900">{dev.developments_count}</span>
+                                            </td>
+                                            <td className="px-4 py-4">
+                                                <span className="text-sm font-bold text-green-600">{dev.leads_count}</span>
+                                            </td>
+                                            <td className="px-4 py-4">
+                                                <span className={cn('text-sm font-bold', dev.avg_score >= 70 ? 'text-green-600' : dev.avg_score >= 40 ? 'text-yellow-600' : 'text-red-500')}>
+                                                    {dev.avg_score}/100
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-4">
+                                                <span className="text-sm text-imi-600">{dev.published_count}/{dev.developments_count}</span>
+                                            </td>
+                                            <td className="px-4 py-4">
+                                                <div className="flex flex-wrap gap-1 max-w-[200px]">
+                                                    {dev.cities.slice(0, 2).map((city: string) => (
+                                                        <span key={city} className="text-[9px] bg-imi-50 text-imi-600 px-2 py-1 rounded-lg font-bold">
+                                                            {city}
+                                                        </span>
+                                                    ))}
+                                                    {dev.cities.length > 2 && (
+                                                        <span className="text-[9px] bg-imi-50 text-imi-400 px-2 py-1 rounded-lg font-bold">
+                                                            +{dev.cities.length - 2}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-4 text-right">
+                                                <Link
+                                                    href={`/backoffice/imoveis?dev=${encodeURIComponent(dev.name)}`}
+                                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-imi-900 hover:text-accent-600 hover:bg-accent-500/10 rounded-lg transition-colors"
+                                                >
+                                                    Ver <ExternalLink size={12} />
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))
                                 )}
-                            </div>
-
-                            <Textarea
-                                label="Descrição"
-                                value={formData.description}
-                                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                rows={4}
-                            />
-
-                            <Input
-                                label="Website"
-                                type="url"
-                                value={formData.website}
-                                onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                                error={errors.website}
-                                placeholder="https://exemplo.com.br"
-                            />
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <Input
-                                    label="CNPJ"
-                                    value={formData.cnpj}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, cnpj: e.target.value }))}
-                                    placeholder="00.000.000/0000-00"
-                                />
-                                <Input
-                                    label="Telefone"
-                                    value={formData.phone}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                                    placeholder="(81) 99999-9999"
-                                />
-                            </div>
-
-                            <Input
-                                label="Email"
-                                type="email"
-                                value={formData.email}
-                                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                error={errors.email}
-                                placeholder="contato@construtora.com.br"
-                            />
-
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.active}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, active: e.target.checked }))}
-                                    className="w-4 h-4 rounded border-slate-300"
-                                />
-                                <span className="text-sm text-imi-900 font-medium">Construtora ativa</span>
-                            </label>
-
-                            <div className="flex gap-4 pt-4 border-t border-slate-200">
-                                <Button type="submit" className="flex-1" disabled={isSaving}>
-                                    {isSaving ? 'Salvando...' : (editingDeveloper ? 'Atualizar' : 'Criar')}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="flex-1"
-                                    onClick={() => {
-                                        setIsModalOpen(false)
-                                        resetForm()
-                                    }}
-                                    disabled={isSaving}
-                                >
-                                    Cancelar
-                                </Button>
-                            </div>
-                        </form>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             )}
         </div>
-    )
+    );
 }

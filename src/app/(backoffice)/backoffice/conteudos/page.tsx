@@ -234,7 +234,7 @@ export default function ContentPage() {
                 <div className="flex justify-between items-start gap-4">
                   <h3 className="text-2xl font-bold text-imi-900 leading-tight group-hover:text-accent-600 transition-colors">{content.title}</h3>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => { setEditingContent(content); setFormData({ ...content, content: typeof content.content === 'string' ? content.content : content.content.text, tags: content.tags || [] }); setIsModalOpen(true); }} className="w-10 h-10 rounded-xl bg-imi-50 flex items-center justify-center text-imi-400 hover:text-imi-900 transition-all">
+                    <button onClick={() => { setEditingContent(content); setFormData({ ...content, content: typeof content.content === 'string' ? content.content : content.content.text, tags: content.tags || [], cover_image: content.cover_image || '' }); setIsModalOpen(true); }} className="w-10 h-10 rounded-xl bg-imi-50 flex items-center justify-center text-imi-400 hover:text-imi-900 transition-all">
                       <Edit size={18} />
                     </button>
                     <button onClick={() => handleDelete(content.id)} className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-300 hover:text-red-600 transition-all">
