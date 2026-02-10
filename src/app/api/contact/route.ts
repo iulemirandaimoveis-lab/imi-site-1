@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
             name: data.name,
             email: data.email,
             phone: data.phone,
-            source: 'website-contact', // Identifying the source
+            origin: 'website-contact', // Identifying the origin
             message: data.message,
             interest: data.interest || 'Geral', // Optional interest
             status: 'new'

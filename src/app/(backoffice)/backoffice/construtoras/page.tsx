@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Edit, Trash2, Upload, X } from 'lucide-react'
 import Button from '@/components/ui/Button'
@@ -45,10 +46,6 @@ export default function DevelopersPage() {
 
     const [errors, setErrors] = useState<Record<string, string>>({})
 
-    useEffect(() => {
-        fetchDevelopers()
-    }, [])
-
     async function fetchDevelopers() {
         setIsLoading(true)
         try {
@@ -58,17 +55,22 @@ export default function DevelopersPage() {
                 .order('created_at', { ascending: false })
 
             if (error) {
-                console.error('Error fetching:', error)
+                console.error('Stack trace:', error)
                 throw error
             }
             setDevelopers(data || [])
         } catch (err: any) {
-            console.error('Caught error:', err)
+            console.error('Error fetching developers:', err)
             showToast(err.message || 'Erro ao carregar construtoras', 'error')
         } finally {
             setIsLoading(false)
         }
     }
+
+    useEffect(() => {
+        fetchDevelopers()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     function validateForm() {
         const newErrors: Record<string, string> = {}
@@ -275,11 +277,15 @@ export default function DevelopersPage() {
                             developers.map((developer) => (
                                 <div key={developer.id} className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-lg transition-shadow">
                                     {developer.logo_url ? (
-                                        <img
-                                            src={developer.logo_url}
-                                            alt={developer.name}
-                                            className="w-full h-32 object-contain mb-4 bg-slate-50 rounded-lg p-4"
-                                        />
+                                        <div className="relative w-full h-32 mb-4 bg-slate-50 rounded-lg">
+                                            <Image
+                                                src={developer.logo_url}
+                                                alt={developer.name}
+                                                fill
+                                                className="object-contain p-4"
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                            />
+                                        </div>
                                     ) : (
                                         <div className="w-full h-32 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
                                             <Upload className="w-8 h-8 text-slate-400" />
@@ -367,12 +373,18 @@ export default function DevelopersPage() {
                                     )}
                                 </div>
                                 {formData.logo_url && (
-                                    <div className="mt-4 relative inline-block">
-                                        <img src={formData.logo_url} alt="Preview" className="h-24 object-contain bg-slate-50 rounded-lg p-2" />
+                                    <div className="mt-4 relative inline-block w-24 h-24 bg-slate-50 rounded-lg">
+                                        <Image
+                                            src={formData.logo_url}
+                                            alt="Preview"
+                                            fill
+                                            className="object-contain p-2"
+                                            sizes="96px"
+                                        />
                                         <button
                                             type="button"
                                             onClick={() => setFormData(prev => ({ ...prev, logo_url: '' }))}
-                                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 z-10"
                                         >
                                             <X className="w-4 h-4" />
                                         </button>

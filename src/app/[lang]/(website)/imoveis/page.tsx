@@ -36,37 +36,36 @@ export default function ImoveisPage() {
     const [filterStatus, setFilterStatus] = useState<string>('all')
 
     useEffect(() => {
+        async function fetchDevelopments() {
+            let query = supabase
+                .from('developments')
+                .select(`
+            *,
+            developers (
+              name,
+              logo_url
+            )
+          `)
+                .order('created_at', { ascending: false })
+
+            if (filterNeighborhood !== 'all') {
+                query = query.eq('neighborhood', filterNeighborhood)
+            }
+
+            if (filterStatus !== 'all') {
+                query = query.eq('status', filterStatus)
+            }
+
+            const { data, error } = await query
+
+            if (!error && data) {
+                setDevelopments(data)
+            }
+
+            setIsLoading(false)
+        }
         fetchDevelopments()
-    }, [filterNeighborhood, filterStatus])
-
-    async function fetchDevelopments() {
-        let query = supabase
-            .from('developments')
-            .select(`
-        *,
-        developers (
-          name,
-          logo_url
-        )
-      `)
-            .order('created_at', { ascending: false })
-
-        if (filterNeighborhood !== 'all') {
-            query = query.eq('neighborhood', filterNeighborhood)
-        }
-
-        if (filterStatus !== 'all') {
-            query = query.eq('status', filterStatus)
-        }
-
-        const { data, error } = await query
-
-        if (!error && data) {
-            setDevelopments(data)
-        }
-
-        setIsLoading(false)
-    }
+    }, [filterNeighborhood, filterStatus, supabase])
 
     const neighborhoods = Array.from(new Set(developments.map(d => d.neighborhood)))
     const statuses = Array.from(new Set(developments.map(d => d.status)))

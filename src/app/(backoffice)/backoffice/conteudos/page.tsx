@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Edit, Trash2, Calendar, Image as ImageIcon, Video, FileText, CheckCircle, Clock, X } from 'lucide-react'
 import Button from '@/components/ui/Button'
@@ -40,11 +42,7 @@ export default function ContentPage() {
     scheduled_at: ''
   })
 
-  useEffect(() => {
-    fetchContents()
-  }, [])
-
-  async function fetchContents() {
+  const fetchContents = useCallback(async () => {
     setIsLoading(true)
     try {
       const { data, error } = await supabase
@@ -63,7 +61,11 @@ export default function ContentPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [supabase, showToast])
+
+  useEffect(() => {
+    fetchContents()
+  }, [fetchContents])
 
   async function handleMediaUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files
@@ -270,7 +272,15 @@ export default function ContentPage() {
           <div key={content.id} className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md transition-shadow flex flex-col md:flex-row gap-6">
             <div className="w-32 h-32 bg-slate-100 rounded-lg flex-shrink-0 overflow-hidden relative">
               {content.media_urls && content.media_urls.length > 0 ? (
-                <img src={content.media_urls[0]} alt="Thumbnail" className="w-full h-full object-cover" />
+                <div className="relative w-full h-full">
+                  <Image
+                    src={content.media_urls[0]}
+                    alt="Thumbnail"
+                    fill
+                    className="object-cover"
+                    sizes="128px"
+                  />
+                </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-slate-400">
                   <ImageIcon className="w-8 h-8" />
@@ -374,9 +384,15 @@ export default function ContentPage() {
                 {formData.media_urls.length > 0 && (
                   <div className="grid grid-cols-4 md:grid-cols-6 gap-4 mt-4 bg-slate-50 p-4 rounded-lg">
                     {formData.media_urls.map((url, i) => (
-                      <div key={i} className="relative group">
-                        <img src={url} alt={`Media ${i}`} className="w-full h-20 object-cover rounded-lg shadow-sm" />
-                        <button type="button" onClick={() => removeMedia(i)} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
+                      <div key={i} className="relative group w-full h-20">
+                        <Image
+                          src={url}
+                          alt={`Media ${i}`}
+                          fill
+                          className="object-cover rounded-lg shadow-sm"
+                          sizes="150px"
+                        />
+                        <button type="button" onClick={() => removeMedia(i)} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10">
                           <X className="w-3 h-3" />
                         </button>
                       </div>

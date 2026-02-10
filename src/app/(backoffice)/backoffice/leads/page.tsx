@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Edit, Trash2, Phone, Mail, MessageCircle, Star, Search, Filter, X, Check, Loader2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
@@ -47,11 +47,7 @@ export default function LeadsPage() {
         development_id: ''
     })
 
-    useEffect(() => {
-        fetchLeads()
-    }, [])
-
-    async function fetchLeads() {
+    const fetchLeads = useCallback(async () => {
         setIsLoading(true)
         try {
             const { data, error } = await supabase
@@ -70,7 +66,11 @@ export default function LeadsPage() {
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [supabase, showToast])
+
+    useEffect(() => {
+        fetchLeads()
+    }, [fetchLeads])
 
     const filteredLeads = leads.filter(lead => {
         const matchesSearch =

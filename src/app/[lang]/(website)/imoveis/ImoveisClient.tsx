@@ -16,41 +16,7 @@ interface ImoveisClientProps {
 }
 
 export default function ImoveisClient({ initialDevelopments, lang }: ImoveisClientProps) {
-    if (!initialDevelopments || initialDevelopments.length === 0) {
-        return (
-            <main className="bg-white min-h-screen pt-32 pb-20">
-                <div className="container-custom text-center max-w-3xl mx-auto py-20">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-imi-50 rounded-[2rem] p-12 border border-imi-100 shadow-soft"
-                    >
-                        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
-                            <span className="text-4xl">🏗️</span>
-                        </div>
-                        <h1 className="font-display text-4xl md:text-5xl font-bold text-imi-900 mb-6 tracking-tight">
-                            Portfólio em <span className="text-accent-500 italic">Curadoria</span>
-                        </h1>
-                        <p className="text-imi-600 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
-                            Estamos selecionando tecnicamente os melhores ativos do mercado para compor este catálogo exclusivo.
-                            <br /><br />
-                            Aguarde novidades em breve ou fale conosco para oportunidades off-market.
-                        </p>
-                        <Button
-                            asChild
-                            size="lg"
-                            className="bg-imi-900 text-white hover:bg-imi-800 px-10 h-14 font-bold uppercase tracking-widest text-xs"
-                        >
-                            <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">
-                                <MessageCircle className="w-5 h-5 mr-3" />
-                                Consultar Off-Market
-                            </a>
-                        </Button>
-                    </motion.div>
-                </div>
-            </main>
-        );
-    }
+
 
     const [filters, setFilters] = useState<FilterState>({
         status: [],
@@ -131,6 +97,42 @@ export default function ImoveisClient({ initialDevelopments, lang }: ImoveisClie
     const mainGridDevelopments = showReadySection
         ? filteredDevelopments.filter(dev => !readyDevelopments.find(r => r.id === dev.id))
         : filteredDevelopments;
+
+    if (!initialDevelopments || initialDevelopments.length === 0) {
+        return (
+            <main className="bg-white min-h-screen pt-32 pb-20">
+                <div className="container-custom text-center max-w-3xl mx-auto py-20">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-imi-50 rounded-[2rem] p-12 border border-imi-100 shadow-soft"
+                    >
+                        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+                            <span className="text-4xl">🏗️</span>
+                        </div>
+                        <h1 className="font-display text-4xl md:text-5xl font-bold text-imi-900 mb-6 tracking-tight">
+                            Portfólio em <span className="text-accent-500 italic">Curadoria</span>
+                        </h1>
+                        <p className="text-imi-600 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
+                            Estamos selecionando tecnicamente os melhores ativos do mercado para compor este catálogo exclusivo.
+                            <br /><br />
+                            Aguarde novidades em breve ou fale conosco para oportunidades off-market.
+                        </p>
+                        <Button
+                            asChild
+                            size="lg"
+                            className="bg-imi-900 text-white hover:bg-imi-800 px-10 h-14 font-bold uppercase tracking-widest text-xs"
+                        >
+                            <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">
+                                <MessageCircle className="w-5 h-5 mr-3" />
+                                Consultar Off-Market
+                            </a>
+                        </Button>
+                    </motion.div>
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main className="bg-white min-h-screen">

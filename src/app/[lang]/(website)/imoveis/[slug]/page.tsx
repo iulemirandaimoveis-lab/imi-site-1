@@ -41,33 +41,32 @@ export default function DevelopmentDetailPage({ params }: { params: { slug: stri
     const [selectedImage, setSelectedImage] = useState<string>('')
 
     useEffect(() => {
-        fetchDevelopment()
-    }, [params.slug])
+        async function fetchDevelopment() {
+            const { data, error } = await supabase
+                .from('developments')
+                .select(`
+            *,
+            developers (
+              name,
+              logo_url,
+              website,
+              phone,
+              email
+            )
+          `)
+                .eq('slug', params.slug)
+                .single()
 
-    async function fetchDevelopment() {
-        const { data, error } = await supabase
-            .from('developments')
-            .select(`
-        *,
-        developers (
-          name,
-          logo_url,
-          website,
-          phone,
-          email
-        )
-      `)
-            .eq('slug', params.slug)
-            .single()
+            if (error || !data) {
+                notFound()
+            }
 
-        if (error || !data) {
-            notFound()
+            setDevelopment(data)
+            setSelectedImage(data.image || '')
+            setIsLoading(false)
         }
-
-        setDevelopment(data)
-        setSelectedImage(data.image || '')
-        setIsLoading(false)
-    }
+        fetchDevelopment()
+    }, [params.slug, supabase])
 
     if (isLoading) {
         return <div className="min-h-screen flex items-center justify-center">Carregando...</div>

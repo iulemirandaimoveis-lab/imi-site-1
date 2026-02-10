@@ -5,11 +5,14 @@ import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import {
     Save, ArrowLeft, Image as ImageIcon, Video, MapPin,
-    Layout, Check, Loader2, Plus, Trash2, Home
+    Layout, Check, Loader2, Plus, Trash2, Home, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import { toast } from 'sonner';
+
+function cn(...c: any[]) { return c.filter(Boolean).join(' '); }
 
 const supabase = createClient();
 
@@ -42,12 +45,13 @@ export default function PropertyForm() {
 
     const [loading, setLoading] = useState(!isNew);
     const [saving, setSaving] = useState(false);
+    const [developersList, setDevelopersList] = useState<any[]>([]);
     const [formData, setFormData] = useState<any>({
         name: '',
         slug: '',
         description: '',
         short_description: '',
-        developer: '',
+        developer_id: '',
         tipo: 'apartamento',
         status: 'launch',
         status_comercial: 'rascunho',
@@ -73,32 +77,36 @@ export default function PropertyForm() {
     });
 
     useEffect(() => {
-        if (!isNew) {
-            fetchProperty();
-        }
-    }, [id]);
+        const loadRequests = async () => {
+            try {
+                // 1. Fetch Developers
+                const { data: devs } = await supabase.from('developers').select('id, name').order('name');
+                setDevelopersList(devs || []);
 
-    const fetchProperty = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('developments')
-                .select('*')
-                .eq('id', id)
-                .single();
+                // 2. Fetch Property if editing
+                if (!isNew) {
+                    const { data, error } = await supabase
+                        .from('developments')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
 
-            if (error) throw error;
-            if (data) {
-                // Ensure images structure exists
-                const images = data.images || { main: '', gallery: [], videos: [], floorPlans: [] };
-                setFormData({ ...data, images });
+                    if (error) throw error;
+                    if (data) {
+                        const images = data.images || { main: '', gallery: [], videos: [], floorPlans: [] };
+                        setFormData({ ...data, images });
+                    }
+                }
+            } catch (error: any) {
+                toast.error('Erro ao carregar: ' + error.message);
+                router.push('/backoffice/imoveis');
+            } finally {
+                setLoading(false);
             }
-        } catch (error: any) {
-            toast.error('Erro ao carregar imóvel: ' + error.message);
-            router.push('/backoffice/imoveis');
-        } finally {
-            setLoading(false);
         }
-    };
+
+        loadRequests();
+    }, [id, isNew, router]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -197,13 +205,21 @@ export default function PropertyForm() {
                             <div className="grid sm:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-[10px] font-bold text-imi-400 uppercase tracking-widest mb-2">Construtora / Desenvolvedor</label>
-                                    <input
-                                        type="text"
-                                        value={formData.developer}
-                                        onChange={e => setFormData({ ...formData, developer: e.target.value })}
+                                    <select
+                                        value={formData.developer_id || ''}
+                                        onChange={e => setFormData({ ...formData, developer_id: e.target.value })}
                                         className="w-full h-12 px-4 bg-imi-50/50 border border-imi-100 rounded-xl focus:ring-2 focus:ring-imi-900/10 focus:border-imi-900 transition-all text-sm font-medium"
-                                        placeholder="Ex: Moura Dubeux"
-                                    />
+                                    >
+                                        <option value="">Selecione...</option>
+                                        {developersList.map(dev => (
+                                            <option key={dev.id} value={dev.id}>{dev.name}</option>
+                                        ))}
+                                    </select>
+                                    <div className="mt-1 text-right">
+                                        <Link href="/backoffice/construtoras" className="text-[10px] text-accent-500 hover:underline flex items-center justify-end gap-1">
+                                            <Plus size={10} /> Nova Construtora
+                                        </Link>
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-bold text-imi-400 uppercase tracking-widest mb-2">Slug (URL)</label>
@@ -299,7 +315,13 @@ export default function PropertyForm() {
                             />
                             {formData.images.main && (
                                 <div className="mt-4 relative aspect-video rounded-xl overflow-hidden border border-imi-100 max-w-sm">
-                                    <img src={formData.images.main} alt="Preview" className="w-full h-full object-cover" />
+                                    <Image
+                                        src={formData.images.main}
+                                        alt="Preview"
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    />
                                 </div>
                             )}
                         </div>
@@ -434,14 +456,4 @@ export default function PropertyForm() {
     );
 }
 
-function Sparkles({ size, className }: { size: number, className: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-            <path d="M5 3v4" />
-            <path d="M19 17v4" />
-            <path d="M3 5h4" />
-            <path d="M17 19h4" />
-        </svg>
-    )
-}
+

@@ -23,30 +23,40 @@ export default function ContactPage() {
         e.preventDefault()
         setIsSubmitting(true)
 
-        const whatsappMessage = `
-*Contato via Site IMI*
+        try {
+            // Persist to Supabase
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    interest: formData.subject,
+                    message: formData.message
+                })
+            })
 
-*Nome:* ${formData.name}
-*Email:* ${formData.email}
-*Telefone:* ${formData.phone}
-*Assunto:* ${formData.subject}
+            if (response.ok) {
+                // Show success feedback
+                setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    subject: '',
+                    message: ''
+                })
+                alert('Mensagem enviada com sucesso! Entraremos em contato em breve.')
+            } else {
+                throw new Error('Erro ao enviar')
+            }
 
-*Mensagem:*
-${formData.message}
-    `.trim()
-
-        const whatsappUrl = `https://wa.me/5581997230455?text=${encodeURIComponent(whatsappMessage)}`
-        window.open(whatsappUrl, '_blank')
-
-        setFormData({
-            name: '',
-            email: '',
-            phone: '',
-            subject: '',
-            message: ''
-        })
-
-        setIsSubmitting(false)
+        } catch (err) {
+            console.error('Error saving lead:', err)
+            alert('Erro ao enviar mensagem. Tente pelo WhatsApp abaixo.')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const contactInfo = [

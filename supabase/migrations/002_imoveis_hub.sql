@@ -1,13 +1,9 @@
 -- 002: Imoveis Hub - novas colunas e tabelas
--- Executar no Supabase SQL Editor
+-- Executar no Supabase SQL Editor ANTES do deploy
 
 -- 1. Novas colunas em developments
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS tipo TEXT DEFAULT 'apartamento' CHECK (tipo IN ('apartamento','casa','flat','lote','comercial','resort'));
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS status_comercial TEXT DEFAULT 'rascunho' CHECK (status_comercial IN ('rascunho','publicado','campanha','privado'));
-
--- Garante que a tabela leads tem a coluna development_id para o hub funcionar
-ALTER TABLE leads ADD COLUMN IF NOT EXISTS development_id UUID REFERENCES developments(id) ON DELETE SET NULL;
-
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS pais TEXT DEFAULT 'Brasil';
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS publico_alvo TEXT;
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS argumentos_venda JSONB DEFAULT '[]';
@@ -37,6 +33,10 @@ CREATE TABLE IF NOT EXISTS tracked_links (
 );
 
 ALTER TABLE tracked_links ENABLE ROW LEVEL SECURITY;
+
+-- Drop policy if exists to make migration idempotent
+DROP POLICY IF EXISTS "auth_all_tracked_links" ON tracked_links;
+
 CREATE POLICY "auth_all_tracked_links" ON tracked_links FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- 3. Timeline de eventos do imovel
@@ -51,6 +51,10 @@ CREATE TABLE IF NOT EXISTS development_events (
 );
 
 ALTER TABLE development_events ENABLE ROW LEVEL SECURITY;
+
+-- Drop policy if exists to make migration idempotent
+DROP POLICY IF EXISTS "auth_all_dev_events" ON development_events;
+
 CREATE POLICY "auth_all_dev_events" ON development_events FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- 4. Funcao para calcular score do imovel (0-100)
@@ -62,19 +66,15 @@ DECLARE
 BEGIN
     SELECT * INTO dev FROM developments WHERE id = dev_id;
     IF NOT FOUND THEN RETURN 0; END IF;
-    -- Cadastro basico completo
     IF dev.name IS NOT NULL AND dev.name != '' THEN s := s + 10; END IF;
     IF dev.description IS NOT NULL AND dev.description != '' THEN s := s + 10; END IF;
     IF dev.short_description IS NOT NULL AND dev.short_description != '' THEN s := s + 5; END IF;
-    -- Midia
     IF dev.images IS NOT NULL AND (dev.images->>'main') != '' THEN s := s + 15; END IF;
     IF dev.images IS NOT NULL AND jsonb_array_length(COALESCE(dev.images->'gallery', '[]'::jsonb)) > 0 THEN s := s + 10; END IF;
     IF dev.images IS NOT NULL AND jsonb_array_length(COALESCE(dev.images->'videos', '[]'::jsonb)) > 0 THEN s := s + 10; END IF;
     IF dev.images IS NOT NULL AND jsonb_array_length(COALESCE(dev.images->'floorPlans', '[]'::jsonb)) > 0 THEN s := s + 10; END IF;
-    -- Dados comerciais
     IF dev.price_min IS NOT NULL AND dev.price_min > 0 THEN s := s + 10; END IF;
     IF dev.developer IS NOT NULL AND dev.developer != '' THEN s := s + 5; END IF;
-    -- Interesse
     IF dev.leads_count > 0 THEN s := s + 5; END IF;
     IF dev.leads_count > 5 THEN s := s + 5; END IF;
     IF dev.leads_count > 20 THEN s := s + 5; END IF;
@@ -82,10 +82,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 5. Atualizar score de todos os developments existentes
+-- 5. Atualizar score e leads_count de todos os developments existentes
 UPDATE developments SET score = calculate_development_score(id);
-
--- 6. Atualizar leads_count baseado em leads existentes
 UPDATE developments d SET leads_count = (
     SELECT COUNT(*) FROM leads l WHERE l.development_id = d.id
 );

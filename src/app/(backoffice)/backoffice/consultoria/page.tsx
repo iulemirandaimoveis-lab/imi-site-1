@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Edit, Trash2, CheckCircle, Clock, X, Calendar, Phone, Mail } from 'lucide-react'
 import Button from '@/components/ui/Button'
@@ -41,11 +41,7 @@ export default function ConsultationPage() {
         scheduled_at: ''
     })
 
-    useEffect(() => {
-        fetchConsultations()
-    }, [filterStatus])
-
-    async function fetchConsultations() {
+    const fetchConsultations = useCallback(async () => {
         setIsLoading(true)
         try {
             let query = supabase
@@ -69,7 +65,11 @@ export default function ConsultationPage() {
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [supabase, filterStatus, showToast])
+
+    useEffect(() => {
+        fetchConsultations()
+    }, [fetchConsultations])
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
