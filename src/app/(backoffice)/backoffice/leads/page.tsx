@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Edit, Trash2, Phone, Mail, MessageCircle, Star, Search, Filter, X, Check, Loader2 } from 'lucide-react'
+import { Plus, Edit, Trash2, Phone, Mail, MessageCircle, Star, Search, Filter, X, Check, Loader2, Sparkles } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
@@ -34,6 +34,7 @@ export default function LeadsPage() {
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState('all')
     const [isSaving, setIsSaving] = useState(false)
+    const [isQualifying, setIsQualifying] = useState<string | null>(null)
 
     const [formData, setFormData] = useState({
         name: '',
@@ -158,6 +159,26 @@ export default function LeadsPage() {
             setLeads(prev => prev.map(l => l.id === id ? { ...l, status: newStatus } : l))
         } catch (err: any) {
             showToast('Erro ao atualizar status', 'error')
+        }
+    }
+
+    async function handleQualifyLead(id: string) {
+        setIsQualifying(id);
+        try {
+            const response = await fetch('/api/ai/qualify-lead', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lead_id: id })
+            });
+
+            if (!response.ok) throw new Error('Falha na qualificação');
+
+            showToast('Lead qualificado pela IA com sucesso!', 'success');
+            fetchLeads();
+        } catch (error: any) {
+            showToast('Erro na IA: Verifique as chaves de API', 'error');
+        } finally {
+            setIsQualifying(null);
         }
     }
 
@@ -330,13 +351,25 @@ export default function LeadsPage() {
                                     <option value="lost">Perdido</option>
                                 </select>
 
-                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button size="sm" variant="outline" onClick={() => openEditModal(lead)}>
-                                        <Edit className="w-4 h-4" />
+                                <div className="flex gap-2">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => handleQualifyLead(lead.id)}
+                                        disabled={!!isQualifying}
+                                        className="text-imi-600 border-imi-100 hover:bg-imi-50"
+                                    >
+                                        {isQualifying === lead.id ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} className="mr-1" />}
+                                        Qualificar
                                     </Button>
-                                    <Button size="sm" variant="outline" onClick={() => handleDelete(lead.id)} className="text-red-600 hover:bg-red-50 hover:border-red-200">
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
+                                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Button size="sm" variant="outline" onClick={() => openEditModal(lead)}>
+                                            <Edit className="w-4 h-4" />
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={() => handleDelete(lead.id)} className="text-red-600 hover:bg-red-50 hover:border-red-200">
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </div>
 
                                 <span className="text-xs text-slate-400">
