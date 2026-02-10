@@ -4,6 +4,10 @@
 -- 1. Novas colunas em developments
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS tipo TEXT DEFAULT 'apartamento' CHECK (tipo IN ('apartamento','casa','flat','lote','comercial','resort'));
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS status_comercial TEXT DEFAULT 'rascunho' CHECK (status_comercial IN ('rascunho','publicado','campanha','privado'));
+
+-- Garante que a tabela leads tem a coluna development_id para o hub funcionar
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS development_id UUID REFERENCES developments(id) ON DELETE SET NULL;
+
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS pais TEXT DEFAULT 'Brasil';
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS publico_alvo TEXT;
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS argumentos_venda JSONB DEFAULT '[]';

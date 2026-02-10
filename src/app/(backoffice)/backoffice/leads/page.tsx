@@ -19,6 +19,7 @@ interface Lead {
     notes: string | null
     ai_score: number | null
     ai_priority: 'low' | 'medium' | 'high' | 'critical'
+    development_id: string | null
     last_contacted_at: string | null
     created_at: string
 }
@@ -42,7 +43,8 @@ export default function LeadsPage() {
         source: 'site',
         interest: '',
         notes: '',
-        ai_priority: 'medium'
+        ai_priority: 'medium',
+        development_id: ''
     })
 
     useEffect(() => {
@@ -169,7 +171,8 @@ export default function LeadsPage() {
             source: lead.source || 'manual',
             interest: lead.interest || '',
             notes: lead.notes || '',
-            ai_priority: lead.ai_priority || 'medium'
+            ai_priority: lead.ai_priority || 'medium',
+            development_id: lead.development_id || ''
         })
         setIsModalOpen(true)
     }
@@ -183,7 +186,8 @@ export default function LeadsPage() {
             source: 'manual',
             interest: '',
             notes: '',
-            ai_priority: 'medium'
+            ai_priority: 'medium',
+            development_id: ''
         })
         setEditingLead(null)
     }

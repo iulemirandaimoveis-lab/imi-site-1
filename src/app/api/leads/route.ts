@@ -17,6 +17,7 @@ export async function POST(request: Request) {
                 status: 'new',
                 ai_score: 0,
                 ai_priority: 'medium',
+                development_id: data.development_id || null,
             })
             .select()
             .single();
