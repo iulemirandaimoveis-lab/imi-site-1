@@ -6,7 +6,7 @@ import {
   Plus, Edit, Trash2, Calendar, Image as ImageIcon,
   Video, FileText, CheckCircle, Clock, X, Sparkles,
   Zap, Ghost, MoreHorizontal, ChevronRight, Wand2,
-  Layout, MessageSquare, Share2
+  Layout, MessageSquare, Share2, Loader2
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Button from '@/components/ui/Button'
