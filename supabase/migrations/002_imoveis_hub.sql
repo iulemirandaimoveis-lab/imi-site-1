@@ -18,6 +18,14 @@ ALTER TABLE developments ADD COLUMN IF NOT EXISTS area_to DECIMAL(10,2);
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS units_count INT DEFAULT 1;
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS floor_count INT;
 
+-- Colunas de Mídia (Padrão IMI Pro)
+ALTER TABLE developments ADD COLUMN IF NOT EXISTS image TEXT;
+ALTER TABLE developments ADD COLUMN IF NOT EXISTS gallery_images TEXT[] DEFAULT '{}';
+ALTER TABLE developments ADD COLUMN IF NOT EXISTS floor_plans TEXT[] DEFAULT '{}';
+ALTER TABLE developments ADD COLUMN IF NOT EXISTS videos TEXT[] DEFAULT '{}';
+ALTER TABLE developments ADD COLUMN IF NOT EXISTS virtual_tour_url TEXT;
+ALTER TABLE developments ADD COLUMN IF NOT EXISTS brochure_url TEXT;
+
 -- Colunas de Performance
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS views_count INT DEFAULT 0;
 ALTER TABLE developments ADD COLUMN IF NOT EXISTS leads_count INT DEFAULT 0;
