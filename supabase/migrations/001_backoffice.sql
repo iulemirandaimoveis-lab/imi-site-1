@@ -139,6 +139,12 @@ CREATE POLICY "anon_insert_appraisals" ON appraisal_requests FOR INSERT TO anon 
 
 -- Storage bucket for uploads
 INSERT INTO storage.buckets (id, name, public) VALUES ('media', 'media', true) ON CONFLICT DO NOTHING;
+
+DROP POLICY IF EXISTS "auth_upload_media" ON storage.objects;
 CREATE POLICY "auth_upload_media" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'media');
+
+DROP POLICY IF EXISTS "public_read_media" ON storage.objects;
 CREATE POLICY "public_read_media" ON storage.objects FOR SELECT TO anon USING (bucket_id = 'media');
+
+DROP POLICY IF EXISTS "auth_delete_media" ON storage.objects;
 CREATE POLICY "auth_delete_media" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'media');
