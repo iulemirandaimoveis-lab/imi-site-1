@@ -7,6 +7,8 @@ import Button from '@/components/ui/Button'
 import {
     PropertyForm,
     MediaUploader,
+    PropertyUnits,
+    PropertyEvents,
     useProperty,
     updateProperty,
     PropertyFormData,
@@ -135,8 +137,8 @@ export default function EditarImovelPage() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl transition-all font-bold text-xs uppercase tracking-widest border-2 ${activeTab === tab.id
-                                    ? 'bg-imi-900 text-white border-imi-900 shadow-lg shadow-imi-900/10'
-                                    : 'bg-white text-slate-400 border-white hover:border-slate-100 hover:text-slate-600'
+                                ? 'bg-imi-900 text-white border-imi-900 shadow-lg shadow-imi-900/10'
+                                : 'bg-white text-slate-400 border-white hover:border-slate-100 hover:text-slate-600'
                                 }`}
                         >
                             <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-imi-400' : 'text-slate-200'}`} />
@@ -178,7 +180,19 @@ export default function EditarImovelPage() {
                         </div>
                     )}
 
-                    {(activeTab === 'units' || activeTab === 'analytics' || activeTab === 'tracking' || activeTab === 'events') && (
+                    {activeTab === 'units' && (
+                        <div className="animate-in fade-in duration-500">
+                            <PropertyUnits propertyId={property.id} />
+                        </div>
+                    )}
+
+                    {activeTab === 'events' && (
+                        <div className="animate-in fade-in duration-500">
+                            <PropertyEvents propertyId={property.id} />
+                        </div>
+                    )}
+
+                    {(activeTab === 'analytics' || activeTab === 'tracking') && (
                         <div className="bg-white rounded-3xl border border-slate-100 p-20 text-center animate-in zoom-in-95 duration-300">
                             <Settings2 className="w-16 h-16 text-slate-100 mx-auto mb-6" />
                             <h3 className="text-xl font-bold text-imi-900 mb-2 font-display uppercase tracking-widest">Módulo em Integração</h3>

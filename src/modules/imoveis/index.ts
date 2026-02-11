@@ -1,6 +1,7 @@
 export * from './types'
 export * from './validations'
 export * from './hooks/useProperties'
+export * from './hooks/useDetails'
 export * from './hooks/usePropertyKPIs'
 export * from './utils/propertyHelpers'
 
@@ -12,3 +13,5 @@ export { default as PropertyForm } from './components/PropertyForm'
 export { default as MediaUploader } from './components/MediaUploader'
 export { default as TrackingLinkModal } from './components/TrackingLinkModal'
 export { default as BulkActions } from './components/BulkActions'
+export { default as PropertyUnits } from './components/PropertyUnits'
+export { default as PropertyEvents } from './components/PropertyEvents'
