@@ -7,7 +7,7 @@ echo "🚀 Aplicando Migrations via Node.js Client"
 echo "=========================================="
 echo ""
 
-node scripts/db-apply-migrations.js
+node scripts/apply-migrations.js
 
 if [ $? -eq 0 ]; then
     echo ""
