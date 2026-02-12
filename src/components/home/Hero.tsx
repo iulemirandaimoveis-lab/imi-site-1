@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import { slideUp, staggerContainer } from '@/lib/animations'
+import { useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import LeadCaptureModal from '@/app/[lang]/(website)/imoveis/components/LeadCaptureModal'
 
 interface HeroProps {
     dict: {
@@ -15,6 +18,12 @@ interface HeroProps {
 }
 
 export default function Hero({ dict }: HeroProps) {
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    const handleSuccess = () => {
+        window.open("https://wa.me/5581997230455", "_blank")
+        setIsModalOpen(false)
+    }
     return (
         <section className="relative min-h-[100dvh] flex items-end overflow-hidden bg-imi-900">
             <div className="absolute inset-0 bg-cover bg-top bg-no-repeat" style={{ backgroundImage: "url('/hero-bg.jpg')" }}>
@@ -28,12 +37,28 @@ export default function Hero({ dict }: HeroProps) {
                         <Button asChild size="lg" className="w-full sm:w-auto bg-white text-imi-900 hover:bg-imi-50 border-none shadow-xl h-14">
                             <Link href="/avaliacoes#form">{dict.cta_appraisal}</Link>
                         </Button>
-                        <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 hover:border-white h-14">
-                            <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">{dict.cta_whatsapp}</a>
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 hover:border-white h-14"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            {dict.cta_whatsapp}
                         </Button>
                     </motion.div>
                 </motion.div>
             </div>
+            <AnimatePresence>
+                {isModalOpen && (
+                    <LeadCaptureModal
+                        title="Atendimento IMI"
+                        description="Preencha seus dados para receber um diagnóstico imobiliário e falar com nosso especialista."
+                        customInterest="CTA Hero Home"
+                        onClose={() => setIsModalOpen(false)}
+                        onSuccess={handleSuccess}
+                    />
+                )}
+            </AnimatePresence>
         </section>
     )
 }

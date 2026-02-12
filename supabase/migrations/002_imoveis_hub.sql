@@ -103,3 +103,14 @@ UPDATE developments d SET leads_count = (
     SELECT COUNT(*) FROM leads l WHERE l.development_id = d.id
 );
 UPDATE developments d SET bedrooms = (SELECT bedrooms FROM development_units u WHERE u.development_id = d.id LIMIT 1) WHERE bedrooms = 0;
+
+-- 6. Função para incremento atômico de cliques
+CREATE OR REPLACE FUNCTION increment_link_clicks(link_id UUID)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE tracked_links
+    SET clicks = clicks + 1,
+        last_click_at = NOW()
+    WHERE id = link_id;
+END;
+$$ LANGUAGE plpgsql;

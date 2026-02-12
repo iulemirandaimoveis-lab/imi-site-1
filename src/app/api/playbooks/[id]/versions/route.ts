@@ -1,29 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from 'next/server'
 
-// GET /api/playbooks/[id]/versions - Histórico de versões
-export async function GET(
-    request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    try {
-        const { id } = await params;
-        const supabase = await createClient();
+// DEPRECATED: Migrar para Supabase
+export async function GET(request: NextRequest) {
+    return NextResponse.json(
+        { error: 'API em migração para Supabase' },
+        { status: 503 }
+    )
+}
 
-        const { data: versions, error } = await supabase
-            .from('playbook_versions')
-            .select('*')
-            .eq('playbook_id', id)
-            .order('version', { ascending: false });
+export async function POST(request: NextRequest) {
+    return NextResponse.json(
+        { error: 'API em migração para Supabase' },
+        { status: 503 }
+    )
+}
 
-        if (error) throw error;
+export async function PATCH(request: NextRequest) {
+    return NextResponse.json(
+        { error: 'API em migração para Supabase' },
+        { status: 503 }
+    )
+}
 
-        return NextResponse.json({ versions });
-    } catch (error: any) {
-        console.error('Error in GET /api/playbooks/[id]/versions:', error);
-        return NextResponse.json(
-            { error: error.message || 'Internal Server Error' },
-            { status: 500 }
-        );
-    }
+export async function DELETE(request: NextRequest) {
+    return NextResponse.json(
+        { error: 'API em migração para Supabase' },
+        { status: 503 }
+    )
 }

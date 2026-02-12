@@ -9,6 +9,8 @@ import AdvancedFilter, { FilterState } from './components/AdvancedFilter';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { MessageCircle, Search } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
+import LeadCaptureModal from './components/LeadCaptureModal';
 
 interface ImoveisClientProps {
     initialDevelopments: Development[];
@@ -27,11 +29,25 @@ export default function ImoveisClient({ initialDevelopments, lang }: ImoveisClie
         sort: 'relevant'
     });
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [ctaTarget, setCtaTarget] = useState<'off-market' | 'general'>('general');
+
+    const handleCTAClick = (target: 'off-market' | 'general') => {
+        setCtaTarget(target);
+        setIsModalOpen(true);
+    };
+
+    const handleSuccess = () => {
+        window.open("https://wa.me/5581997230455", "_blank");
+        setIsModalOpen(false);
+    };
+
     // Extract unique locations for the filter dropdown based on REAL data
     const availableLocations = useMemo(() => {
         const locs = new Set<string>();
         initialDevelopments.forEach(dev => {
-            if (dev.region === 'internacional') {
+            const isInternational = ['dubai', 'usa'].includes(dev.region?.toLowerCase());
+            if (isInternational) {
                 // Para internacionais, mostrar o país
                 locs.add(dev.location.country || dev.location.city);
             } else {
@@ -39,7 +55,7 @@ export default function ImoveisClient({ initialDevelopments, lang }: ImoveisClie
                 locs.add(dev.location.city);
             }
         });
-        return Array.from(locs).sort();
+        return Array.from(locs).filter(Boolean).sort();
     }, [initialDevelopments]);
 
     const filteredDevelopments = useMemo(() => {
@@ -119,14 +135,12 @@ export default function ImoveisClient({ initialDevelopments, lang }: ImoveisClie
                             Aguarde novidades em breve ou fale conosco para oportunidades off-market.
                         </p>
                         <Button
-                            asChild
                             size="lg"
                             className="bg-imi-900 text-white hover:bg-imi-800 px-10 h-14 font-bold uppercase tracking-widest text-xs"
+                            onClick={() => handleCTAClick('off-market')}
                         >
-                            <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">
-                                <MessageCircle className="w-5 h-5 mr-3" />
-                                Consultar Off-Market
-                            </a>
+                            <MessageCircle className="w-5 h-5 mr-3" />
+                            Consultar Off-Market
                         </Button>
                     </motion.div>
                 </div>
@@ -263,18 +277,29 @@ export default function ImoveisClient({ initialDevelopments, lang }: ImoveisClie
                         </motion.p>
                         <motion.div variants={slideUp}>
                             <Button
-                                asChild
                                 size="lg"
                                 className="bg-white text-imi-900 hover:bg-imi-50 h-16 px-12 font-bold uppercase tracking-[0.2em] text-sm shadow-2xl"
+                                onClick={() => handleCTAClick('general')}
                             >
-                                <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">
-                                    <MessageCircle className="w-5 h-5 mr-3 text-imi-700" />
-                                    Iniciar Consultoria
-                                </a>
+                                <MessageCircle className="w-5 h-5 mr-3 text-imi-700" />
+                                Iniciar Consultoria
                             </Button>
                         </motion.div>
                     </motion.div>
                 </div>
+                <AnimatePresence>
+                    {isModalOpen && (
+                        <LeadCaptureModal
+                            title={ctaTarget === 'off-market' ? "Acesso Off-Market" : "Consultoria IMI"}
+                            description={ctaTarget === 'off-market'
+                                ? "Preencha seus dados para receber nossa curadoria exclusiva de imóveis que não estão no catálogo aberto."
+                                : "Fale com nossos especialistas e receba um atendimento baseado em dados e segurança para seu próximo investimento."}
+                            customInterest={ctaTarget === 'off-market' ? "Interesse em Imóveis Off-Market" : "Consultoria Geral - Listagem de Imóveis"}
+                            onClose={() => setIsModalOpen(false)}
+                            onSuccess={handleSuccess}
+                        />
+                    )}
+                </AnimatePresence>
             </section>
         </main>
     );

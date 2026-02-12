@@ -8,6 +8,8 @@ import Select from '@/components/ui/Select'
 import Textarea from '@/components/ui/Textarea'
 import Button from '@/components/ui/Button'
 
+import { getAttribution } from '@/lib/utils/attribution'
+
 export default function AppraisalForm() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -19,12 +21,20 @@ export default function AppraisalForm() {
 
         const formData = new FormData(e.currentTarget)
         const data = Object.fromEntries(formData)
+        const attribution = getAttribution()
 
         try {
-            const response = await fetch('/api/appraisal', {
+            const response = await fetch('/api/leads/capture', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify({
+                    name: data.name,
+                    email: data.email,
+                    phone: data.phone,
+                    interest: `Solicitação de Avaliação: ${data.appraisalType}`,
+                    message: `Tipo Imóvel: ${data.propertyType} | Cidade: ${data.city} | Endereço: ${data.address} | Prazo: ${data.timeline} | Info: ${data.message}`,
+                    attribution
+                }),
             })
 
             if (response.ok) {

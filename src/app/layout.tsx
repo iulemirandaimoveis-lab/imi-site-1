@@ -1,4 +1,4 @@
-import { Playfair_Display, Outfit } from 'next/font/google';
+import { Playfair_Display, Inter } from 'next/font/google';
 import './globals.css';
 
 const playfair = Playfair_Display({
@@ -8,10 +8,10 @@ const playfair = Playfair_Display({
     display: 'swap',
 });
 
-const outfit = Outfit({
+const inter = Inter({
     subsets: ['latin'],
     weight: ['300', '400', '500', '600', '700'],
-    variable: '--font-outfit',
+    variable: '--font-inter',
     display: 'swap',
 });
 
@@ -20,12 +20,16 @@ export const metadata = {
     description: 'Avaliações técnicas NBR 14653, consultoria estratégica e corretagem premium',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+    children,
+}: {
+    children: React.ReactNode
+}) {
     return (
-        <html lang="pt-BR" className={`${playfair.variable} ${outfit.variable}`}>
-            <body className="font-sans antialiased bg-white text-imi-600">
+        <html lang="pt-BR" className={`${playfair.variable} ${inter.variable}`}>
+            <body className={`${inter.className} min-h-screen bg-slate-50 relative`}>
                 {children}
             </body>
         </html>
-    );
+    )
 }

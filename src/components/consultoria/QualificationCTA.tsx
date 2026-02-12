@@ -2,8 +2,17 @@
 
 import Button from '@/components/ui/Button';
 import { MessageCircle, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import LeadCaptureModal from '@/app/[lang]/(website)/imoveis/components/LeadCaptureModal';
 
 export function QualificationCTA() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleSuccess = () => {
+        window.open("https://wa.me/5581997230455?text=Ol%C3%A1%2C%20queria%20agendar%20uma%20sess%C3%A3o%20estrat%C3%A9gica%20sobre%20im%C3%B3veis%20internacionais.", "_blank");
+        setIsModalOpen(false);
+    };
     return (
         <section className="relative py-24 bg-imi-900 overflow-hidden">
             {/* Background Details */}
@@ -21,11 +30,13 @@ export function QualificationCTA() {
                     </p>
 
                     <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6">
-                        <Button size="lg" className="bg-white text-imi-900 hover:bg-imi-50 min-w-[240px]" asChild>
-                            <a href="https://wa.me/5581997230455?text=Ol%C3%A1%2C%20queria%20agendar%20uma%20sess%C3%A3o%20estrat%C3%A9gica%20sobre%20im%C3%B3veis%20internacionais.">
-                                <MessageCircle className="w-5 h-5 mr-3" />
-                                Agendar Sessão Gratuita
-                            </a>
+                        <Button
+                            size="lg"
+                            className="bg-white text-imi-900 hover:bg-imi-50 min-w-[240px]"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <MessageCircle className="w-5 h-5 mr-3" />
+                            Agendar Sessão Gratuita
                         </Button>
 
                         <a
@@ -52,6 +63,17 @@ export function QualificationCTA() {
                     </div>
                 </div>
             </div>
+            <AnimatePresence>
+                {isModalOpen && (
+                    <LeadCaptureModal
+                        title="Sessão Estratégica"
+                        description="Agende sua consultoria técnica sobre imóveis internacionais e receba um diagnóstico patrimonial em instantes."
+                        customInterest="Consultoria Internacional / Sessão Estratégica"
+                        onClose={() => setIsModalOpen(false)}
+                        onSuccess={handleSuccess}
+                    />
+                )}
+            </AnimatePresence>
         </section>
     );
 }

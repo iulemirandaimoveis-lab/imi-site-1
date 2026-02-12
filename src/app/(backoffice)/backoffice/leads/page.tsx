@@ -5,9 +5,10 @@ import { createClient } from '@/lib/supabase/client'
 import {
     Plus, Edit, Trash2, Phone, Mail, MessageCircle,
     Star, Search, Filter, X, Check, Loader2, Sparkles,
-    Calendar, ArrowUpRight, User, Hash, Zap, ChevronRight, Users
+    Calendar, ArrowUpRight, User, Hash, Zap, ChevronRight, Users, Layers
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
@@ -200,7 +201,7 @@ export default function LeadsPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 rounded-full bg-accent-500 shadow-[0_0_8px_rgba(212,175,55,0.5)]" />
+                        <div className="w-2 h-2 rounded-full bg-accent-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]" />
                         <span className="text-[10px] font-black text-imi-400 uppercase tracking-[0.3em]">Módulo de Conversão</span>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold text-imi-900 font-display tracking-tight">
@@ -208,10 +209,18 @@ export default function LeadsPage() {
                     </h1>
                 </div>
 
-                <Button onClick={() => setIsModalOpen(true)} className="h-14 px-8 bg-imi-900 text-white rounded-2xl shadow-elevated group active:scale-95 transition-all">
-                    <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform" />
-                    Adicionar Lead
-                </Button>
+                <div className="flex gap-3">
+                    <Link href="/backoffice/leads/kanban">
+                        <Button variant="outline" className="h-14 px-8 border-imi-100 bg-white/50 backdrop-blur-md rounded-2xl transition-all">
+                            <Layers className="w-5 h-5 mr-3 text-imi-400" />
+                            Visualizar Kanban
+                        </Button>
+                    </Link>
+                    <Button onClick={() => setIsModalOpen(true)} className="h-14 px-8 bg-imi-900 text-white rounded-2xl shadow-elevated group active:scale-95 transition-all">
+                        <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform" />
+                        Adicionar Lead
+                    </Button>
+                </div>
             </div>
 
             {/* Filters */}
@@ -268,7 +277,9 @@ export default function LeadsPage() {
                                 </div>
                                 <div className="space-y-3">
                                     <div className="flex flex-wrap items-center gap-3">
-                                        <h3 className="text-xl font-bold text-imi-900 group-hover:text-accent-600 transition-colors uppercase tracking-tight">{lead.name}</h3>
+                                        <Link href={`/backoffice/leads/${lead.id}`}>
+                                            <h3 className="text-xl font-bold text-imi-900 group-hover:text-accent-600 transition-colors uppercase tracking-tight cursor-pointer">{lead.name}</h3>
+                                        </Link>
                                         <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${lead.ai_priority === 'critical' ? 'bg-red-50 text-red-600 border-red-100' :
                                             lead.ai_priority === 'high' ? 'bg-orange-50 text-orange-600 border-orange-100' :
                                                 'bg-imi-50 text-imi-400 border-imi-100'
@@ -319,7 +330,7 @@ export default function LeadsPage() {
                                         disabled={!!isQualifying}
                                         className={`flex items-center gap-2 h-12 px-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isQualifying === lead.id
                                             ? 'bg-accent-50 text-accent-600'
-                                            : 'bg-accent-500 text-white shadow-elevated hover:bg-gold-600 active:scale-95'
+                                            : 'bg-accent-500 text-white shadow-elevated hover:bg-accent-600 active:scale-95'
                                             }`}
                                     >
                                         {isQualifying === lead.id ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import useSWR from 'swr';
 import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
 import {
     Search,
     FileText,
@@ -13,7 +14,8 @@ import {
     Home,
     Clock,
     ClipboardCheck,
-    MoreHorizontal
+    MoreHorizontal,
+    Plus
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { toast } from 'sonner';
@@ -75,10 +77,26 @@ export default function AppraisalRequestsPage() {
     });
 
     return (
-        <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-imi-900 font-display">Solicitações de Avaliação</h1>
-                <p className="text-imi-500 mt-1">Gestão de laudos técnicos e avaliações NBR 14653.</p>
+        <div className="space-y-6 pb-24 animate-fade-in">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
+                <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 rounded-full bg-accent-500 shadow-[0_0_8px_rgba(234,179,8,0.5)]" />
+                        <span className="text-[10px] font-black text-imi-400 uppercase tracking-[0.3em]">Engineering & Valuation Hub</span>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-bold text-imi-900 font-display tracking-tight">
+                        Avaliações <span className="text-accent-500">Técnicas</span>
+                    </h1>
+                </div>
+
+                <div className="flex gap-3">
+                    <Link href="/backoffice/avaliacoes/novo">
+                        <Button className="h-14 px-8 bg-imi-900 text-white rounded-2xl shadow-elevated group active:scale-95 transition-all">
+                            <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform" />
+                            Novo Laudo Técnico
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-2xl shadow-soft border border-imi-50">
@@ -222,8 +240,8 @@ export default function AppraisalRequestsPage() {
                             </div>
 
                             <div className="p-8 border-t border-imi-100">
-                                <Button asChild fullWidth className="h-14 bg-imi-900">
-                                    <a href={`https://wa.me/55${selectedItem.phone?.replace(/\D/g, '')}`} target="_blank">
+                                <Button className="h-14 bg-imi-900 w-full">
+                                    <a href={`https://wa.me/55${selectedItem.phone?.replace(/\D/g, '')}`} target="_blank" className="flex items-center justify-center w-full h-full">
                                         <MessageCircle size={20} className="mr-2" />
                                         Conversar sobre o Laudo
                                     </a>

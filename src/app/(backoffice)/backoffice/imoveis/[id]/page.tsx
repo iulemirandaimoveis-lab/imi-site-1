@@ -1,214 +1,161 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { ChevronLeft, Building2, Image as ImageIcon, Layers, BarChart3, Link as LinkIcon, Settings2, ShieldCheck } from 'lucide-react'
+import { ChevronLeft, Building2, Layers, BarChart3, Link as LinkIcon, ShieldCheck } from 'lucide-react'
 import { useRouter, useParams } from 'next/navigation'
-import Button from '@/components/ui/Button'
-import {
-    PropertyForm,
-    MediaUploader,
-    PropertyUnits,
-    PropertyEvents,
-    useProperty,
-    updateProperty,
-    PropertyFormData,
-    calculatePropertyScore,
-    formatCurrency
-} from '@/modules/imoveis'
+import { useDevelopment, updateDevelopment } from '@/hooks/use-developments'
+import DevelopmentForm from '@/components/backoffice/imoveis/DevelopmentForm'
 import { useToast } from '@/components/ui/Toast'
 import Toast from '@/components/ui/Toast'
+import PropertyUnitsManager from '@/components/backoffice/imoveis/PropertyUnitsManager'
+import PropertyEvents from '@/components/backoffice/imoveis/PropertyEvents'
+import TrackedLinksList from '@/components/backoffice/imoveis/TrackedLinksList'
+import PropertyAnalytics from '@/components/backoffice/imoveis/PropertyAnalytics'
 
-type TabType = 'basic' | 'media' | 'units' | 'analytics' | 'tracking' | 'events'
+type TabType = 'details' | 'units' | 'tracking' | 'events' | 'analytics'
 
 export default function EditarImovelPage() {
     const router = useRouter()
-    const params = useParams()
-    const id = params.id as string
+    const { id } = useParams()
     const { toasts, showToast, removeToast } = useToast()
-
-    const { property, isLoading, mutate, error } = useProperty(id)
-    const [activeTab, setActiveTab] = useState<TabType>('basic')
+    const [activeTab, setActiveTab] = useState<TabType>('details')
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    // Redirecionar se erro ou se tentar acessar 'novo' via rota dinâmica
+    const { development, isLoading, error, mutate } = useDevelopment(id as string)
+
     useEffect(() => {
-        if (id === 'novo') router.replace('/backoffice/imoveis/novo')
         if (error) {
-            showToast('Falha ao localizar o ativo imobiliário', 'error')
+            showToast('Erro ao carregar empreendimento', 'error')
             router.push('/backoffice/imoveis')
         }
-    }, [id, error, router, showToast])
+    }, [error, router, showToast])
 
-    if (isLoading || !property) {
-        return (
-            <div className="p-8 max-w-[1400px] mx-auto animate-pulse">
-                <div className="h-20 bg-slate-50 rounded-2xl mb-12"></div>
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    <div className="lg:col-span-1 h-64 bg-slate-50 rounded-2xl"></div>
-                    <div className="lg:col-span-3 h-[600px] bg-slate-50 rounded-2xl"></div>
-                </div>
-            </div>
-        )
-    }
-
-    const score = calculatePropertyScore(property)
-
-    async function handleUpdateBasic(data: PropertyFormData) {
+    const handleUpdate = async (data: any) => {
         setIsSubmitting(true)
         try {
-            await updateProperty(id, data)
-            showToast('Inteligência básica atualizada com sucesso', 'success')
+            await updateDevelopment(id as string, data)
+            showToast('Empreendimento atualizado com sucesso', 'success')
             mutate()
         } catch (err: any) {
-            showToast(err.message || 'Erro ao persistir alterações', 'error')
+            showToast(err.message || 'Erro ao atualizar', 'error')
         } finally {
             setIsSubmitting(false)
         }
     }
 
-    async function handleUpdateMedia(mediaData: any) {
-        try {
-            await updateProperty(id, mediaData)
-            showToast('Portfólio de mídia atualizado', 'success')
-            mutate()
-        } catch (err: any) {
-            showToast(err.message || 'Erro ao processar uploads', 'error')
-        }
+    if (isLoading || !development) {
+        return (
+            <div className="p-8 max-w-[1400px] mx-auto animate-pulse">
+                <div className="h-20 bg-imi-50 rounded-2xl mb-12"></div>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <div className="lg:col-span-1 h-64 bg-imi-50 rounded-2xl"></div>
+                    <div className="lg:col-span-3 h-[600px] bg-imi-50 rounded-2xl"></div>
+                </div>
+            </div>
+        )
     }
 
     const tabs = [
-        { id: 'basic', label: 'Inteligência Básica', icon: Building2 },
-        { id: 'media', label: 'Portfólio de Mídia', icon: ImageIcon },
-        { id: 'units', label: 'Mapa de Unidades', icon: Layers },
-        { id: 'tracking', label: 'Performance de Links', icon: LinkIcon },
-        { id: 'analytics', label: 'Estatísticas Reais', icon: BarChart3 },
-        { id: 'events', label: 'Protocolos e Eventos', icon: ShieldCheck },
+        { id: 'details', label: 'Detalhes & Mídia', icon: Building2 },
+        { id: 'units', label: 'Unidades & Tipologias', icon: Layers },
+        { id: 'tracking', label: 'Links & Campanhas', icon: LinkIcon },
+        { id: 'events', label: 'Histórico & Eventos', icon: ShieldCheck },
+        { id: 'analytics', label: 'Analytics em Breve', icon: BarChart3 },
     ]
 
     return (
-        <div className="p-8 max-w-[1400px] mx-auto">
+        <div className="p-8 max-w-[1400px] mx-auto pb-40">
             {/* Toast System */}
             <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2">
                 {toasts.map(toast => (
-                    <Toast
-                        key={toast.id}
-                        message={toast.message}
-                        type={toast.type}
-                        onClose={() => removeToast(toast.id)}
-                    />
+                    <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
                 ))}
             </div>
 
-            {/* Control Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 animate-in slide-in-from-top-4 duration-500">
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => router.push('/backoffice/imoveis')}
-                        className="w-12 h-12 bg-white rounded-2xl border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm"
+                        className="w-12 h-12 bg-white rounded-2xl border border-imi-100 flex items-center justify-center hover:bg-imi-50 transition-all shadow-soft"
                     >
                         <ChevronLeft className="w-5 h-5 text-imi-900" />
                     </button>
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <span className={`w-2 h-2 rounded-full ${property.status === 'active' ? 'bg-green-500' : 'bg-slate-300'}`}></span>
-                            <span className="text-[10px] font-bold text-imi-500 uppercase tracking-widest">{property.status} • Asset ID: {id.split('-')[0]}</span>
+                            <span className={`w-2 h-2 rounded-full ${development.status_commercial === 'published' ? 'bg-green-500' : 'bg-imi-300'}`}></span>
+                            <span className="text-[10px] font-black text-imi-400 uppercase tracking-widest">{development.status_commercial} • ID: {development.id.split('-')[0]}</span>
                         </div>
-                        <h1 className="text-3xl font-bold text-imi-900 tracking-tight">{property.name}</h1>
+                        <h1 className="text-3xl font-bold text-imi-900 tracking-tight font-display">{development.title}</h1>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-                    <div className="px-4 py-2 text-center border-r border-slate-100">
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Inventory Score</div>
-                        <div className={`text-xl font-black ${score > 80 ? 'text-green-600' : score > 50 ? 'text-imi-600' : 'text-orange-500'}`}>{score}</div>
+                <div className="flex items-center gap-4 bg-white p-3 rounded-2xl border border-imi-100 shadow-soft">
+                    <div className="px-4 py-1 text-center border-r border-imi-50">
+                        <div className="text-[10px] font-black text-imi-300 uppercase tracking-widest">Score</div>
+                        <div className="text-xl font-black text-imi-900">{development.inventory_score || 0}</div>
                     </div>
-                    <div className="px-4 py-2 text-center">
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Reach</div>
-                        <div className="text-xl font-black text-imi-900">{property.views || 0}</div>
+                    <div className="px-4 py-1 text-center">
+                        <div className="text-[10px] font-black text-imi-300 uppercase tracking-widest">Leads</div>
+                        <div className="text-xl font-black text-imi-900">{development.leads_count || 0}</div>
                     </div>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-                {/* Navigation Sidebar */}
-                <div className="lg:col-span-1 space-y-2">
+                {/* Sidebar Navigation */}
+                <div className="lg:col-span-1 space-y-3">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl transition-all font-bold text-xs uppercase tracking-widest border-2 ${activeTab === tab.id
-                                ? 'bg-imi-900 text-white border-imi-900 shadow-lg shadow-imi-900/10'
-                                : 'bg-white text-slate-400 border-white hover:border-slate-100 hover:text-slate-600'
+                            className={`w-full flex items-center gap-4 px-6 py-4 rounded-xl transition-all font-bold text-xs uppercase tracking-widest border-l-4 ${activeTab === tab.id
+                                ? 'bg-white border-imi-900 text-imi-900 shadow-soft translate-x-2'
+                                : 'bg-transparent border-transparent text-imi-400 hover:bg-imi-50/50 hover:text-imi-600'
                                 }`}
                         >
-                            <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-imi-400' : 'text-slate-200'}`} />
+                            <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-imi-900' : 'text-imi-300'}`} />
                             {tab.label}
                         </button>
                     ))}
 
-                    <div className="mt-12 p-6 bg-slate-50 rounded-2xl border border-slate-100 italic">
-                        <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                            "Toda alteração neste módulo reflete em tempo real no website público e nos portais integrados (Fase 4)."
-                        </p>
+                    <div className="pt-8 px-6 text-xs text-imi-300 leading-relaxed font-medium italic">
+                        Alterações são refletidas automaticamente no portal público e apps conectados.
                     </div>
                 </div>
 
-                {/* Content Area */}
+                {/* Main Content */}
                 <div className="lg:col-span-3">
-                    {activeTab === 'basic' && (
-                        <div className="animate-in fade-in duration-500">
-                            <PropertyForm
-                                property={property}
-                                onSubmit={handleUpdateBasic}
-                                onCancel={() => router.push('/backoffice/imoveis')}
+                    {activeTab === 'details' && (
+                        <div className="animate-in fade-in zoom-in-95 duration-300">
+                            <DevelopmentForm
+                                initialData={development}
+                                onSubmit={handleUpdate}
                                 isSubmitting={isSubmitting}
                             />
                         </div>
                     )}
 
-                    {activeTab === 'media' && (
-                        <div className="animate-in fade-in duration-500">
-                            <MediaUploader
-                                propertyId={property.id}
-                                images={property.gallery_images || []}
-                                floorPlans={property.floor_plans || []}
-                                videos={property.videos || []}
-                                virtualTourUrl={property.virtual_tour_url}
-                                brochureUrl={property.brochure_url}
-                                onUpdate={handleUpdateMedia}
-                            />
+                    {activeTab === 'units' && (
+                        <div className="animate-in fade-in zoom-in-95 duration-300">
+                            <PropertyUnitsManager propertyId={development.id} />
                         </div>
                     )}
 
-                    {activeTab === 'units' && (
-                        <div className="animate-in fade-in duration-500">
-                            <PropertyUnits propertyId={property.id} />
+                    {activeTab === 'tracking' && (
+                        <div className="animate-in fade-in zoom-in-95 duration-300">
+                            <TrackedLinksList propertyId={development.id} property={development} />
                         </div>
                     )}
 
                     {activeTab === 'events' && (
-                        <div className="animate-in fade-in duration-500">
-                            <PropertyEvents propertyId={property.id} />
+                        <div className="animate-in fade-in zoom-in-95 duration-300">
+                            <PropertyEvents propertyId={development.id} />
                         </div>
                     )}
 
-                    {(activeTab === 'analytics' || activeTab === 'tracking') && (
-                        <div className="bg-white rounded-3xl border border-slate-100 p-20 text-center animate-in zoom-in-95 duration-300">
-                            <Settings2 className="w-16 h-16 text-slate-100 mx-auto mb-6" />
-                            <h3 className="text-xl font-bold text-imi-900 mb-2 font-display uppercase tracking-widest">Módulo em Integração</h3>
-                            <p className="text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
-                                Esta funcionalidade estratégica está agendada para o ciclo de expansão (Fase 2-3 do cronograma oficial).
-                            </p>
-                            <div className="mt-8 pt-8 border-t border-slate-50 flex justify-center gap-8">
-                                <div className="text-center">
-                                    <div className="text-[10px] font-bold text-slate-300 uppercase mb-1">Status</div>
-                                    <div className="text-xs font-bold text-imi-600 uppercase tracking-tighter">Desenvolvimento</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-[10px] font-bold text-slate-300 uppercase mb-1">Prioridade</div>
-                                    <div className="text-xs font-bold text-imi-600 uppercase tracking-tighter">Alta</div>
-                                </div>
-                            </div>
+                    {activeTab === 'analytics' && (
+                        <div className="animate-in zoom-in-95 duration-300">
+                            <PropertyAnalytics propertyId={development.id} />
                         </div>
                     )}
                 </div>

@@ -7,6 +7,7 @@ import { MapPin, Phone, Mail, MessageCircle, Send } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
+import { getAttribution } from '@/lib/utils/attribution'
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -23,9 +24,10 @@ export default function ContactPage() {
         e.preventDefault()
         setIsSubmitting(true)
 
+        const attribution = getAttribution()
+
         try {
-            // Persist to Supabase
-            const response = await fetch('/api/contact', {
+            const response = await fetch('/api/leads/capture', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -33,12 +35,12 @@ export default function ContactPage() {
                     email: formData.email,
                     phone: formData.phone,
                     interest: formData.subject,
-                    message: formData.message
+                    message: formData.message,
+                    attribution
                 })
             })
 
             if (response.ok) {
-                // Show success feedback
                 setFormData({
                     name: '',
                     email: '',
@@ -46,11 +48,10 @@ export default function ContactPage() {
                     subject: '',
                     message: ''
                 })
-                alert('Mensagem enviada com sucesso! Entraremos em contato em breve.')
+                alert('Mensagem enviada com sucesso! Nossa IA já está processando seu perfil e um especialista entrará em contato.')
             } else {
                 throw new Error('Erro ao enviar')
             }
-
         } catch (err) {
             console.error('Error saving lead:', err)
             alert('Erro ao enviar mensagem. Tente pelo WhatsApp abaixo.')

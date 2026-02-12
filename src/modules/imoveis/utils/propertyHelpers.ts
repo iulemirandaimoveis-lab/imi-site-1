@@ -20,6 +20,8 @@ export const propertyTypeLabels: Record<PropertyType, string> = {
     penthouse: 'Cobertura',
     studio: 'Studio',
     land: 'Terreno',
+    commercial: 'Comercial',
+    resort: 'Resort/Hotel',
 }
 
 export function formatCurrency(value: number): string {

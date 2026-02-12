@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply text-imi-500 bg-white;
+    @apply text-text-body-light dark:text-text-body-dark bg-background-light dark:bg-background-dark;
   }
 
   ::selection {
@@ -50,5 +50,5 @@
 
 [dir="rtl"] .font-display {
   /* Playfair Display has poor Arabic support - use fallback */
-  font-family: var(--font-outfit), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
 }

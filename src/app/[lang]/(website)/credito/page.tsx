@@ -7,6 +7,7 @@ import { Building2, Banknote, TrendingUp, ShieldCheck, Clock, ChevronDown, Chevr
 import Button from '@/components/ui/Button'
 import { formatCurrency } from '@/lib/utils'
 import Image from 'next/image'
+import LeadCaptureModal from '@/app/[lang]/(website)/imoveis/components/LeadCaptureModal'
 
 const creditTypes = [
     {
@@ -63,6 +64,12 @@ export default function CreditPage() {
     const [years, setYears] = useState(20)
     const [interestRate] = useState(10.5)
     const [openFaq, setOpenFaq] = useState<number | null>(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    const handleSuccess = () => {
+        window.open("https://wa.me/5581997230455", "_blank")
+        setIsModalOpen(false)
+    }
 
     const calculateMonthlyPayment = () => {
         const monthlyRate = interestRate / 100 / 12
@@ -444,15 +451,29 @@ export default function CreditPage() {
                         <p className="text-imi-300 text-lg md:text-xl mb-12 max-w-2xl mx-auto font-light leading-relaxed relative z-10">
                             Fale agora com um especialista IMI e descubra qual a melhor alavancagem para o seu momento de investimento.
                         </p>
-                        <Button asChild size="lg" className="w-full sm:w-auto bg-white text-imi-900 hover:bg-imi-50 h-14 sm:h-16 px-8 sm:px-12 text-base sm:text-lg font-bold shadow-xl relative z-10">
-                            <a href="https://wa.me/5581997230455" target="_blank" rel="noopener noreferrer">
-                                <MessageCircle className="w-6 h-6 mr-3 text-imi-900" />
-                                Agendar Sessão de Crédito
-                            </a>
+                        <Button
+                            size="lg"
+                            className="w-full sm:w-auto bg-white text-imi-900 hover:bg-imi-50 h-14 sm:h-16 px-8 sm:px-12 text-base sm:text-lg font-bold shadow-xl relative z-10"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <MessageCircle className="w-6 h-6 mr-3 text-imi-900" />
+                            Agendar Sessão de Crédito
                         </Button>
                     </div>
                 </div>
             </section>
+
+            <AnimatePresence>
+                {isModalOpen && (
+                    <LeadCaptureModal
+                        title="Assessoria de Crédito"
+                        description="Preencha seus dados para receber uma análise personalizada de crédito e alavancagem financeira."
+                        customInterest="Consultoria de Crédito / Financiamento"
+                        onClose={() => setIsModalOpen(false)}
+                        onSuccess={handleSuccess}
+                    />
+                )}
+            </AnimatePresence>
         </main>
     )
 }

@@ -5,13 +5,16 @@ export const propertySchema = z.object({
     slug: z.string().min(3).max(100).regex(/^[a-z0-9-]+$/, 'Slug deve conter apenas letras minúsculas, números e hífens'),
     description: z.string().min(10, 'Descrição deve ter no mínimo 10 caracteres'),
     developer_id: z.string().uuid('Selecione uma construtora válida'),
-    type: z.enum(['apartment', 'house', 'penthouse', 'studio', 'land']),
+    type: z.enum(['apartment', 'house', 'penthouse', 'studio', 'land', 'commercial', 'resort']),
     status: z.enum(['active', 'inactive', 'pending', 'sold']),
+    status_commercial: z.enum(['draft', 'published', 'campaign', 'private', 'sold']),
 
     address: z.string().min(5, 'Endereço obrigatório'),
     neighborhood: z.string().min(2, 'Bairro obrigatório'),
     city: z.string().min(2, 'Cidade obrigatória'),
     state: z.string().length(2, 'Estado deve ter 2 caracteres (UF)'),
+    country: z.string().min(2, 'País obrigatório').default('Brasil'),
+    region: z.enum(['paraiba', 'pernambuco', 'sao-paulo', 'dubai', 'usa', 'other']),
     zipcode: z.string().optional().or(z.literal('')),
 
     price_from: z.number().positive('Preço deve ser maior que zero'),
@@ -29,6 +32,11 @@ export const propertySchema = z.object({
     launch_date: z.string().nullable(),
 
     featured: z.boolean(),
+    image: z.string().optional().or(z.literal('')),
+    gallery_images: z.array(z.string()).optional().default([]),
+    floor_plans: z.array(z.string()).optional().default([]),
+    target_audience: z.string().optional().nullable(),
+    selling_points: z.array(z.string()).optional().nullable(),
 }).refine(
     (data) => !data.price_to || data.price_to >= data.price_from,
     {

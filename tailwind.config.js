@@ -1,6 +1,5 @@
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+const config = {
     content: [
         './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
         './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,6 +8,16 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
+                primary: '#C9A24D',
+                'background-light': '#F8F9FA',
+                'background-dark': '#0B111A',
+                'card-light': '#FFFFFF',
+                'card-dark': '#161B26',
+                'text-header-light': '#0B1E36',
+                'text-header-dark': '#F3F4F6',
+                'text-body-light': '#4B5563',
+                'text-body-dark': '#9CA3AF',
+                'imi-dark-blue': '#1E212B',
                 imi: {
                     50: '#F7F8FA',
                     100: '#ECEEF2',
@@ -45,7 +54,7 @@ const config: Config = {
                 },
             },
             fontFamily: {
-                sans: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+                sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
                 display: ['var(--font-playfair)', 'Georgia', 'serif'],
             },
             fontSize: {

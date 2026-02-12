@@ -56,6 +56,15 @@ export async function POST(request: NextRequest) {
             requested_by: user.id,
         });
 
+        // Persiste qualificação no banco de dados para histórico
+        await supabase
+            .from('lead_qualifications')
+            .insert({
+                lead_id: lead_id,
+                score: result.qualification.score,
+                reasoning: result.qualification.summary
+            });
+
         return NextResponse.json({
             lead_id,
             qualification: result.qualification,

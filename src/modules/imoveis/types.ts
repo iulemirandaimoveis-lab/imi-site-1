@@ -1,7 +1,9 @@
 // Types para o módulo de Imóveis
 
 export type PropertyStatus = 'active' | 'inactive' | 'pending' | 'sold'
-export type PropertyType = 'apartment' | 'house' | 'penthouse' | 'studio' | 'land'
+export type PropertyType = 'apartment' | 'house' | 'penthouse' | 'studio' | 'land' | 'commercial' | 'resort'
+export type CommercialStatus = 'draft' | 'published' | 'campaign' | 'private' | 'sold'
+export type Region = 'paraiba' | 'pernambuco' | 'sao-paulo' | 'dubai' | 'usa' | 'other'
 
 export interface Developer {
     id: string
@@ -25,6 +27,8 @@ export interface Property {
     neighborhood: string
     city: string
     state: string
+    country: string
+    region: Region
     zipcode: string | null
     lat: number | null
     lng: number | null
@@ -59,6 +63,9 @@ export interface Property {
     leads_count: number
     score: number | null
     featured: boolean
+    status_commercial: CommercialStatus
+    target_audience: string | null
+    selling_points: string[] | null
 
     created_at: string
     updated_at: string

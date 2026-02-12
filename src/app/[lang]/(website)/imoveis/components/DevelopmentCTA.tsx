@@ -1,24 +1,35 @@
 'use client';
 
+import { useState } from 'react';
 import { Development } from '../types/development';
 import Button from '@/components/ui/Button';
 import { MessageCircle, FileText } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { slideUp, staggerContainer } from '@/lib/animations';
+import LeadCaptureModal from './LeadCaptureModal';
 
 interface DevelopmentCTAProps {
     development: Development;
 }
 
 export default function DevelopmentCTA({ development }: DevelopmentCTAProps) {
-    const handleWhatsApp = (type: 'info' | 'table') => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [ctaType, setCtaType] = useState<'info' | 'table'>('info');
+
+    const handleCTAClick = (type: 'info' | 'table') => {
+        setCtaType(type);
+        setIsModalOpen(true);
+    };
+
+    const handleSuccess = () => {
         const messages = {
             info: `Olá! Tenho interesse no ${development.name}. Gostaria de mais informações.`,
             table: `Olá! Gostaria de receber a tabela completa de preços do ${development.name}.`
         };
 
-        const message = encodeURIComponent(messages[type]);
+        const message = encodeURIComponent(messages[ctaType as keyof typeof messages]);
         window.open(`https://wa.me/5581997230455?text=${message}`, '_blank');
+        setIsModalOpen(false);
     };
 
     return (
@@ -45,7 +56,7 @@ export default function DevelopmentCTA({ development }: DevelopmentCTAProps) {
                         <Button
                             size="lg"
                             className="bg-white text-imi-900 hover:bg-imi-50 min-w-[280px] h-16 font-bold uppercase tracking-[0.2em] text-sm shadow-xl"
-                            onClick={() => handleWhatsApp('info')}
+                            onClick={() => handleCTAClick('info')}
                         >
                             <MessageCircle className="w-5 h-5 mr-3 text-imi-600" />
                             Falar com Especialista
@@ -55,7 +66,7 @@ export default function DevelopmentCTA({ development }: DevelopmentCTAProps) {
                             size="lg"
                             variant="outline"
                             className="border-white/30 text-white hover:bg-white/10 min-w-[280px] h-16 font-bold uppercase tracking-[0.2em] text-sm"
-                            onClick={() => handleWhatsApp('table')}
+                            onClick={() => handleCTAClick('table')}
                         >
                             <FileText className="w-5 h-5 mr-3 text-accent-500" />
                             Solicitar Tabela Completa
@@ -63,6 +74,16 @@ export default function DevelopmentCTA({ development }: DevelopmentCTAProps) {
                     </motion.div>
                 </motion.div>
             </div>
+            <AnimatePresence>
+                {isModalOpen && (
+                    <LeadCaptureModal
+                        propertyName={development.name}
+                        propertyId={development.id}
+                        onClose={() => setIsModalOpen(false)}
+                        onSuccess={handleSuccess}
+                    />
+                )}
+            </AnimatePresence>
         </section>
     );
 }
